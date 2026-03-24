@@ -216,12 +216,10 @@ const handleSearch = () => {
 
 const selectCategory = (cat: string) => {
   currentCategory.value = cat;
-  // 跳转到物品列表页并传递分类参数
-  uni.switchTab({
-    url: "/pages/items/items",
+  // 跳转到搜索页面并传递分类参数
+  uni.navigateTo({
+    url: `/pages/search/search?category=${cat}`,
   });
-  // 使用事件总线或存储传递分类参数
-  uni.setStorageSync("selectedCategory", cat);
 };
 
 const goToDetail = (id: number) => {
@@ -231,8 +229,8 @@ const goToDetail = (id: number) => {
 };
 
 const goToMore = () => {
-  uni.switchTab({
-    url: "/pages/items/items",
+  uni.navigateTo({
+    url: "/pages/search/search",
   });
 };
 </script>

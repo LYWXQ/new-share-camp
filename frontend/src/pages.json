@@ -13,12 +13,7 @@
         "navigationBarTitleText": "编辑资料"
       }
     },
-    {
-      "path": "pages/items/items",
-      "style": {
-        "navigationBarTitleText": "物品列表"
-      }
-    },
+
     {
       "path": "pages/my-items/my-items",
       "style": {
@@ -133,8 +128,8 @@
         "selectedIconPath": "static/logo.png"
       },
       {
-        "pagePath": "pages/items/items",
-        "text": "物品",
+        "pagePath": "pages/orders/orders",
+        "text": "订单",
         "iconPath": "static/logo.png",
         "selectedIconPath": "static/logo.png"
       },
@@ -145,8 +140,8 @@
         "selectedIconPath": "static/logo.png"
       },
       {
-        "pagePath": "pages/orders/orders",
-        "text": "订单",
+        "pagePath": "pages/messages/messages",
+        "text": "消息",
         "iconPath": "static/logo.png",
         "selectedIconPath": "static/logo.png"
       },

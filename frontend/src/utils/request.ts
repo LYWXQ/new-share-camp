@@ -109,6 +109,9 @@ export const request = <T = any>(options: RequestOptions): Promise<T> => {
           // 处理业务逻辑错误（如果后端返回了 code 字段）
           if (result.code && result.code !== 200 && result.code !== 201) {
             showError(result.message || '请求失败')
+            if (showLoadingFlag) {
+              hideLoading()
+            }
             reject(result)
             return
           }
@@ -128,18 +131,33 @@ export const request = <T = any>(options: RequestOptions): Promise<T> => {
             })
           }, 1500)
           
+          if (showLoadingFlag) {
+            hideLoading()
+          }
           reject(new Error('Unauthorized'))
         } else if (statusCode === 403) {
           showError('没有权限执行此操作')
+          if (showLoadingFlag) {
+            hideLoading()
+          }
           reject(new Error('Forbidden'))
         } else if (statusCode === 404) {
           showError('请求的资源不存在')
+          if (showLoadingFlag) {
+            hideLoading()
+          }
           reject(new Error('Not Found'))
         } else if (statusCode >= 500) {
           showError('服务器错误，请稍后重试')
+          if (showLoadingFlag) {
+            hideLoading()
+          }
           reject(new Error('Server Error'))
         } else {
           showError('网络请求失败')
+          if (showLoadingFlag) {
+            hideLoading()
+          }
           reject(new Error('Request Failed'))
         }
       },

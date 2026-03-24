@@ -4,13 +4,6 @@
       <view class="message-tabs">
         <view 
           class="tab" 
-          :class="{ active: currentType === 'all' }"
-          @click="switchType('all')"
-        >
-          全部
-        </view>
-        <view 
-          class="tab" 
           :class="{ active: currentType === 'system' }"
           @click="switchType('system')"
         >
@@ -79,7 +72,7 @@ import { ref, onMounted } from 'vue'
 import { getMessageList, markAsRead, markAllAsRead, deleteMessage, type Message } from '@/api/messages'
 
 // 当前选中的消息类型
-const currentType = ref<'all' | 'system' | 'chat'>('all')
+const currentType = ref<'system' | 'chat'>('system')
 
 // 消息列表
 const messageList = ref<Message[]>([])
@@ -98,14 +91,10 @@ const fetchMessageList = async (isRefresh = false) => {
   isLoading.value = true
   
   try {
-    const params: { page: number; limit: number; type?: 'system' | 'chat' } = {
+    const params: { page: number; limit: number; type: 'system' | 'chat' } = {
       page: isRefresh ? 1 : page.value,
-      limit: limit.value
-    }
-    
-    // 如果不是全部，添加类型筛选
-    if (currentType.value !== 'all') {
-      params.type = currentType.value
+      limit: limit.value,
+      type: currentType.value
     }
     
     const res = await getMessageList(params)
@@ -133,7 +122,7 @@ const fetchMessageList = async (isRefresh = false) => {
 }
 
 // 切换消息类型
-const switchType = (type: 'all' | 'system' | 'chat') => {
+const switchType = (type: 'system' | 'chat') => {
   if (currentType.value === type) return
   currentType.value = type
   page.value = 1
