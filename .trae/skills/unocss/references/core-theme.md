@@ -1,13 +1,13 @@
 ---
 name: unocss-theme
-description: Theming system for colors, breakpoints, and design tokens
+description: 颜色、断点和设计令牌的主题系统
 ---
 
-# UnoCSS Theme
+# UnoCSS 主题
 
-UnoCSS supports theming similar to Tailwind CSS / Windi CSS. The `theme` property is deep-merged with the default theme.
+UnoCSS 支持与 Tailwind CSS / Windi CSS 类似的主题。`theme` 属性与默认主题深度合并。
 
-## Basic Usage
+## 基本用法
 
 ```ts
 theme: {
@@ -21,9 +21,9 @@ theme: {
 }
 ```
 
-## Using Theme in Rules
+## 在规则中使用主题
 
-Access theme values in dynamic rules:
+在动态规则中访问主题值：
 
 ```ts
 rules: [
@@ -34,20 +34,20 @@ rules: [
 ]
 ```
 
-## Using Theme in Variants
+## 在变体中使用主题
 
 ```ts
 variants: [
   {
     name: 'variant-name',
     match(matcher, { theme }) {
-      // Access theme.breakpoints, theme.colors, etc.
+      // 访问 theme.breakpoints、theme.colors 等
     },
   },
 ]
 ```
 
-## Using Theme in Shortcuts
+## 在快捷方式中使用主题
 
 ```ts
 shortcuts: [
@@ -58,9 +58,9 @@ shortcuts: [
 ]
 ```
 
-## Breakpoints
+## 断点
 
-**Warning:** Custom `breakpoints` object **overrides** the default, not merges.
+**警告：** 自定义的 `breakpoints` 对象**覆盖**默认值，而不是合并。
 
 ```ts
 theme: {
@@ -71,11 +71,11 @@ theme: {
 }
 ```
 
-Only `sm:` and `md:` variants will be available.
+只有 `sm:` 和 `md:` 变体可用。
 
-### Inherit Default Breakpoints
+### 继承默认断点
 
-Use `extendTheme` to merge with defaults:
+使用 `extendTheme` 与默认值合并：
 
 ```ts
 extendTheme: (theme) => {
@@ -90,19 +90,19 @@ extendTheme: (theme) => {
 }
 ```
 
-**Note:** `verticalBreakpoints` works the same for vertical layout.
+**注意：** `verticalBreakpoints` 的工作方式与纵向布局相同。
 
-### Breakpoint Sorting
+### 断点排序
 
-Breakpoints are sorted by size. Use consistent units to avoid errors:
+断点按大小排序。使用一致的单位以避免错误：
 
 ```ts
 theme: {
   breakpoints: {
     sm: '320px',
-    // Don't mix units - convert rem to px
-    // md: '40rem', // Bad
-    md: `${40 * 16}px`, // Good
+    // 不要混合单位 - 将 rem 转换为 px
+    // md: '40rem', // 错误
+    md: `${40 * 16}px`, // 正确
     lg: '960px',
   },
 }
@@ -110,9 +110,9 @@ theme: {
 
 ## ExtendTheme
 
-`extendTheme` lets you modify the merged theme object:
+`extendTheme` 允许你修改合并后的主题对象：
 
-### Mutate Theme
+### 修改主题
 
 ```ts
 extendTheme: (theme) => {
@@ -123,9 +123,9 @@ extendTheme: (theme) => {
 }
 ```
 
-### Replace Theme
+### 替换主题
 
-Return a new object to completely replace:
+返回新对象以完全替换：
 
 ```ts
 extendTheme: (theme) => {
@@ -139,32 +139,32 @@ extendTheme: (theme) => {
 }
 ```
 
-## Theme Differences in Presets
+## 预设中的主题差异
 
-### preset-wind3 vs preset-wind4
+### preset-wind3 与 preset-wind4
 
 | preset-wind3 | preset-wind4 |
 |--------------|--------------|
 | `fontFamily` | `font` |
 | `fontSize` | `text.fontSize` |
-| `lineHeight` | `text.lineHeight` or `leading` |
-| `letterSpacing` | `text.letterSpacing` or `tracking` |
+| `lineHeight` | `text.lineHeight` 或 `leading` |
+| `letterSpacing` | `text.letterSpacing` 或 `tracking` |
 | `borderRadius` | `radius` |
 | `easing` | `ease` |
 | `breakpoints` | `breakpoint` |
 | `boxShadow` | `shadow` |
 | `transitionProperty` | `property` |
 
-## Common Theme Keys
+## 常用主题键
 
-- `colors` - Color palette
-- `breakpoints` - Responsive breakpoints
-- `fontFamily` - Font stacks
-- `fontSize` - Text sizes
-- `spacing` - Spacing scale
-- `borderRadius` - Border radius values
-- `boxShadow` - Shadow definitions
-- `animation` - Animation keyframes and timing
+- `colors` - 调色板
+- `breakpoints` - 响应式断点
+- `fontFamily` - 字体栈
+- `fontSize` - 文字大小
+- `spacing` - 间距比例
+- `borderRadius` - 圆角值
+- `boxShadow` - 阴影定义
+- `animation` - 动画关键帧和计时
 
 <!-- 
 Source references:

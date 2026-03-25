@@ -1,44 +1,44 @@
 ---
-title: Props Are Read-Only - Never Mutate Props
+title: Props 是只读的 - 永远不要变更 Props
 impact: HIGH
-impactDescription: Mutating props breaks one-way data flow and causes unpredictable parent-child state synchronization issues
+impactDescription: 变更 props 会破坏单向数据流并导致不可预测的父子状态同步问题
 type: gotcha
 tags: [vue3, props, one-way-data-flow, mutation, component-design]
 ---
 
-# Props Are Read-Only - Never Mutate Props
+# Props 是只读的 - 永远不要变更 Props
 
-**Impact: HIGH** - Props in Vue follow one-way data flow: parent to child only. Mutating a prop in a child component violates this contract, triggering Vue warnings and causing hard-to-debug state synchronization issues. The parent component loses control of the data it passed down.
+**影响：高** - Vue 中的 Props 遵循单向数据流：仅从父到子。在子组件中变更 prop 会违反此约定，触发 Vue 警告并导致难以调试的状态同步问题。父组件失去对它传递的数据的控制。
 
-Props are "snapshots" from the parent at render time. Vue's reactivity system tracks props at the parent level - mutating in the child doesn't notify the parent, leading to state inconsistencies.
+Props 是渲染时来自父组件的"快照"。Vue 的响应式系统在父级追踪 props - 在子级变更不会通知父级，导致状态不一致。
 
-This is especially dangerous with object/array props because JavaScript passes them by reference, allowing mutation without assignment.
+对于对象/数组 props 这尤其危险，因为 JavaScript 通过引用传递它们，允许在不赋值的情况下进行变更。
 
-## Task Checklist
+## 任务清单
 
-- [ ] Never assign new values to props
-- [ ] Never mutate object or array prop properties directly
-- [ ] Use emit to request parent to make changes
-- [ ] Create local copies if you need to modify prop-based data
-- [ ] Use computed properties for derived values
+- [ ] 永远不要给 props 赋新值
+- [ ] 永远不要直接变更对象或数组 prop 属性
+- [ ] 使用 emit 请求父级进行更改
+- [ ] 如果你需要修改基于 prop 的数据，创建本地副本
+- [ ] 使用计算属性获取派生值
 
-## The Problem
+## 问题
 
-**Incorrect - Direct primitive prop mutation:**
+**错误 - 直接原始 prop 变更：**
 ```vue
 <script setup>
 const props = defineProps({
   count: Number
 })
 
-// WRONG: Vue will warn about mutating props
+// 错误：Vue 会警告变更 props
 function increment() {
-  props.count++ // Mutation attempt - this WILL fail
+  props.count++ // 变更尝试 - 这会失败
 }
 </script>
 ```
 
-**Incorrect - Object/array prop mutation (silent but dangerous):**
+**错误 - 对象/数组 prop 变更（静默但危险）：**
 ```vue
 <script setup>
 const props = defineProps({
@@ -46,28 +46,28 @@ const props = defineProps({
   items: Array
 })
 
-// WRONG: No warning, but breaks data flow!
+// 错误：没有警告，但破坏数据流！
 function updateUser() {
-  props.user.name = 'New Name' // Mutates parent's object
+  props.user.name = 'New Name' // 变更父级的对象
 }
 
 function addItem() {
-  props.items.push({ id: 1 }) // Mutates parent's array
+  props.items.push({ id: 1 }) // 变更父级的数组
 }
 </script>
 ```
 
-This pattern is dangerous because:
-1. Parent component doesn't know about the change
-2. Data can become out of sync
-3. Makes debugging difficult - where did the change come from?
-4. Breaks the component contract
+这种模式很危险，因为：
+1. 父组件不知道变更
+2. 数据可能变得不同步
+3. 使调试困难 - 变更来自哪里？
+4. 破坏组件约定
 
-## Pattern 1: Emit Events to Parent
+## 模式 1：向父级发送事件
 
-Let the parent handle all data changes.
+让父级处理所有数据更改。
 
-**Correct:**
+**正确：**
 ```vue
 <!-- ChildComponent.vue -->
 <script setup>
@@ -100,11 +100,11 @@ function updateName(newName) {
 </template>
 ```
 
-## Pattern 2: Local Copy for Editable Data (Prop as Initial Value)
+## 模式 2：可编辑数据的本地副本（Prop 作为初始值）
 
-When the component needs to work with a modified version of prop data.
+当组件需要使用 prop 数据的修改版本时。
 
-**Correct:**
+**正确：**
 ```vue
 <script setup>
 import { ref, watch } from 'vue'
@@ -114,13 +114,13 @@ const props = defineProps({
   user: Object
 })
 
-// Local copy for editing
+// 用于编辑的本地副本
 const localValue = ref(props.initialValue)
 
-// Deep copy for objects
+// 对象的深拷贝
 const localUser = ref({ ...props.user })
 
-// Sync when parent changes the prop
+// 当父级更改 prop 时同步
 watch(() => props.initialValue, (newVal) => {
   localValue.value = newVal
 })
@@ -136,11 +136,11 @@ watch(() => props.user, (newUser) => {
 </template>
 ```
 
-## Pattern 3: Computed Properties for Transformations
+## 模式 3：用于转换的计算属性
 
-When you need a derived/transformed version of the prop.
+当你需要 prop 的派生/转换版本时。
 
-**Correct:**
+**正确：**
 ```vue
 <script setup>
 import { computed } from 'vue'
@@ -150,21 +150,21 @@ const props = defineProps({
   items: Array
 })
 
-// Derived value - doesn't mutate prop
+// 派生值 - 不变更 prop
 const uppercaseText = computed(() => props.text.toUpperCase())
 
-// Filtered view - doesn't mutate prop
+// 过滤视图 - 不变更 prop
 const activeItems = computed(() =>
   props.items.filter(item => item.active)
 )
 </script>
 ```
 
-## Pattern 4: v-model for Two-Way Binding
+## 模式 4：双向绑定的 v-model
 
-For form-like components that need two-way binding.
+对于需要双向绑定的表单类组件。
 
-**Correct:**
+**正确：**
 ```vue
 <!-- CustomInput.vue -->
 <script setup>
@@ -186,29 +186,29 @@ const emit = defineEmits(['update:modelValue'])
 ```vue
 <!-- ParentComponent.vue -->
 <template>
-  <!-- v-model is shorthand for :modelValue + @update:modelValue -->
+  <!-- v-model 是 :modelValue + @update:modelValue 的简写 -->
   <CustomInput v-model="text" />
 </template>
 ```
 
-## Common Mistake: Thinking Object Mutation Is Safe
+## 常见错误：认为对象变更是安全的
 
 ```vue
 <script setup>
 const props = defineProps({ config: Object })
 
-// This "works" but is an anti-pattern!
-props.config.theme = 'dark' // No Vue warning, but still wrong
+// 这"有效"但是反模式！
+props.config.theme = 'dark' // 没有 Vue 警告，但仍然错误
 </script>
 ```
 
-Vue doesn't warn because it can't efficiently detect deep mutations. But this still:
-- Breaks one-way data flow
-- Makes the component unpredictable
-- Causes maintenance nightmares
+Vue 不警告是因为它无法有效检测深度变更。但这仍然：
+- 破坏单向数据流
+- 使组件不可预测
+- 导致维护噩梦
 
-**Always treat props as if they were deeply frozen.**
+**始终将 props 视为深度冻结。**
 
-## Reference
-- [Vue.js Props - One-Way Data Flow](https://vuejs.org/guide/components/props.html#one-way-data-flow)
-- [Vue.js Props - Mutating Object/Array Props](https://vuejs.org/guide/components/props.html#mutating-object-array-props)
+## 参考
+- [Vue.js Props - 单向数据流](https://vuejs.org/guide/components/props.html#one-way-data-flow)
+- [Vue.js Props - 变更对象/数组 Props](https://vuejs.org/guide/components/props.html#mutating-object-array-props)

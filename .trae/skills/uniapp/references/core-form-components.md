@@ -1,20 +1,20 @@
 ---
-name: Form Components
-description: Input, selection, and form control components
+name: 表单组件
+description: 输入、选择和表单控制组件。在使用 uni-app 的 input、textarea、picker、checkbox、radio、switch、slider 等表单组件时调用此技能。
 ---
 
-# Form Components
+# 表单组件
 
 ## input
 
-Single-line text input.
+单行文本输入。
 
 ```vue
 <template>
   <input
     v-model="inputValue"
     type="text"
-    placeholder="Enter text"
+    placeholder="请输入文本"
     :maxlength="100"
     :focus="true"
     @input="onInput"
@@ -25,38 +25,38 @@ Single-line text input.
 </template>
 ```
 
-**Properties:**
+**属性：**
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| value | String | | Input value |
-| type | String | text | Input type: text/number/idcard/digit/tel |
-| password | Boolean | false | Password input |
-| placeholder | String | | Placeholder text |
-| placeholder-style | String | | Placeholder inline styles |
-| placeholder-class | String | | Placeholder CSS class |
-| maxlength | Number | 140 | Max character length |
-| cursor-spacing | Number | 0 | Cursor distance from keyboard bottom (px) |
-| focus | Boolean | false | Auto focus |
-| confirm-type | String | done | Return key type: send/search/next/go/done |
-| confirm-hold | Boolean | false | Keep keyboard open after confirm |
+| 属性 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| value | String | | 输入值 |
+| type | String | text | 输入类型：text/number/idcard/digit/tel |
+| password | Boolean | false | 密码输入 |
+| placeholder | String | | 占位符文本 |
+| placeholder-style | String | | 占位符内联样式 |
+| placeholder-class | String | | 占位符 CSS 类 |
+| maxlength | Number | 140 | 最大字符长度 |
+| cursor-spacing | Number | 0 | 光标距离键盘底部的距离（px） |
+| focus | Boolean | false | 自动聚焦 |
+| confirm-type | String | done | 回车键类型：send/search/next/go/done |
+| confirm-hold | Boolean | false | 确认后保持键盘打开 |
 
-**Events:**
-- `@input` - Input value change
-- `@focus` - Input focused
-- `@blur` - Input blurred
-- `@confirm` - Confirm button clicked
-- `@keyboardheightchange` - Keyboard height changed
+**事件：**
+- `@input` - 输入值变化
+- `@focus` - 输入框聚焦
+- `@blur` - 输入框失焦
+- `@confirm` - 确认按钮点击
+- `@keyboardheightchange` - 键盘高度变化
 
 ## textarea
 
-Multi-line text input.
+多行文本输入。
 
 ```vue
 <template>
   <textarea
     v-model="content"
-    placeholder="Enter content"
+    placeholder="请输入内容"
     :maxlength="500"
     :auto-height="true"
     :show-confirm-bar="false"
@@ -65,41 +65,41 @@ Multi-line text input.
 </template>
 ```
 
-**Additional Properties:**
+**附加属性：**
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| auto-height | Boolean | false | Auto adjust height |
-| fixed | Boolean | false | Fixed position when scrolling |
-| cursor | Number | | Cursor position |
-| show-confirm-bar | Boolean | true | Show recommendation bar (WeChat) |
-| selection-start | Number | -1 | Selection start position |
-| selection-end | Number | -1 | Selection end position |
+| 属性 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| auto-height | Boolean | false | 自动调整高度 |
+| fixed | Boolean | false | 滚动时固定位置 |
+| cursor | Number | | 光标位置 |
+| show-confirm-bar | Boolean | true | 显示推荐栏（微信） |
+| selection-start | Number | -1 | 选择起始位置 |
+| selection-end | Number | -1 | 选择结束位置 |
 
 ## picker
 
-Selection from predefined options.
+从预定义选项中选择。
 
 ```vue
 <template>
-  <!-- Selector mode -->
+  <!-- 选择器模式 -->
   <picker mode="selector" :range="options" :value="selected" @change="onChange">
-    <view>Selected: {{ options[selected] }}</view>
+    <view>已选择：{{ options[selected] }}</view>
   </picker>
 
-  <!-- Multi-selector -->
+  <!-- 多列选择器 -->
   <picker mode="multiSelector" :range="multiOptions" @change="onMultiChange">
-    <view>Multi-select</view>
+    <view>多选</view>
   </picker>
 
-  <!-- Date picker -->
+  <!-- 日期选择器 -->
   <picker mode="date" :value="date" :start="startDate" :end="endDate" @change="onDateChange">
-    <view>Date: {{ date }}</view>
+    <view>日期：{{ date }}</view>
   </picker>
 
-  <!-- Region picker -->
+  <!-- 地区选择器 -->
   <picker mode="region" :value="region" @change="onRegionChange">
-    <view>Region: {{ region.join('-') }}</view>
+    <view>地区：{{ region.join('-') }}</view>
   </picker>
 </template>
 
@@ -107,13 +107,13 @@ Selection from predefined options.
 export default {
   data() {
     return {
-      options: ['Option 1', 'Option 2', 'Option 3'],
+      options: ['选项 1', '选项 2', '选项 3'],
       selected: 0,
       multiOptions: [['A', 'B'], ['1', '2', '3']],
       date: '2024-01-01',
       startDate: '2020-01-01',
       endDate: '2025-12-31',
-      region: ['Beijing', 'Beijing', 'Dongcheng']
+      region: ['北京市', '北京市', '东城区']
     }
   },
   methods: {
@@ -131,10 +131,10 @@ export default {
 </script>
 ```
 
-**Mode-specific Properties:**
+**模式特定属性：**
 
-| Mode | Properties |
-|------|------------|
+| 模式 | 属性 |
+|------|------|
 | selector | range, range-key |
 | multiSelector | range, range-key |
 | time | start, end |
@@ -143,7 +143,7 @@ export default {
 
 ## picker-view
 
-Embedded picker view (inline, not popup).
+嵌入式选择器视图（内联，非弹出）。
 
 ```vue
 <template>
@@ -160,11 +160,11 @@ Embedded picker view (inline, not popup).
 
 ## radio / checkbox
 
-Selection controls.
+选择控件。
 
 ```vue
 <template>
-  <!-- Radio group -->
+  <!-- 单选组 -->
   <radio-group @change="onRadioChange">
     <label v-for="item in items" :key="item.value">
       <radio :value="item.value" :checked="item.checked" color="#007AFF" />
@@ -172,7 +172,7 @@ Selection controls.
     </label>
   </radio-group>
 
-  <!-- Checkbox group -->
+  <!-- 复选组 -->
   <checkbox-group @change="onCheckboxChange">
     <label v-for="item in items" :key="item.value">
       <checkbox :value="item.value" :checked="item.checked" color="#007AFF" />
@@ -182,18 +182,18 @@ Selection controls.
 </template>
 ```
 
-**radio/checkbox Properties:**
+**radio/checkbox 属性：**
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| value | String | | Identifier value |
-| checked | Boolean | false | Selected state |
-| disabled | Boolean | false | Disabled state |
-| color | Color | | Selected color |
+| 属性 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| value | String | | 标识值 |
+| checked | Boolean | false | 选中状态 |
+| disabled | Boolean | false | 禁用状态 |
+| color | Color | | 选中颜色 |
 
 ## switch
 
-Toggle switch.
+开关切换。
 
 ```vue
 <template>
@@ -207,18 +207,18 @@ Toggle switch.
 </template>
 ```
 
-**Properties:**
+**属性：**
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| checked | Boolean | false | Checked state |
-| disabled | Boolean | false | Disabled state |
-| type | String | switch | Style: switch/checkbox |
-| color | Color | | Switch color when on |
+| 属性 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| checked | Boolean | false | 选中状态 |
+| disabled | Boolean | false | 禁用状态 |
+| type | String | switch | 样式：switch/checkbox |
+| color | Color | | 开启时的颜色 |
 
 ## slider
 
-Range slider input.
+范围滑块输入。
 
 ```vue
 <template>

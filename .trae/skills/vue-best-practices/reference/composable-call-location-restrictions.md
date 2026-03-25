@@ -1,141 +1,141 @@
 ---
-title: Call Composables Only in Setup Context Synchronously
-impact: HIGH
-impactDescription: Composables called outside setup context or asynchronously fail to register lifecycle hooks and may cause memory leaks
+title: 只在 Setup 上下文中同步调用可组合函数
+影响: 高
+影响描述: 在 setup 上下文外部或异步调用可组合函数会导致生命周期钩子注册失败并可能造成内存泄漏
 type: gotcha
 tags: [vue3, composables, composition-api, setup, async, lifecycle]
 ---
 
-# Call Composables Only in Setup Context Synchronously
+# 只在 Setup 上下文中同步调用可组合函数
 
-**Impact: HIGH** - Composables must be called synchronously within `<script setup>`, the `setup()` function, or lifecycle hooks. Calling composables asynchronously (after await), in callbacks, or outside component context prevents Vue from associating lifecycle hooks with the component instance, causing silent failures.
+**影响：高** - 可组合函数必须在 `<script setup>`、`setup()` 函数或生命周期钩子中同步调用。在回调中异步调用可组合函数（await 之后）或在组件上下文外部调用会阻止 Vue 将生命周期钩子与组件实例关联，导致静默失败。
 
-This is critical because composables often register `onMounted` and `onUnmounted` hooks internally. If called in the wrong context, these hooks are never registered, leading to uninitialized state or memory leaks.
+这很关键，因为可组合函数经常在内部注册 `onMounted` 和 `onUnmounted` 钩子。如果在错误的上下文中调用，这些钩子永远不会被注册，导致状态未初始化或内存泄漏。
 
-## Task Checklist
+## 任务清单
 
-- [ ] Call all composables at the top level of `<script setup>` or `setup()`
-- [ ] Never call composables inside async callbacks, setTimeout, or Promise.then
-- [ ] Never call composables conditionally (if/else) - call unconditionally and handle the condition inside
-- [ ] Never call composables inside loops - restructure to call once with array data
-- [ ] Exception: Composables CAN be called in lifecycle hooks like `onMounted`
+- [ ] 在 `<script setup>` 或 `setup()` 的顶层调用所有可组合函数
+- [ ] 永远不要在异步回调、setTimeout 或 Promise.then 中调用可组合函数
+- [ ] 永远不要有条件地（if/else）调用可组合函数 - 无条件调用并在内部处理条件
+- [ ] 永远不要在循环中调用可组合函数 - 重构为使用数组数据调用一次
+- [ ] 例外：可组合函数可以在生命周期钩子如 `onMounted` 中调用
 
-**Incorrect:**
+**错误：**
 ```vue
 <script setup>
 import { useFetch } from './composables/useFetch'
 import { useAuth } from './composables/useAuth'
 
-// WRONG: Composable called after await
+// 错误：await 后调用可组合函数
 const config = await loadConfig()
-const { data } = useFetch(config.apiUrl)  // Lifecycle hooks won't register!
+const { data } = useFetch(config.apiUrl)  // 生命周期钩子不会注册！
 
-// WRONG: Composable called conditionally
+// 错误：有条件地调用可组合函数
 if (someCondition) {
-  const { user } = useAuth()  // Inconsistent hook registration!
+  const { user } = useAuth()  // 钩子注册不一致！
 }
 
-// WRONG: Composable called in callback
+// 错误：在回调中调用可组合函数
 setTimeout(() => {
-  const { data } = useFetch('/api/delayed')  // No component context!
+  const { data } = useFetch('/api/delayed')  // 没有组件上下文！
 }, 1000)
 
-// WRONG: Composable called in loop
+// 错误：在循环中调用可组合函数
 for (const url of urls) {
-  const { data } = useFetch(url)  // Creates multiple instances incorrectly
+  const { data } = useFetch(url)  // 错误地创建多个实例
 }
 </script>
 ```
 
-**Correct:**
+**正确：**
 ```vue
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useFetch } from './composables/useFetch'
 import { useAuth } from './composables/useAuth'
 
-// CORRECT: Call composables synchronously at top level
+// 正确：在顶层同步调用可组合函数
 const { user, isAuthenticated } = useAuth()
 const apiUrl = ref('/api/default')
 const { data, execute } = useFetch(apiUrl)
 
-// Handle async config loading differently
+// 不同地处理异步配置加载
 onMounted(async () => {
   const config = await loadConfig()
-  apiUrl.value = config.apiUrl  // Update the ref, composable reacts
+  apiUrl.value = config.apiUrl  // 更新 ref，可组合函数响应
 })
 
-// CORRECT: Handle condition inside, not outside
+// 正确：在内部处理条件，而不是外部
 const showUserData = computed(() => isAuthenticated.value && someCondition)
 
-// CORRECT: For multiple URLs, use a different pattern
+// 正确：对于多个 URL，使用不同的模式
 const urls = ref(['/api/a', '/api/b', '/api/c'])
 const results = ref([])
 
-// Either fetch in onMounted or use a composable designed for arrays
+// 在 onMounted 中获取或使用为数组设计的可组合函数
 onMounted(async () => {
   results.value = await Promise.all(urls.value.map(url => fetch(url)))
 })
 </script>
 ```
 
-## Exception: Calling in Lifecycle Hooks
+## 例外：在生命周期钩子中调用
 
-Composables CAN be called inside lifecycle hooks because Vue maintains the component context:
+可组合函数可以在生命周期钩子中调用，因为 Vue 维护组件上下文：
 
 ```vue
 <script setup>
 import { onMounted } from 'vue'
 import { useEventListener } from '@vueuse/core'
 
-// CORRECT: Called in lifecycle hook - component context is available
+// 正确：在生命周期钩子中调用 - 组件上下文可用
 onMounted(() => {
-  // This works because we're still in the component's execution context
+  // 这有效因为我们在组件的执行上下文中
   useEventListener(document, 'visibilitychange', handleVisibility)
 })
 </script>
 ```
 
-## Special Case: Async Setup in `<script setup>`
+## 特殊情况：`<script setup>` 中的异步 Setup
 
-Top-level await in `<script setup>` is special - Vue's compiler automatically preserves context:
+`<script setup>` 中的顶层 await 是特殊的 - Vue 的编译器自动保留上下文：
 
 ```vue
 <script setup>
 import { useFetch } from './composables/useFetch'
 
-// CORRECT: Top-level await in <script setup> preserves context
-// Vue compiler handles this specially
+// 正确：`<script setup>` 中的顶层 await 保留上下文
+// Vue 编译器特殊处理这个
 const config = await loadConfig()
-const { data } = useFetch(config.apiUrl)  // This works!
+const { data } = useFetch(config.apiUrl)  // 这有效！
 
-// But nested awaits still break context:
+// 但嵌套的 await 仍然破坏上下文：
 async function initLater() {
   await delay(1000)
-  const { data } = useFetch('/api/late')  // WRONG: This won't work!
+  const { data } = useFetch('/api/late')  // 错误：这无效！
 }
 </script>
 ```
 
-## Why This Matters
+## 为什么这很重要
 
-When you call a composable, Vue needs to know which component instance to associate it with. This association happens through an internal "current instance" that's only set during synchronous setup execution.
+当你调用可组合函数时，Vue 需要知道将其与哪个组件实例关联。这种关联通过仅在同步 setup 执行期间设置的内部"当前实例"发生。
 
 ```javascript
-// Inside a composable
+// 在可组合函数内部
 export function useFetch(url) {
   const data = ref(null)
 
-  // These need the current component instance!
+  // 这些需要当前组件实例！
   onMounted(() => { /* ... */ })
   onUnmounted(() => { /* cleanup */ })
 
-  // If called outside setup context, Vue can't find the instance
-  // and these hooks are silently ignored
+  // 如果在 setup 上下文外部调用，Vue 找不到实例
+  // 这些钩子被静默忽略
   return { data }
 }
 ```
 
-## Reference
+## 参考
 - [Vue.js Composables - Usage Restrictions](https://vuejs.org/guide/reusability/composables.html#usage-restrictions)
 - [Vue.js Composition API - Setup Context](https://vuejs.org/api/composition-api-setup.html)

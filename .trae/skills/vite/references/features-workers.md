@@ -1,19 +1,19 @@
 ---
 name: features-workers
-description: Web Worker support in Vite
+description: Vite 中的 Web Worker 支持
 ---
 
 # Web Workers
 
-## Constructor Syntax (Recommended)
+## 构造函数语法（推荐）
 
-Standard Web Worker creation:
+标准 Web Worker 创建：
 
 ```ts
 const worker = new Worker(new URL('./worker.js', import.meta.url))
 ```
 
-Module worker:
+模块 Worker：
 
 ```ts
 const worker = new Worker(new URL('./worker.js', import.meta.url), {
@@ -21,7 +21,7 @@ const worker = new Worker(new URL('./worker.js', import.meta.url), {
 })
 ```
 
-Shared Worker:
+共享 Worker：
 
 ```ts
 const sharedWorker = new SharedWorker(
@@ -29,11 +29,11 @@ const sharedWorker = new SharedWorker(
 )
 ```
 
-**Note:** The `new URL()` must be used directly inside `new Worker()` for detection.
+**注意：** `new URL()` 必须直接在 `new Worker()` 内部使用以便检测。
 
-## Query Suffix Syntax
+## 查询后缀语法
 
-Import with `?worker` suffix:
+使用 `?worker` 后缀导入：
 
 ```ts
 import MyWorker from './worker?worker'
@@ -41,7 +41,7 @@ import MyWorker from './worker?worker'
 const worker = new MyWorker()
 ```
 
-Shared worker:
+共享 Worker：
 
 ```ts
 import MySharedWorker from './worker?sharedworker'
@@ -49,9 +49,9 @@ import MySharedWorker from './worker?sharedworker'
 const worker = new MySharedWorker()
 ```
 
-### Inline Worker
+### 内联 Worker
 
-Inline as base64 string (no separate chunk):
+内联为 base64 字符串（无单独代码块）：
 
 ```ts
 import MyWorker from './worker?worker&inline'
@@ -59,17 +59,17 @@ import MyWorker from './worker?worker&inline'
 const worker = new MyWorker()
 ```
 
-### Worker URL Only
+### 仅 Worker URL
 
-Get URL instead of constructor:
+获取 URL 而非构造函数：
 
 ```ts
 import workerUrl from './worker?worker&url'
 ```
 
-## Worker Script
+## Worker 脚本
 
-Workers can use ESM `import` statements:
+Worker 可以使用 ESM `import` 语句：
 
 ```ts
 // worker.js
@@ -81,24 +81,24 @@ self.onmessage = (e) => {
 }
 ```
 
-## Worker Options
+## Worker 选项
 
-Configure worker bundling:
+配置 Worker 打包：
 
 ```ts
 // vite.config.ts
 export default defineConfig({
   worker: {
-    format: 'es',  // or 'iife'
-    plugins: () => [/* worker-specific plugins */],
+    format: 'es',  // 或 'iife'
+    plugins: () => [/* Worker 专用插件 */],
     rollupOptions: {
-      // Rollup options for worker bundle
+      // Worker 打包的 Rollup 选项
     }
   }
 })
 ```
 
-## WebAssembly in Workers
+## Worker 中的 WebAssembly
 
 ```ts
 // worker.js

@@ -1,15 +1,15 @@
 ---
 name: advanced-api
-description: Vite's JavaScript API for programmatic usage
+description: Vite 的 JavaScript API，用于程序化使用
 ---
 
 # JavaScript API
 
-Vite's APIs are fully typed. Use TypeScript or enable JS type checking for intellisense.
+Vite 的 API 完全支持类型。使用 TypeScript 或启用 JS 类型检查以获得智能提示。
 
 ## `createServer`
 
-Create a development server programmatically:
+以编程方式创建开发服务器：
 
 ```ts
 import { createServer } from 'vite'
@@ -27,30 +27,30 @@ server.printUrls()
 server.bindCLIShortcuts({ print: true })
 ```
 
-### ViteDevServer Interface
+### ViteDevServer 接口
 
 ```ts
 interface ViteDevServer {
   config: ResolvedConfig
-  middlewares: Connect.Server      // Connect app for custom middleware
-  httpServer: http.Server | null   // Node HTTP server
-  watcher: FSWatcher               // Chokidar watcher
-  ws: WebSocketServer              // WebSocket for HMR
-  moduleGraph: ModuleGraph         // Module import relationships
+  middlewares: Connect.Server      // 用于自定义中间件的 Connect 应用
+  httpServer: http.Server | null   // Node HTTP 服务器
+  watcher: FSWatcher               // Chokidar 监视器
+  ws: WebSocketServer              // 用于 HMR 的 WebSocket
+  moduleGraph: ModuleGraph         // 模块导入关系
   
-  // Transform without HTTP
+  // 无需 HTTP 进行转换
   transformRequest(url: string): Promise<TransformResult | null>
   
-  // Apply HTML transforms
+  // 应用 HTML 转换
   transformIndexHtml(url: string, html: string): Promise<string>
   
-  // Load module for SSR
+  // 为 SSR 加载模块
   ssrLoadModule(url: string): Promise<Record<string, any>>
   
-  // Fix SSR error stack traces
+  // 修复 SSR 错误堆栈跟踪
   ssrFixStacktrace(e: Error): void
   
-  // Control
+  // 控制
   listen(port?: number): Promise<ViteDevServer>
   restart(): Promise<void>
   close(): Promise<void>
@@ -59,7 +59,7 @@ interface ViteDevServer {
 
 ## `build`
 
-Build for production:
+构建生产环境：
 
 ```ts
 import { build } from 'vite'
@@ -77,7 +77,7 @@ await build({
 
 ## `preview`
 
-Preview production build locally:
+本地预览生产构建：
 
 ```ts
 import { preview } from 'vite'
@@ -94,7 +94,7 @@ previewServer.printUrls()
 
 ## `resolveConfig`
 
-Resolve config without starting server:
+在不启动服务器的情况下解析配置：
 
 ```ts
 import { resolveConfig } from 'vite'
@@ -102,13 +102,13 @@ import { resolveConfig } from 'vite'
 const config = await resolveConfig(
   { root: './project' },
   'serve',        // 'serve' | 'build'
-  'development'   // default mode
+  'development'   // 默认模式
 )
 ```
 
 ## `mergeConfig`
 
-Deep merge two configs:
+深度合并两个配置：
 
 ```ts
 import { mergeConfig } from 'vite'
@@ -116,7 +116,7 @@ import { mergeConfig } from 'vite'
 const merged = mergeConfig(baseConfig, overrideConfig)
 ```
 
-Merge callback config:
+合并回调配置：
 
 ```ts
 import { defineConfig, mergeConfig } from 'vite'
@@ -128,21 +128,21 @@ export default defineConfig((env) =>
 
 ## `loadEnv`
 
-Load .env files:
+加载 .env 文件：
 
 ```ts
 import { loadEnv } from 'vite'
 
-// Load VITE_* vars
+// 加载 VITE_* 变量
 const env = loadEnv('development', process.cwd())
 
-// Load all vars (empty prefix)
+// 加载所有变量（空前缀）
 const allEnv = loadEnv('development', process.cwd(), '')
 ```
 
 ## `searchForWorkspaceRoot`
 
-Find monorepo workspace root:
+查找 monorepo 工作区根目录：
 
 ```ts
 import { searchForWorkspaceRoot } from 'vite'
@@ -152,7 +152,7 @@ const workspaceRoot = searchForWorkspaceRoot(process.cwd())
 
 ## `normalizePath`
 
-Normalize paths for cross-platform:
+跨平台规范化路径：
 
 ```ts
 import { normalizePath } from 'vite'
@@ -162,7 +162,7 @@ normalizePath('foo\\bar')  // 'foo/bar'
 
 ## `transformWithOxc`
 
-Transform JS/TS with Oxc Transformer:
+使用 Oxc Transformer 转换 JS/TS：
 
 ```ts
 import { transformWithOxc } from 'vite'
@@ -176,20 +176,20 @@ const result = await transformWithOxc(
 
 ## `preprocessCSS`
 
-Pre-process CSS files:
+预处理 CSS 文件：
 
 ```ts
 import { preprocessCSS, resolveConfig } from 'vite'
 
 const config = await resolveConfig({}, 'serve')
 const result = await preprocessCSS(code, 'styles.scss', config)
-// result.code - plain CSS
-// result.modules - CSS modules mapping
+// result.code - 纯 CSS
+// result.modules - CSS 模块映射
 ```
 
 ## `loadConfigFromFile`
 
-Load config file manually:
+手动加载配置文件：
 
 ```ts
 import { loadConfigFromFile } from 'vite'
@@ -203,11 +203,11 @@ const result = await loadConfigFromFile(
 
 ## InlineConfig
 
-Extends UserConfig with:
+扩展 UserConfig：
 
 ```ts
 interface InlineConfig extends UserConfig {
-  configFile?: string | false  // Config file path or false to skip
+  configFile?: string | false  // 配置文件路径或 false 跳过
   mode?: string
 }
 ```

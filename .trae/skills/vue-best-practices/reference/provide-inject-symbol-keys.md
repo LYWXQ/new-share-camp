@@ -1,49 +1,49 @@
 ---
-title: Use Symbol Keys for Provide/Inject in Large Applications
-impact: MEDIUM
-impactDescription: String injection keys can collide in large applications or when using third-party components
+title: 在大型应用中使用 Symbol 键进行 Provide/Inject
+影响: 中
+影响描述: 字符串注入键在大型应用或使用第三方组件时可能发生冲突
 type: best-practice
 tags: [vue3, provide-inject, typescript, architecture, component-library]
 ---
 
-# Use Symbol Keys for Provide/Inject in Large Applications
+# 在大型应用中使用 Symbol 键进行 Provide/Inject
 
-**Impact: MEDIUM** - Using string keys for provide/inject works for small applications but can cause key collisions in large apps, component libraries, or when multiple teams work on the same codebase. Symbol keys guarantee uniqueness and provide better TypeScript integration.
+**影响：中** - 在小型应用中使用字符串键进行 provide/inject 有效，但在大型应用、组件库或多个团队在同一代码库工作时可能导致键冲突。Symbol 键保证唯一性并提供更好的 TypeScript 集成。
 
-## Task Checklist
+## 任务清单
 
-- [ ] Use Symbol keys for provide/inject in large applications
-- [ ] Export symbols from a dedicated keys file
-- [ ] Use `InjectionKey<T>` for TypeScript type safety
-- [ ] Reserve string keys for simple, local use cases only
+- [ ] 在大型应用中使用 Symbol 键进行 provide/inject
+- [ ] 从专用键文件导出符号
+- [ ] 使用 `InjectionKey<T>` 进行 TypeScript 类型安全
+- [ ] 仅将字符串键保留用于简单、本地用例
 
-## The Problem: String Key Collisions
+## 问题：字符串键冲突
 
-**Risky - String keys can collide:**
+**有风险 - 字符串键可能冲突：**
 ```vue
-<!-- ThemeProvider.vue (your code) -->
+<!-- ThemeProvider.vue（你的代码） -->
 <script setup>
 import { provide, ref } from 'vue'
 provide('theme', ref('dark'))
 </script>
 
-<!-- SomeThirdPartyComponent.vue (library) -->
+<!-- SomeThirdPartyComponent.vue（库） -->
 <script setup>
 import { provide, ref } from 'vue'
-// Oops! Same key, different value
+// 哎呀！相同的键，不同的值
 provide('theme', ref({ primary: 'blue', secondary: 'gray' }))
 </script>
 
 <!-- DeepChild.vue -->
 <script setup>
 import { inject } from 'vue'
-const theme = inject('theme') // Which one? Closest ancestor wins
+const theme = inject('theme') // 哪个？最近的祖先获胜
 </script>
 ```
 
-## Solution: Symbol Keys
+## 解决方案：Symbol 键
 
-**Correct - Unique symbols prevent collisions:**
+**正确 - 唯一符号防止冲突：**
 
 ```js
 // injection-keys.js
@@ -73,15 +73,15 @@ const theme = inject(ThemeKey)
 </script>
 ```
 
-## TypeScript: InjectionKey for Type Safety
+## TypeScript：使用 InjectionKey 进行类型安全
 
-Vue provides `InjectionKey<T>` for strongly-typed injection:
+Vue 提供 `InjectionKey<T>` 用于强类型注入：
 
 ```ts
 // injection-keys.ts
 import type { InjectionKey, Ref } from 'vue'
 
-// Define the injected type
+// 定义注入类型
 interface User {
   id: string
   name: string
@@ -93,7 +93,7 @@ interface ThemeConfig {
   primaryColor: string
 }
 
-// Create typed injection keys
+// 创建类型化的注入键
 export const UserKey: InjectionKey<Ref<User>> = Symbol('user')
 export const ThemeKey: InjectionKey<Ref<ThemeConfig>> = Symbol('theme')
 export const LoggerKey: InjectionKey<(msg: string) => void> = Symbol('logger')
@@ -116,7 +116,7 @@ const theme = ref({
   primaryColor: '#007bff'
 })
 
-// TypeScript validates the provided value matches the key's type
+// TypeScript 验证提供的值匹配键的类型
 provide(UserKey, user)
 provide(ThemeKey, theme)
 </script>
@@ -128,29 +128,29 @@ provide(ThemeKey, theme)
 import { inject } from 'vue'
 import { UserKey, ThemeKey } from '@/injection-keys'
 
-// TypeScript knows user is Ref<User> | undefined
+// TypeScript 知道 user 是 Ref<User> | undefined
 const user = inject(UserKey)
 
-// With default value, TypeScript knows it's not undefined
+// 使用默认值时，TypeScript 知道它不是 undefined
 const theme = inject(ThemeKey, ref({ mode: 'light', primaryColor: '#000' }))
 
-// Type-safe access
-console.log(user?.value.name) // TypeScript knows the shape
+// 类型安全访问
+console.log(user?.value.name) // TypeScript 知道形状
 console.log(theme.value.mode) // 'light' | 'dark'
 </script>
 ```
 
-## Pattern: Injection Keys File Organization
+## 模式：注入键文件组织
 
-For larger applications, organize keys by feature:
+对于较大的应用，按功能组织键：
 
 ```
 src/
   injection-keys/
-    index.ts          # Re-exports all keys
-    auth.ts           # Auth-related keys
-    theme.ts          # Theme-related keys
-    feature-x.ts      # Feature-specific keys
+    index.ts          # 重新导出所有键
+    auth.ts           # 认证相关键
+    theme.ts          # 主题相关键
+    feature-x.ts      # 功能特定键
 ```
 
 ```ts
@@ -180,53 +180,53 @@ export * from './theme'
 export * from './feature-x'
 ```
 
-## Handling Missing Injections with Types
+## 处理缺失的注入并带类型
 
-TypeScript helps catch missing providers:
+TypeScript 帮助捕获缺失的提供者：
 
 ```vue
 <script setup lang="ts">
 import { inject } from 'vue'
 import { UserKey } from '@/injection-keys'
 
-// Option 1: Handle undefined explicitly
+// 选项 1：显式处理 undefined
 const user = inject(UserKey)
 if (!user) {
-  throw new Error('UserKey must be provided by an ancestor component')
+  throw new Error('UserKey 必须由祖先组件提供')
 }
 
-// Option 2: Provide a default
+// 选项 2：提供默认值
 const userWithDefault = inject(UserKey, ref({
   id: 'guest',
   name: 'Guest User',
   email: ''
 }))
 
-// Option 3: Use non-null assertion (only if you're certain)
+// 选项 3：使用非空断言（仅当你确定时）
 const userRequired = inject(UserKey)!
 </script>
 ```
 
-## When String Keys Are Still OK
+## 字符串键何时仍然 OK
 
-String keys are acceptable for:
+字符串键适用于：
 
-- Small applications with few providers
-- Local component trees with clear boundaries
-- Quick prototypes
-- App-level provides with unique, namespaced strings
+- 有少量提供者的小型应用
+- 边界清晰的本地组件树
+- 快速原型
+- 使用唯一、命名空间字符串的应用级 provide
 
 ```vue
-<!-- App-level provides with namespaced strings -->
+<!-- 使用命名空间字符串的应用级 provide -->
 <script setup>
 import { provide } from 'vue'
 
-// Namespaced strings reduce collision risk
+// 命名空间字符串减少冲突风险
 provide('myapp:config', config)
 provide('myapp:analytics', analytics)
 </script>
 ```
 
-## Reference
+## 参考
 - [Vue.js Provide/Inject - Working with Symbol Keys](https://vuejs.org/guide/components/provide-inject.html#working-with-symbol-keys)
 - [Vue.js TypeScript - Typing Provide/Inject](https://vuejs.org/guide/typescript/composition-api.html#typing-provide-inject)

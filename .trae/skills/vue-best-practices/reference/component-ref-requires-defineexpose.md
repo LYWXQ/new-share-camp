@@ -1,26 +1,26 @@
 ---
-title: Component Refs Require defineExpose with Script Setup
+title: 组件引用需要使用 Script Setup 的 defineExpose
 impact: HIGH
-impactDescription: Parent components cannot access child ref properties unless explicitly exposed
+impactDescription: 父组件无法访问子组件 ref 属性，除非显式暴露
 type: gotcha
 tags: [vue3, template-refs, script-setup, defineExpose, component-communication]
 ---
 
-# Component Refs Require defineExpose with Script Setup
+# 组件引用需要使用 Script Setup 的 defineExpose
 
-**Impact: HIGH** - Components using `<script setup>` are private by default. A parent component using a template ref to access a child will get an empty object unless the child explicitly exposes properties using `defineExpose()`. This is a fundamental change from Options API behavior.
+**影响：高** - 使用 `<script setup>` 的组件默认是私有的。使用模板引用访问子组件的父组件会得到一个空对象，除非子组件使用 `defineExpose()` 显式暴露属性。这是与 Options API 行为的根本变化。
 
-This catches many developers off-guard when migrating from Options API, where `this.$refs.child` gave full access to the child instance.
+这在从 Options API 迁移时让许多开发者感到意外，在 Options API 中 `this.$refs.child` 给予对子实例的完全访问权限。
 
-## Task Checklist
+## 任务清单
 
-- [ ] Use `defineExpose()` to explicitly expose properties/methods to parent refs
-- [ ] Only expose what's necessary - keep component internals private
-- [ ] Document exposed APIs as they form your component's public interface
-- [ ] Prefer props/emit for parent-child communication; use refs sparingly
-- [ ] Call defineExpose before any await operation (see async caveat)
+- [ ] 使用 `defineExpose()` 显式暴露属性/方法给父级 refs
+- [ ] 只暴露必要的 - 保持组件内部私有
+- [ ] 将暴露的 API 记录为它们形成组件的公共接口
+- [ ] 优先使用 props/emit 进行父子通信；谨慎使用 refs
+- [ ] 在任何 await 操作之前调用 defineExpose（参见异步注意事项）
 
-**Incorrect:**
+**错误示例：**
 ```vue
 <!-- ChildComponent.vue -->
 <script setup>
@@ -37,7 +37,7 @@ function reset() {
   count.value = 0
 }
 
-// WRONG: Nothing exposed - parent ref sees empty object
+// 错误：没有暴露 - 父级 ref 看到空对象
 </script>
 
 <template>
@@ -54,7 +54,7 @@ import ChildComponent from './ChildComponent.vue'
 const childRef = ref(null)
 
 onMounted(() => {
-  // WRONG: childRef.value is {} - empty object!
+  // 错误：childRef.value 是 {} - 空对象！
   console.log(childRef.value.count) // undefined
   childRef.value.increment() // TypeError: not a function
 })
@@ -65,14 +65,14 @@ onMounted(() => {
 </template>
 ```
 
-**Correct:**
+**正确示例：**
 ```vue
 <!-- ChildComponent.vue -->
 <script setup>
 import { ref } from 'vue'
 
 const count = ref(0)
-const internalState = ref('private') // Keep this private
+const internalState = ref('private') // 保持这个私有
 
 function increment() {
   count.value++
@@ -82,12 +82,12 @@ function reset() {
   count.value = 0
 }
 
-// CORRECT: Explicitly expose public API
+// 正确：显式暴露公共 API
 defineExpose({
-  count,      // Expose the ref
-  increment,  // Expose methods
+  count,      // 暴露 ref
+  increment,  // 暴露方法
   reset
-  // internalState NOT exposed - stays private
+  // internalState 未暴露 - 保持私有
 })
 </script>
 
@@ -105,11 +105,11 @@ import ChildComponent from './ChildComponent.vue'
 const childRef = ref(null)
 
 onMounted(() => {
-  // CORRECT: Can access exposed properties
+  // 正确：可以访问暴露的属性
   console.log(childRef.value.count) // 0
-  childRef.value.increment() // Works!
+  childRef.value.increment() // 有效！
 
-  // internalState is not accessible (private)
+  // internalState 不可访问（私有）
   console.log(childRef.value.internalState) // undefined
 })
 </script>
@@ -120,17 +120,17 @@ onMounted(() => {
 ```
 
 ```vue
-<!-- Input wrapper example - exposing native element -->
+<!-- 输入包装器示例 - 暴露原生元素 -->
 <script setup>
 import { ref } from 'vue'
 
 const inputEl = ref(null)
 
-// Expose the native input for parent to access (e.g., for focus)
+// 暴露原生输入供父级访问（例如，用于聚焦）
 defineExpose({
   focus: () => inputEl.value?.focus(),
   blur: () => inputEl.value?.blur(),
-  // Or expose the element directly
+  // 或直接暴露元素
   el: inputEl
 })
 </script>
@@ -141,7 +141,7 @@ defineExpose({
 ```
 
 ```javascript
-// Options API equivalent using expose option
+// Options API 等效使用 expose 选项
 export default {
   expose: ['count', 'increment', 'reset'],
   data() {
@@ -157,20 +157,20 @@ export default {
 }
 ```
 
-## Best Practice Reminder
+## 最佳实践提醒
 
-Component refs create tight coupling between parent and child. Prefer standard patterns:
+组件 refs 在父级和子级之间创建紧耦合。优先使用标准模式：
 
 ```vue
-<!-- PREFERRED: Use props and emit for communication -->
+<!-- 首选：使用 props 和 emit 进行通信 -->
 <script setup>
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])
 </script>
 
-<!-- Only use refs for imperative actions like focus(), scrollTo(), etc. -->
+<!-- 只对命令式操作如 focus()、scrollTo() 等使用 refs -->
 ```
 
-## Reference
-- [Vue.js Component Refs](https://vuejs.org/guide/essentials/template-refs.html#ref-on-component)
+## 参考
+- [Vue.js 组件 Refs](https://vuejs.org/guide/essentials/template-refs.html#ref-on-component)
 - [Script Setup - defineExpose](https://vuejs.org/api/sfc-script-setup.html#defineexpose)

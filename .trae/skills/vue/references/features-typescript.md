@@ -1,15 +1,15 @@
 ---
 name: typescript-integration
-description: Type Vue components with TypeScript in Composition API
+description: 在 Composition API 中为 Vue 组件添加 TypeScript 类型
 ---
 
-# TypeScript with Vue
+# TypeScript 与 Vue
 
-Vue provides excellent TypeScript support in Composition API.
+Vue 在 Composition API 中提供出色的 TypeScript 支持。
 
-## Typing Props
+## 为 Props 添加类型
 
-### Type-based declaration (recommended)
+### 基于类型的声明（推荐）
 
 ```vue
 <script setup lang="ts">
@@ -23,7 +23,7 @@ interface Props {
 const props = defineProps<Props>()
 ```
 
-### With defaults (3.5+)
+### 带默认值（3.5+）
 
 ```vue
 <script setup lang="ts">
@@ -35,7 +35,7 @@ interface Props {
 const { msg = 'hello', labels = ['one'] } = defineProps<Props>()
 ```
 
-### With withDefaults (3.4 and below)
+### 使用 withDefaults（3.4 及以下）
 
 ```vue
 <script setup lang="ts">
@@ -50,7 +50,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 ```
 
-### Complex prop types
+### 复杂 prop 类型
 
 ```vue
 <script setup lang="ts">
@@ -66,17 +66,17 @@ const props = defineProps<{
 }>()
 ```
 
-## Typing Emits
+## 为 Emits 添加类型
 
 ```vue
 <script setup lang="ts">
-// Call signature syntax
+// 调用签名语法
 const emit = defineEmits<{
   (e: 'change', id: number): void
   (e: 'update', value: string): void
 }>()
 
-// Named tuple syntax (3.3+, more concise)
+// 命名元组语法（3.3+，更简洁）
 const emit = defineEmits<{
   change: [id: number]
   update: [value: string]
@@ -84,23 +84,23 @@ const emit = defineEmits<{
 </script>
 ```
 
-## Typing ref()
+## 为 ref() 添加类型
 
 ```ts
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 
-// Inferred
+// 推断
 const count = ref(0) // Ref<number>
 
-// Explicit generic
+// 显式泛型
 const name = ref<string>() // Ref<string | undefined>
 
-// Type annotation
+// 类型注解
 const id: Ref<string | number> = ref('abc')
 ```
 
-## Typing reactive()
+## 为 reactive() 添加类型
 
 ```ts
 import { reactive } from 'vue'
@@ -110,28 +110,28 @@ interface State {
   name: string
 }
 
-// Use interface on variable
+// 在变量上使用接口
 const state: State = reactive({
   count: 0,
   name: 'Vue'
 })
 ```
 
-## Typing computed()
+## 为 computed() 添加类型
 
 ```ts
 import { computed } from 'vue'
 
-// Inferred from getter
+// 从 getter 推断
 const double = computed(() => count.value * 2) // ComputedRef<number>
 
-// Explicit generic
+// 显式泛型
 const result = computed<string>(() => {
   return String(value.value)
 })
 ```
 
-## Typing Event Handlers
+## 为事件处理器添加类型
 
 ```vue
 <script setup lang="ts">
@@ -146,9 +146,9 @@ function handleChange(event: Event) {
 </template>
 ```
 
-## Typing Template Refs
+## 为模板引用添加类型
 
-### useTemplateRef (3.5+)
+### useTemplateRef（3.5+）
 
 ```vue
 <script setup lang="ts">
@@ -166,7 +166,7 @@ onMounted(() => {
 </template>
 ```
 
-### Legacy ref approach
+### 传统 ref 方式
 
 ```vue
 <script setup lang="ts">
@@ -184,7 +184,7 @@ onMounted(() => {
 </template>
 ```
 
-## Typing Component Refs
+## 为组件引用添加类型
 
 ```vue
 <script setup lang="ts">
@@ -200,47 +200,47 @@ const compRef = useTemplateRef<MyComponentInstance>('comp')
 </template>
 ```
 
-## Typing Provide/Inject
+## 为 Provide/Inject 添加类型
 
 ```ts
 import { provide, inject } from 'vue'
 import type { InjectionKey, Ref } from 'vue'
 
-// Define typed key
+// 定义类型化键
 const countKey = Symbol() as InjectionKey<Ref<number>>
 
-// Provider
+// 提供者
 provide(countKey, ref(0))
 
-// Injector
+// 注入者
 const count = inject(countKey) // Ref<number> | undefined
 
-// With default
+// 带默认值
 const count = inject(countKey, ref(0)) // Ref<number>
 
-// String key with explicit type
+// 带显式类型的字符串键
 const foo = inject<string>('foo')
 ```
 
-## Typing defineModel (3.4+)
+## 为 defineModel 添加类型（3.4+）
 
 ```ts
-// Basic
+// 基本
 const model = defineModel<string>()
 //    ^? Ref<string | undefined>
 
-// Required
+// 必需
 const model = defineModel<string>({ required: true })
 //    ^? Ref<string>
 
-// With modifiers
+// 带修饰符
 const [model, modifiers] = defineModel<string, 'trim' | 'uppercase'>()
 //                ^? Record<'trim' | 'uppercase', true | undefined>
 ```
 
-## Global Custom Properties
+## 全局自定义属性
 
-Extend `ComponentCustomProperties` for global properties:
+为全局属性扩展 `ComponentCustomProperties`：
 
 ```ts
 // types/vue.d.ts
@@ -252,7 +252,7 @@ declare module 'vue' {
 }
 ```
 
-## Generic Components
+## 泛型组件
 
 ```vue
 <script setup lang="ts" generic="T">

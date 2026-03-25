@@ -1,5 +1,5 @@
 ---
-category: Browser
+category: 浏览器
 related:
   - useColorMode
   - usePreferredDark
@@ -8,11 +8,11 @@ related:
 
 # useDark
 
-Reactive dark mode with auto data persistence.
+响应式深色模式并自动持久化数据。
 
-<CourseLink href="https://vueschool.io/lessons/theming-with-vueuse-usedark-and-usecolormode?friend=vueuse">Learn useDark with this FREE video lesson from Vue School!</CourseLink>
+<CourseLink href="https://vueschool.io/lessons/theming-with-vueuse-usedark-and-usecolormode?friend=vueuse">通过 Vue School 的免费视频课程学习 useDark！</CourseLink>
 
-## Basic Usage
+## 基本用法
 
 ```ts
 import { useDark, useToggle } from '@vueuse/core'
@@ -21,31 +21,31 @@ const isDark = useDark()
 const toggleDark = useToggle(isDark)
 ```
 
-## Behavior
+## 行为
 
-`useDark` combines with `usePreferredDark` and `useStorage`. On start up, it reads the value from localStorage/sessionStorage (the key is configurable) to see if there is a user configured color scheme, if not, it will use users' system preferences. When you change the `isDark` ref, it will update the corresponding element's attribute and then store the preference to storage (default key: `vueuse-color-scheme`) for persistence.
+`useDark` 结合 `usePreferredDark` 和 `useStorage`。启动时，它从 localStorage/sessionStorage（键可配置）读取值以查看是否有用户配置的颜色方案，如果没有，它将使用用户的系统偏好。当您更改 `isDark` ref 时，它将更新相应元素的属性，然后将偏好存储到存储中（默认键：`vueuse-color-scheme`）以进行持久化。
 
-> Please note `useDark` only handles the DOM attribute changes for you to apply proper selector in your CSS. It does NOT handle the actual style, theme or CSS for you.
+> 请注意，`useDark` 仅为您处理 DOM 属性更改以在 CSS 中应用适当的选择器。它**不**处理实际的样式、主题或 CSS。
 
-## Configuration
+## 配置
 
-By default, it uses [Tailwind CSS favored dark mode](https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually), which enables dark mode when class `dark` is applied to the `html` tag, for example:
+默认情况下，它使用 [Tailwind CSS 偏好的深色模式](https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually)，当 `html` 标签应用 `dark` 类时启用深色模式，例如：
 
 ```html
-<!--light-->
+<!--浅色-->
 <html>
   ...
 </html>
 
-<!--dark-->
+<!--深色-->
 <html class="dark">
   ...
 </html>
 ```
 
-Still, you can also customize it to make it work with most CSS frameworks.
+不过，您也可以自定义它以使其与大多数 CSS 框架一起工作。
 
-For example:
+例如：
 
 ```ts
 import { useDark } from '@vueuse/core'
@@ -58,17 +58,17 @@ const isDark = useDark({
 })
 ```
 
-will work like
+将工作如下
 
 ```html
-<!--light-->
+<!--浅色-->
 <html>
   <body color-scheme="light">
     ...
   </body>
 </html>
 
-<!--dark-->
+<!--深色-->
 <html>
   <body color-scheme="dark">
     ...
@@ -76,50 +76,50 @@ will work like
 </html>
 ```
 
-If the configuration above still does not fit your needs, you can use the`onChanged` option to take full control over how you handle updates.
+如果上述配置仍然不符合您的需求，您可以使用 `onChanged` 选项来完全控制如何处理更新。
 
 ```ts
 import { useDark } from '@vueuse/core'
 // ---cut---
 const isDark = useDark({
   onChanged(dark) {
-    // update the dom, call the API or something
+    // 更新 dom，调用 API 或其他操作
   },
 })
 ```
 
-## Component Usage
+## 组件用法
 
 ```vue
 <template>
   <UseDark v-slot="{ isDark, toggleDark }">
     <button @click="toggleDark()">
-      Is Dark: {{ isDark }}
+      是否深色: {{ isDark }}
     </button>
   </UseDark>
 </template>
 ```
 
-## Type Declarations
+## 类型声明
 
 ```ts
 export interface UseDarkOptions
   extends Omit<UseColorModeOptions<BasicColorSchema>, "modes" | "onChanged"> {
   /**
-   * Value applying to the target element when isDark=true
+   * 当 isDark=true 时应用于目标元素的值
    *
    * @default 'dark'
    */
   valueDark?: string
   /**
-   * Value applying to the target element when isDark=false
+   * 当 isDark=false 时应用于目标元素的值
    *
    * @default ''
    */
   valueLight?: string
   /**
-   * A custom handler for handle the updates.
-   * When specified, the default behavior will be overridden.
+   * 处理更新的自定义处理程序。
+   * 指定时，将覆盖默认行为。
    *
    * @default undefined
    */
@@ -130,7 +130,7 @@ export interface UseDarkOptions
   ) => void
 }
 /**
- * Reactive dark mode with auto data persistence.
+ * 响应式深色模式并自动持久化数据。
  *
  * @see https://vueuse.org/useDark
  * @param options

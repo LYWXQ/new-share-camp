@@ -1,19 +1,19 @@
 ---
 name: vite-plugin-uni-pages
-description: File-based routing system for Vite-powered uni-app projects with automatic page discovery and TypeScript support
+description: 基于 Vite 的 uni-app 文件路由系统 - 自动页面发现和 TypeScript 支持，做什么：为 uni-app 项目提供基于文件的路由，从文件结构自动生成 pages.json 配置；何时调用：当用户需要配置基于文件的路由、使用 definePage 宏定义页面配置或访问虚拟模块页面元数据时调用
 ---
 
 # vite-plugin-uni-pages
 
-Provides file-based routing for uni-app projects using Vite. Automatically generates `pages.json` configuration from your file structure.
+为使用 Vite 的 uni-app 项目提供基于文件的路由。从文件结构自动生成 `pages.json` 配置。
 
-## Installation
+## 安装
 
 ```bash
 npm i -D @uni-helper/vite-plugin-uni-pages
 ```
 
-## Basic Setup
+## 基本设置
 
 ```ts
 // vite.config.ts
@@ -21,15 +21,15 @@ import Uni from '@dcloudio/vite-plugin-uni'
 import UniPages from '@uni-helper/vite-plugin-uni-pages'
 import { defineConfig } from 'vite'
 
-// Place UniPages before Uni
+// 将 UniPages 放在 Uni 之前
 export default defineConfig({
   plugins: [UniPages(), Uni()],
 })
 ```
 
-## TypeScript Support
+## TypeScript 支持
 
-Add types to `tsconfig.json`:
+将类型添加到 `tsconfig.json`：
 
 ```json
 {
@@ -39,16 +39,16 @@ Add types to `tsconfig.json`:
 }
 ```
 
-## Global Configuration
+## 全局配置
 
-Create `pages.config.ts` (or .js/.json) for global settings:
+创建 `pages.config.ts`（或 .js/.json）用于全局设置：
 
 ```ts
 // pages.config.ts
 import { defineUniPages } from '@uni-helper/vite-plugin-uni-pages'
 
 export default defineUniPages({
-  // Optional: manual pages have highest priority
+  // 可选：手动页面具有最高优先级
   pages: [],
   globalStyle: {
     navigationBarTextStyle: 'black',
@@ -57,9 +57,9 @@ export default defineUniPages({
 })
 ```
 
-## Virtual Module
+## 虚拟模块
 
-Access page metadata via virtual module:
+通过虚拟模块访问页面元数据：
 
 ```ts
 /// <reference types="@uni-helper/vite-plugin-uni-pages/client" />
@@ -68,13 +68,13 @@ import { pages } from 'virtual:uni-pages'
 console.log(pages)
 ```
 
-## definePage Macro
+## definePage 宏
 
-Define page configuration directly in SFC files:
+直接在 SFC 文件中定义页面配置：
 
 ```vue
 <script setup lang="ts">
-// Object form
+// 对象形式
 definePage({
   style: {
     navigationBarTitleText: 'hello world',
@@ -82,16 +82,16 @@ definePage({
   middlewares: ['auth'],
 })
 
-// Function form (supports TypeScript, async)
+// 函数形式（支持 TypeScript、异步）
 definePage(() => {
   return {
     style: {
-      navigationBarTitleText: 'dynamic title',
+      navigationBarTitleText: '动态标题',
     },
   }
 })
 
-// Async form
+// 异步形式
 definePage(async () => {
   const title = await fetchTitle()
   return {
@@ -101,23 +101,23 @@ definePage(async () => {
 </script>
 ```
 
-### Important Notes for definePage
+### definePage 重要说明
 
-- Write inside `<script>` block
-- `definePage` runs in a different scope than SFC (no access to SFC variables)
-- Page path is auto-generated from file path
-- Only one `definePage` per file
-- Supports importing external libraries (pure JS only)
-- Supports TypeScript type imports (types are stripped)
+- 写在 `<script>` 块内
+- `definePage` 在与 SFC 不同的作用域中运行（无法访问 SFC 变量）
+- 页面路径从文件路径自动生成
+- 每个文件只能有一个 `definePage`
+- 支持导入外部库（仅限纯 JS）
+- 支持 TypeScript 类型导入（类型会被剥离）
 
-### Using with Condition Compile
+### 与条件编译一起使用
 
 ```vue
 <script setup>
 import { isH5 } from '@uni-helper/uni-env'
 
 definePage(() => {
-  const title = isH5 ? 'H5 Environment' : 'Other Platform'
+  const title = isH5 ? 'H5 环境' : '其他平台'
   return {
     style: { navigationBarTitleText: title },
   }
@@ -125,38 +125,38 @@ definePage(() => {
 </script>
 ```
 
-## Configuration Options
+## 配置选项
 
 ```ts
 export interface Options {
-  /** Generate TypeScript declarations */
-  dts?: boolean | string  // default: true (outputs uni-pages.d.ts)
+  /** 生成 TypeScript 声明 */
+  dts?: boolean | string  // 默认：true（输出 uni-pages.d.ts）
 
-  /** Config file pattern */
-  configSource: string    // default: 'pages.config.(ts|mts|cts|js|cjs|mjs|json)'
+  /** 配置文件模式 */
+  configSource: string    // 默认：'pages.config.(ts|mts|cts|js|cjs|mjs|json)'
 
-  /** Default home page */
-  homePage: string        // default: 'pages/index' or 'pages/index/index'
+  /** 默认首页 */
+  homePage: string        // 默认：'pages/index' 或 'pages/index/index'
 
-  /** Merge with existing pages.json */
-  mergePages: boolean     // default: true
+  /** 与现有 pages.json 合并 */
+  mergePages: boolean     // 默认：true
 
-  /** Pages directory */
-  dir: string             // default: 'src/pages'
+  /** 页面目录 */
+  dir: string             // 默认：'src/pages'
 
-  /** Sub-packages directories */
-  subPackages: string[]   // e.g., ['src/pages-sub']
+  /** 分包目录 */
+  subPackages: string[]   // 例如：['src/pages-sub']
 
-  /** Output directory for pages.json */
-  outDir: string          // default: 'src'
+  /** pages.json 输出目录 */
+  outDir: string          // 默认：'src'
 
-  /** Exclude patterns */
-  exclude: string[]       // default: []
+  /** 排除模式 */
+  exclude: string[]       // 默认：[]
 
-  /** Route block language in SFC */
-  routeBlockLang: 'json5' | 'jsonc' | 'json' | 'yaml' | 'yml'  // default: 'json5'
+  /** SFC 中的路由块语言 */
+  routeBlockLang: 'json5' | 'jsonc' | 'json' | 'yaml' | 'yml'  // 默认：'json5'
 
-  // Lifecycle hooks
+  // 生命周期钩子
   onBeforeLoadUserConfig?: (ctx: PageContext) => void
   onAfterLoadUserConfig?: (ctx: PageContext) => void
   onBeforeScanPages?: (ctx: PageContext) => void
@@ -168,12 +168,12 @@ export interface Options {
 }
 ```
 
-## Usage with Layouts
+## 与布局一起使用
 
 ```vue
 <script setup>
 definePage({
-  layout: 'default',  // Specify layout
+  layout: 'default',  // 指定布局
   middlewares: ['auth'],
 })
 </script>

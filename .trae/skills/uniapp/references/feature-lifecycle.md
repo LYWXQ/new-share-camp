@@ -1,13 +1,13 @@
 ---
-name: Page Lifecycle
-description: Page and application lifecycle hooks
+name: 页面生命周期
+description: 页面和应用生命周期钩子。在使用 uni-app 开发时了解应用和页面的生命周期、执行时机和最佳实践时调用此技能。
 ---
 
-# Page Lifecycle
+# 页面生命周期
 
-## Application Lifecycle
+## 应用生命周期
 
-In `App.vue`:
+在 `App.vue` 中：
 
 ```javascript
 export default {
@@ -17,34 +17,34 @@ export default {
   },
 
   onLaunch(options) {
-    // App launched (only once)
-    console.log('App launched', options)
+    // 应用启动（仅一次）
+    console.log('应用启动', options)
     this.checkUpdate()
   },
 
   onShow(options) {
-    // App shown/foreground
-    console.log('App shown', options)
+    // 应用显示/前台
+    console.log('应用显示', options)
   },
 
   onHide() {
-    // App hidden/background
-    console.log('App hidden')
+    // 应用隐藏/后台
+    console.log('应用隐藏')
   },
 
   onError(msg) {
-    // Global error handler
-    console.error('App error:', msg)
+    // 全局错误处理
+    console.error('应用错误：', msg)
   },
 
   onUnhandledRejection(err) {
-    // Unhandled promise rejection
-    console.error('Unhandled rejection:', err)
+    // 未处理的 Promise 拒绝
+    console.error('未处理的拒绝：', err)
   },
 
   onPageNotFound(res) {
-    // 404 page not found
-    console.error('Page not found:', res.path)
+    // 404 页面未找到
+    console.error('页面未找到：', res.path)
     uni.redirectTo({
       url: '/pages/404/404'
     })
@@ -52,11 +52,11 @@ export default {
 
   methods: {
     checkUpdate() {
-      // Check for app updates
+      // 检查应用更新
       const updateManager = uni.getUpdateManager()
       updateManager.onCheckForUpdate((res) => {
         if (res.hasUpdate) {
-          console.log('New version available')
+          console.log('有新版本可用')
         }
       })
     }
@@ -64,109 +64,109 @@ export default {
 }
 ```
 
-## Page Lifecycle
+## 页面生命周期
 
 ```vue
 <script>
 export default {
-  // === Page Load ===
+  // === 页面加载 ===
   onLoad(options) {
-    // Page loaded with query parameters
-    console.log('Page loaded', options)
-    // options contains URL query params
-    // e.g., /pages/detail?id=123 -> options = { id: '123' }
+    // 页面加载，带查询参数
+    console.log('页面加载', options)
+    // options 包含 URL 查询参数
+    // 例如：/pages/detail?id=123 -> options = { id: '123' }
     this.id = options.id
     this.loadData()
   },
 
-  // === Page Show ===
+  // === 页面显示 ===
   onShow() {
-    // Page shown (every time)
-    console.log('Page shown')
-    // Good for refreshing data when returning
+    // 页面显示（每次）
+    console.log('页面显示')
+    // 适合返回时刷新数据
   },
 
-  // === Page Ready ===
+  // === 页面就绪 ===
   onReady() {
-    // Page ready, DOM rendered
-    console.log('Page ready')
-    // Safe to access DOM elements
+    // 页面就绪，DOM 已渲染
+    console.log('页面就绪')
+    // 可以安全访问 DOM 元素
     this.initChart()
   },
 
-  // === Page Hide ===
+  // === 页面隐藏 ===
   onHide() {
-    // Page hidden (navigated away)
-    console.log('Page hidden')
-    // Pause videos, timers, etc.
+    // 页面隐藏（导航离开）
+    console.log('页面隐藏')
+    // 暂停视频、定时器等
   },
 
-  // === Page Unload ===
+  // === 页面卸载 ===
   onUnload() {
-    // Page destroyed
-    console.log('Page unloaded')
-    // Clean up resources, remove listeners
+    // 页面销毁
+    console.log('页面卸载')
+    // 清理资源，移除监听
     clearInterval(this.timer)
   },
 
-  // === Pull Down Refresh ===
+  // === 下拉刷新 ===
   onPullDownRefresh() {
-    // User pulled down
-    console.log('Pull down refresh')
+    // 用户下拉
+    console.log('下拉刷新')
     this.refreshData().finally(() => {
       uni.stopPullDownRefresh()
     })
   },
 
-  // === Reach Bottom ===
+  // === 到达底部 ===
   onReachBottom() {
-    // Scrolled to bottom
-    console.log('Reach bottom')
+    // 滚动到底部
+    console.log('到达底部')
     this.loadMore()
   },
 
-  // === Page Scroll ===
+  // === 页面滚动 ===
   onPageScroll(e) {
-    // Page scrolled
-    // e.scrollTop: scroll position
+    // 页面滚动
+    // e.scrollTop: 滚动位置
     this.scrollTop = e.scrollTop
   },
 
-  // === Resize ===
+  // === 尺寸变化 ===
   onResize(e) {
-    // Page resized (e.g., rotation)
-    console.log('Page resized', e.size)
+    // 页面尺寸变化（如旋转）
+    console.log('页面尺寸变化', e.size)
   },
 
-  // === Share ===
+  // === 分享 ===
   onShareAppMessage(res) {
-    // Native share (MP)
+    // 原生分享（小程序）
     if (res.from === 'button') {
-      // From share button
+      // 来自分享按钮
       console.log(res.target)
     }
     return {
-      title: 'Share Title',
+      title: '分享标题',
       path: '/pages/index/index',
       imageUrl: '/static/share.png'
     }
   },
 
-  // === Timeline Share ===
+  // === 朋友圈分享 ===
   onShareTimeline() {
-    // Share to timeline (WeChat)
+    // 分享到朋友圈（微信）
     return {
-      title: 'Timeline Title',
+      title: '朋友圈标题',
       query: 'id=123',
       imageUrl: '/static/share.png'
     }
   },
 
-  // === Add to Favorites ===
+  // === 添加到收藏 ===
   onAddToFavorites() {
-    // Add to MP favorites
+    // 添加到小程序收藏
     return {
-      title: 'Favorite Title',
+      title: '收藏标题',
       imageUrl: '/static/fav.png',
       query: 'id=123'
     }
@@ -182,79 +182,79 @@ export default {
 
   methods: {
     loadData() {
-      // Load page data
+      // 加载页面数据
     },
     refreshData() {
-      // Refresh data
+      // 刷新数据
     },
     loadMore() {
-      // Load more data
+      // 加载更多数据
     },
     initChart() {
-      // Initialize chart after DOM ready
+      // DOM 就绪后初始化图表
     }
   }
 }
 </script>
 ```
 
-## Component Lifecycle (Vue 2)
+## 组件生命周期（Vue 2）
 
 ```vue
 <script>
 export default {
-  // === Creation ===
+  // === 创建 ===
   beforeCreate() {
-    // Instance initialized
+    // 实例初始化
   },
 
   created() {
-    // Instance created, data observed
-    // Good for initial data loading
+    // 实例创建，数据已观察
+    // 适合初始数据加载
   },
 
-  // === Mounting ===
+  // === 挂载 ===
   beforeMount() {
-    // Before DOM mount
+    // DOM 挂载前
   },
 
   mounted() {
-    // DOM mounted
-    // Good for DOM operations
+    // DOM 已挂载
+    // 适合 DOM 操作
   },
 
-  // === Updating ===
+  // === 更新 ===
   beforeUpdate() {
-    // Before data update
+    // 数据更新前
   },
 
   updated() {
-    // After data update
+    // 数据更新后
   },
 
-  // === Destruction ===
+  // === 销毁 ===
   beforeDestroy() {
-    // Before instance destroyed
-    // Clean up here
+    // 实例销毁前
+    // 在此清理
   },
 
   destroyed() {
-    // Instance destroyed
+    // 实例已销毁
   },
 
-  // === Keep-alive ===
+  // ===  keep-alive ===
   activated() {
-    // Component activated (kept-alive)
+    // 组件激活（keep-alive）
   },
 
   deactivated() {
-    // Component deactivated (kept-alive)
+    // 组件停用（keep-alive）
   }
 }
 </script>
 ```
 
-## Component Lifecycle (Vue 3)
+## 组件生命周期（Vue 3）
 
 ```vue
 <script setup>
@@ -269,7 +269,7 @@ import {
   onDeactivated
 } from 'vue'
 
-// Setup runs before beforeCreate
+// setup 在 beforeCreate 之前运行
 console.log('setup')
 
 onBeforeMount(() => {
@@ -306,34 +306,34 @@ onDeactivated(() => {
 </script>
 ```
 
-## Lifecycle Comparison
+## 生命周期对比
 
-| Scenario | UniApp Page | Vue Component |
-|----------|-------------|---------------|
-| Initial load | onLoad | created |
-| DOM ready | onReady | mounted |
-| Page show | onShow | - |
-| Page hide | onHide | - |
-| Page destroy | onUnload | destroyed/unmounted |
-| Data refresh | onPullDownRefresh | - |
-| Infinite scroll | onReachBottom | - |
-| Scroll position | onPageScroll | - |
+| 场景 | UniApp 页面 | Vue 组件 |
+|------|-------------|----------|
+| 初始加载 | onLoad | created |
+| DOM 就绪 | onReady | mounted |
+| 页面显示 | onShow | - |
+| 页面隐藏 | onHide | - |
+| 页面销毁 | onUnload | destroyed/unmounted |
+| 数据刷新 | onPullDownRefresh | - |
+| 无限滚动 | onReachBottom | - |
+| 滚动位置 | onPageScroll | - |
 
-## App Update Manager
+## 应用更新管理器
 
 ```javascript
-// In App.vue onLaunch
+// 在 App.vue onLaunch 中
 onLaunch() {
   const updateManager = uni.getUpdateManager()
 
   updateManager.onCheckForUpdate((res) => {
-    console.log('Has update:', res.hasUpdate)
+    console.log('有更新：', res.hasUpdate)
   })
 
   updateManager.onUpdateReady(() => {
     uni.showModal({
-      title: 'Update Ready',
-      content: 'New version downloaded. Restart to apply?',
+      title: '更新就绪',
+      content: '新版本已下载。重启应用？',
       success: (res) => {
         if (res.confirm) {
           updateManager.applyUpdate()
@@ -343,14 +343,14 @@ onLaunch() {
   })
 
   updateManager.onUpdateFailed(() => {
-    console.error('Update failed')
+    console.error('更新失败')
   })
 }
 ```
 
-## Best Practices
+## 最佳实践
 
-### Data Loading Pattern
+### 数据加载模式
 
 ```javascript
 export default {
@@ -388,7 +388,7 @@ export default {
 }
 ```
 
-### Scroll Performance
+### 滚动性能
 
 ```javascript
 export default {
@@ -399,7 +399,7 @@ export default {
     }
   },
 
-  // Throttle scroll events
+  // 节流滚动事件
   onPageScroll: throttle(function(e) {
     this.scrollTop = e.scrollTop
     this.showBackTop = e.scrollTop > 500

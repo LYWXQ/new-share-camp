@@ -1,15 +1,15 @@
 ---
 name: component-events-emits
-description: Emit and handle custom events from child to parent components
+description: 从子组件向父组件触发自定义事件并处理
 ---
 
-# Component Events
+# 组件事件
 
-Components emit custom events to communicate with parent components.
+组件触发自定义事件与父组件通信。
 
-## Emitting Events
+## 触发事件
 
-Use `$emit` in templates or `defineEmits` in script:
+在模板中使用 `$emit` 或在 script 中使用 `defineEmits`：
 
 ```vue
 <script setup lang="ts">
@@ -21,36 +21,36 @@ function handleClick() {
 </script>
 
 <template>
-  <button @click="$emit('inFocus')">Focus</button>
-  <button @click="handleClick">Submit</button>
+  <button @click="$emit('inFocus')">聚焦</button>
+  <button @click="handleClick">提交</button>
 </template>
 ```
 
-## Type-Based Declaration (Recommended)
+## 基于类型的声明（推荐）
 
 ```vue
 <script setup lang="ts">
-// Call signature syntax
+// 调用签名语法
 const emit = defineEmits<{
   (e: 'change', id: number): void
   (e: 'update', value: string): void
 }>()
 
-// Named tuple syntax (3.3+, more concise)
+// 命名元组语法（3.3+，更简洁）
 const emit = defineEmits<{
   change: [id: number]
   update: [value: string]
 }>()
 
-// Usage
+// 使用
 emit('change', 123)
 emit('update', 'hello')
 </script>
 ```
 
-## Event Arguments
+## 事件参数
 
-Pass additional arguments to events:
+向事件传递额外参数：
 
 ```vue
 <script setup lang="ts">
@@ -64,13 +64,13 @@ function increase() {
 </script>
 ```
 
-Parent receives arguments:
+父组件接收参数：
 
 ```vue-html
-<!-- Inline handler -->
+<!-- 内联处理器 -->
 <MyButton @increase-by="(n) => count += n" />
 
-<!-- Method handler -->
+<!-- 方法处理器 -->
 <MyButton @increase-by="increaseCount" />
 ```
 
@@ -80,43 +80,43 @@ function increaseCount(n: number) {
 }
 ```
 
-## Event Validation
+## 事件验证
 
-Validate event payloads with object syntax:
+使用对象语法验证事件载荷：
 
 ```vue
 <script setup lang="ts">
 const emit = defineEmits({
-  // No validation
+  // 无验证
   click: null,
   
-  // Validate submit event
+  // 验证 submit 事件
   submit: ({ email, password }: { email: string; password: string }) => {
     if (email && password) {
       return true
     }
-    console.warn('Invalid submit payload!')
+    console.warn('无效的 submit 载荷！')
     return false
   }
 })
 </script>
 ```
 
-## Listening to Events
+## 监听事件
 
-Use `v-on` or `@` shorthand:
+使用 `v-on` 或 `@` 简写：
 
 ```vue-html
 <MyComponent @some-event="handleEvent" />
 
-<!-- With .once modifier -->
+<!-- 使用 .once 修饰符 -->
 <MyComponent @some-event.once="handleOnce" />
 ```
 
-## Event Name Casing
+## 事件命名规范
 
-- Emit in camelCase
-- Listen in kebab-case
+- 使用 camelCase 触发
+- 使用 kebab-case 监听
 
 ```ts
 emit('someEvent')
@@ -126,11 +126,11 @@ emit('someEvent')
 <MyComponent @some-event="handler" />
 ```
 
-## Important Notes
+## 重要说明
 
-- Component events do NOT bubble (unlike DOM events)
-- Only direct child events can be listened to
-- For sibling/deeply nested communication, use provide/inject or state management
+- 组件事件**不会冒泡**（与 DOM 事件不同）
+- 只能监听直接子组件的事件
+- 对于兄弟/深层嵌套通信，使用 provide/inject 或状态管理
 
 <!-- 
 Source references:

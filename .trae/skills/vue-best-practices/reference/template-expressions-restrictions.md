@@ -1,70 +1,70 @@
 ---
-title: Template Expressions Must Be Single Expressions
+title: 模板表达式必须是单个表达式
 impact: MEDIUM
-impactDescription: Using statements instead of expressions in templates causes compilation errors
+impactDescription: 在模板中使用语句而不是表达式会导致编译错误
 type: capability
 tags: [vue3, template, expressions, interpolation, syntax]
 ---
 
-# Template Expressions Must Be Single Expressions
+# 模板表达式必须是单个表达式
 
-**Impact: MEDIUM** - Vue templates only support single JavaScript expressions, not statements. Using variable declarations, if statements, or multiple statements will cause template compilation errors.
+**影响：中** - Vue 模板只支持单个 JavaScript 表达式，不支持语句。使用变量声明、if 语句或多行代码块将导致模板编译错误。
 
-Template interpolation `{{ }}` and directive bindings evaluate JavaScript expressions that produce a value. Statements like `if`, `for`, variable declarations, or multi-line code blocks are not allowed.
+模板插值 `{{ }}` 和指令绑定求值产生值的 JavaScript 表达式。不允许使用 `if`、`for`、变量声明或多行代码块等语句。
 
-## Task Checklist
+## 任务清单
 
-- [ ] Use only single expressions in `{{ }}` interpolation
-- [ ] Use ternary operators instead of if/else statements
-- [ ] Move complex logic to computed properties or methods
-- [ ] Avoid variable declarations in templates
-- [ ] Use `v-if`/`v-else` directives for conditional rendering
+- [ ] 在 `{{ }}` 插值中只使用单个表达式
+- [ ] 使用三元运算符代替 if/else 语句
+- [ ] 将复杂逻辑移到计算属性或方法中
+- [ ] 避免在模板中声明变量
+- [ ] 使用 `v-if`/`v-else` 指令进行条件渲染
 
-**Incorrect:**
+**错误示例：**
 ```vue
 <template>
-  <!-- ERROR: Variable declaration is a statement, not expression -->
+  <!-- 错误：变量声明是语句，不是表达式 -->
   <p>{{ var greeting = 'Hello' }}</p>
   <p>{{ let x = 1 }}</p>
   <p>{{ const name = 'Vue' }}</p>
 
-  <!-- ERROR: if statement not allowed -->
+  <!-- 错误：不允许使用 if 语句 -->
   <p>{{ if (ok) { return message } }}</p>
   <p>{{ if (user) return user.name }}</p>
 
-  <!-- ERROR: Multiple statements not allowed -->
+  <!-- 错误：不允许使用多个语句 -->
   <p>{{ count++; return count }}</p>
   <p>{{ items.push(newItem); items.length }}</p>
 
-  <!-- ERROR: for/while loops not allowed -->
+  <!-- 错误：不允许使用 for/while 循环 -->
   <p>{{ for (let i = 0; i < 5; i++) { } }}</p>
 </template>
 ```
 
-**Correct:**
+**正确示例：**
 ```vue
 <template>
-  <!-- OK: Simple expressions -->
+  <!-- 可以：简单表达式 -->
   <p>{{ message }}</p>
   <p>{{ count + 1 }}</p>
   <p>{{ items.length }}</p>
 
-  <!-- OK: Ternary operators for conditionals -->
+  <!-- 可以：用于条件的三元运算符 -->
   <p>{{ ok ? 'YES' : 'NO' }}</p>
   <p>{{ user ? user.name : 'Guest' }}</p>
   <p>{{ score >= 60 ? 'Pass' : 'Fail' }}</p>
 
-  <!-- OK: Method/function calls -->
+  <!-- 可以：方法/函数调用 -->
   <p>{{ formatDate(date) }}</p>
   <p>{{ items.filter(i => i.active).length }}</p>
 
-  <!-- OK: Chained expressions -->
+  <!-- 可以：链式表达式 -->
   <p>{{ message.split('').reverse().join('') }}</p>
 
-  <!-- OK: Template literals -->
+  <!-- 可以：模板字符串 -->
   <p>{{ `Hello, ${name}!` }}</p>
 
-  <!-- OK: Object/array expressions -->
+  <!-- 可以：对象/数组表达式 -->
   <p>{{ { name: 'Vue', version: 3 } }}</p>
 </template>
 
@@ -76,7 +76,7 @@ const message = ref('Hello')
 const user = ref({ name: 'Alice' })
 const score = ref(85)
 
-// Move complex logic to computed properties
+// 将复杂逻辑移到计算属性
 const greeting = computed(() => {
   if (user.value) {
     return `Welcome back, ${user.value.name}!`
@@ -84,31 +84,31 @@ const greeting = computed(() => {
   return 'Hello, Guest!'
 })
 
-// Or use methods for reusable logic
+// 或使用方法处理可复用逻辑
 function formatDate(date) {
   return new Date(date).toLocaleDateString()
 }
 </script>
 ```
 
-## Use Directives for Control Flow
+## 使用指令进行控制流
 
 ```vue
 <template>
-  <!-- Instead of if/else in expressions, use v-if/v-else -->
+  <!-- 代替表达式中的 if/else，使用 v-if/v-else -->
   <p v-if="user">Welcome, {{ user.name }}!</p>
   <p v-else>Please log in</p>
 
-  <!-- Instead of loops in expressions, use v-for -->
+  <!-- 代替表达式中的循环，使用 v-for -->
   <ul>
     <li v-for="item in items" :key="item.id">{{ item.name }}</li>
   </ul>
 
-  <!-- Conditional display without removing from DOM -->
+  <!-- 不从 DOM 移除的条件显示 -->
   <p v-show="isVisible">This toggles visibility</p>
 </template>
 ```
 
-## Reference
-- [Vue.js Template Syntax - Using JavaScript Expressions](https://vuejs.org/guide/essentials/template-syntax.html#using-javascript-expressions)
-- [Vue.js Conditional Rendering](https://vuejs.org/guide/essentials/conditional.html)
+## 参考
+- [Vue.js 模板语法 - 使用 JavaScript 表达式](https://vuejs.org/guide/essentials/template-syntax.html#using-javascript-expressions)
+- [Vue.js 条件渲染](https://vuejs.org/guide/essentials/conditional.html)

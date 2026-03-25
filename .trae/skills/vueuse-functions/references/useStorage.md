@@ -1,42 +1,42 @@
 ---
-category: State
+category: 状态
 related: useLocalStorage, useSessionStorage, useStorageAsync
 ---
 
 # useStorage
 
-Create a reactive ref that can be used to access & modify [LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) or [SessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
+创建可用于访问和修改 [LocalStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/localStorage) 或 [SessionStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/sessionStorage) 的响应式 ref。
 
-Uses localStorage by default, other storage sources be specified via third argument.
+默认使用 localStorage，其他存储源可通过第三个参数指定。
 
-## Usage
+## 用法
 
 ::: tip
-When using with Nuxt 3, this function will **NOT** be auto imported in favor of Nitro's built-in [`useStorage()`](https://nitro.unjs.io/guide/storage). Use explicit import if you want to use the function from VueUse.
+与 Nuxt 3 一起使用时，此函数**不会**自动导入，以支持 Nitro 内置的 [`useStorage()`](https://nitro.unjs.io/guide/storage)。如果要使用 VueUse 中的函数，请使用显式导入。
 :::
 
 ```ts
 import { useStorage } from '@vueuse/core'
 
-// bind object
+// 绑定对象
 const state = useStorage('my-store', { hello: 'hi', greeting: 'Hello' })
 
-// bind boolean
-const flag = useStorage('my-flag', true) // returns Ref<boolean>
+// 绑定布尔值
+const flag = useStorage('my-flag', true) // 返回 Ref<boolean>
 
-// bind number
-const count = useStorage('my-count', 0) // returns Ref<number>
+// 绑定数字
+const count = useStorage('my-count', 0) // 返回 Ref<number>
 
-// bind string with SessionStorage
-const id = useStorage('my-id', 'some-string-id', sessionStorage) // returns Ref<string>
+// 使用 SessionStorage 绑定字符串
+const id = useStorage('my-id', 'some-string-id', sessionStorage) // 返回 Ref<string>
 
-// delete data from storage
+// 从存储中删除数据
 state.value = null
 ```
 
-## Merge Defaults
+## 合并默认值
 
-By default, `useStorage` will use the value from storage if it is present and ignores the default value. Be aware that when you are adding more properties to the default value, the key might be `undefined` if client's storage does not have that key.
+默认情况下，`useStorage` 将使用存储中的值（如果存在）并忽略默认值。请注意，当您向默认值添加更多属性时，如果客户端的存储没有该键，该键可能是 `undefined`。
 
 ```ts
 import { useStorage } from '@vueuse/core'
@@ -45,10 +45,10 @@ localStorage.setItem('my-store', '{"hello": "hello"}')
 
 const state = useStorage('my-store', { hello: 'hi', greeting: 'hello' }, localStorage)
 
-console.log(state.value.greeting) // undefined, since the value is not presented in storage
+console.log(state.value.greeting) // undefined，因为该值不在存储中
 ```
 
-To solve that, you can enable `mergeDefaults` option.
+要解决此问题，您可以启用 `mergeDefaults` 选项。
 
 ```ts
 import { useStorage } from '@vueuse/core'
@@ -62,11 +62,11 @@ const state = useStorage(
   { mergeDefaults: true } // <--
 )
 
-console.log(state.value.hello) // 'nihao', from storage
-console.log(state.value.greeting) // 'hello', from merged default value
+console.log(state.value.hello) // 'nihao'，来自存储
+console.log(state.value.greeting) // 'hello'，来自合并的默认值
 ```
 
-When setting it to true, it will perform a **shallow merge** for objects. You can pass a function to perform custom merge (e.g. deep merge), for example:
+当设置为 true 时，它将对对象执行**浅合并**。您可以传递一个函数来执行自定义合并（例如深合并），例如：
 
 ```ts
 import { useStorage } from '@vueuse/core'
@@ -79,11 +79,11 @@ const state = useStorage(
 )
 ```
 
-## Custom Serialization
+## 自定义序列化
 
-By default, `useStorage` will smartly use the corresponding serializer based on the data type of provided default value. For example, `JSON.stringify` / `JSON.parse` will be used for objects, `Number.toString` / `parseFloat` for numbers, etc.
+默认情况下，`useStorage` 将根据提供的默认值的数据类型智能地使用相应的序列化器。例如，对于对象将使用 `JSON.stringify` / `JSON.parse`，对于数字将使用 `Number.toString` / `parseFloat` 等。
 
-You can also provide your own serialization function to `useStorage`:
+您还可以提供自己的序列化函数给 `useStorage`：
 
 ```ts
 import { useStorage } from '@vueuse/core'
@@ -101,7 +101,7 @@ useStorage(
 )
 ```
 
-Please note when you provide `null` as the default value, `useStorage` can't assume the data type from it. In this case, you can provide a custom serializer or reuse the built-in ones explicitly.
+请注意，当您提供 `null` 作为默认值时，`useStorage` 无法从中推断数据类型。在这种情况下，您可以提供自定义序列化器或显式重用内置的序列化器。
 
 ```ts
 import { StorageSerializers, useStorage } from '@vueuse/core'
@@ -110,7 +110,7 @@ const objectLike = useStorage('key', null, undefined, { serializer: StorageSeria
 objectLike.value = { foo: 'bar' }
 ```
 
-## Type Declarations
+## 类型声明
 
 ```ts
 export interface Serializer<T> {
@@ -137,50 +137,50 @@ export interface UseStorageOptions<T>
     ConfigurableWindow,
     ConfigurableFlush {
   /**
-   * Watch for deep changes
+   * 监视深层更改
    *
    * @default true
    */
   deep?: boolean
   /**
-   * Listen to storage changes, useful for multiple tabs application
+   * 监听存储更改，对多标签页应用有用
    *
    * @default true
    */
   listenToStorageChanges?: boolean
   /**
-   * Write the default value to the storage when it does not exist
+   * 当存储不存在时将默认值写入存储
    *
    * @default true
    */
   writeDefaults?: boolean
   /**
-   * Merge the default value with the value read from the storage.
+   * 将默认值与从存储读取的值合并。
    *
-   * When setting it to true, it will perform a **shallow merge** for objects.
-   * You can pass a function to perform custom merge (e.g. deep merge), for example:
+   * 当设置为 true 时，它将对对象执行**浅合并**。
+   * 您可以传递一个函数来执行自定义合并（例如深合并），例如：
    *
    * @default false
    */
   mergeDefaults?: boolean | ((storageValue: T, defaults: T) => T)
   /**
-   * Custom data serialization
+   * 自定义数据序列化
    */
   serializer?: Serializer<T>
   /**
-   * On error callback
+   * 错误回调
    *
-   * Default log error to `console.error`
+   * 默认将错误记录到 `console.error`
    */
   onError?: (error: unknown) => void
   /**
-   * Use shallow ref as reference
+   * 使用 shallow ref 作为引用
    *
    * @default false
    */
   shallow?: boolean
   /**
-   * Wait for the component to be mounted before reading the storage.
+   * 等待组件挂载后再读取存储。
    *
    * @default false
    */

@@ -1,14 +1,14 @@
 ---
-category: Browser
+category: 浏览器
 ---
 
 # useClipboard
 
-Reactive [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API). Provides the ability to respond to clipboard commands (cut, copy, and paste) as well as to asynchronously read from and write to the system clipboard. Access to the contents of the clipboard is gated behind the [Permissions API](https://developer.mozilla.org/en-US/docs/Web/API/Permissions_API). Without user permission, reading or altering the clipboard contents is not permitted.
+响应式 [Clipboard API](https://developer.mozilla.org/zh-CN/docs/Web/API/Clipboard_API)。提供响应剪贴板命令（剪切、复制和粘贴）以及异步读取和写入系统剪贴板的能力。对剪贴板内容的访问由 [Permissions API](https://developer.mozilla.org/zh-CN/docs/Web/API/Permissions_API) 控制。没有用户权限，不允许读取或更改剪贴板内容。
 
-<CourseLink href="https://vueschool.io/lessons/reactive-browser-wrappers-in-vueuse-useclipboard?friend=vueuse">Learn how to reactively save text to the clipboard with this FREE video lesson from Vue School!</CourseLink>
+<CourseLink href="https://vueschool.io/lessons/reactive-browser-wrappers-in-vueuse-useclipboard?friend=vueuse">通过 Vue School 的免费视频课程学习如何响应式地将文本保存到剪贴板！</CourseLink>
 
-## Usage
+## 用法
 
 ```vue
 <script setup lang="ts">
@@ -21,54 +21,54 @@ const { text, copy, copied, isSupported } = useClipboard({ source })
 <template>
   <div v-if="isSupported">
     <button @click="copy(source)">
-      <!-- by default, `copied` will be reset in 1.5s -->
-      <span v-if="!copied">Copy</span>
-      <span v-else>Copied!</span>
+      <!-- 默认情况下，`copied` 将在 1.5 秒后重置 -->
+      <span v-if="!copied">复制</span>
+      <span v-else>已复制！</span>
     </button>
-    <p>Current copied: <code>{{ text || 'none' }}</code></p>
+    <p>当前复制的内容: <code>{{ text || '无' }}</code></p>
   </div>
   <p v-else>
-    Your browser does not support Clipboard API
+    您的浏览器不支持 Clipboard API
   </p>
 </template>
 ```
 
-Set `legacy: true` to keep the ability to copy if [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API) is not available. It will handle copy with [execCommand](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand) as fallback.
+设置 `legacy: true` 以在 [Clipboard API](https://developer.mozilla.org/zh-CN/docs/Web/API/Clipboard_API) 不可用时保持复制能力。它将使用 [execCommand](https://developer.mozilla.org/zh-CN/docs/Web/API/Document/execCommand) 作为后备处理复制。
 
-## Component Usage
+## 组件用法
 
 ```vue
 <template>
-  <UseClipboard v-slot="{ copy, copied }" source="copy me">
+  <UseClipboard v-slot="{ copy, copied }" source="复制我">
     <button @click="copy()">
-      {{ copied ? 'Copied' : 'Copy' }}
+      {{ copied ? '已复制' : '复制' }}
     </button>
   </UseClipboard>
 </template>
 ```
 
-## Type Declarations
+## 类型声明
 
 ```ts
 export interface UseClipboardOptions<Source> extends ConfigurableNavigator {
   /**
-   * Enabled reading for clipboard
+   * 启用剪贴板读取
    *
    * @default false
    */
   read?: boolean
   /**
-   * Copy source
+   * 复制源
    */
   source?: Source
   /**
-   * Milliseconds to reset state of `copied` ref
+   * 重置 `copied` ref 状态的毫秒数
    *
    * @default 1500
    */
   copiedDuring?: number
   /**
-   * Whether fallback to document.execCommand('copy') if clipboard is undefined.
+   * 如果剪贴板未定义，是否回退到 document.execCommand('copy')。
    *
    * @default false
    */
@@ -83,7 +83,7 @@ export interface UseClipboardReturn<Optional> {
     : (text: string) => Promise<void>
 }
 /**
- * Reactive Clipboard API.
+ * 响应式 Clipboard API。
  *
  * @see https://vueuse.org/useClipboard
  * @param options

@@ -1,13 +1,13 @@
 ---
 name: build-library
-description: Building libraries with Vite including proper package.json exports
+description: 使用 Vite 构建库，包括正确的 package.json 导出配置
 ---
 
-# Library Mode
+# 库模式
 
-Build browser-oriented libraries for distribution.
+构建面向浏览器的库以进行分发。
 
-## Basic Configuration
+## 基本配置
 
 ```ts
 import { resolve } from 'path'
@@ -17,14 +17,14 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'lib/main.js'),
-      name: 'MyLib',           // Global variable name for UMD
-      fileName: 'my-lib'       // Output filename (without extension)
+      name: 'MyLib',           // UMD 的全局变量名
+      fileName: 'my-lib'       // 输出文件名（不带扩展名）
     },
     rolldownOptions: {
-      external: ['vue'],       // Don't bundle these
+      external: ['vue'],       // 不打包这些
       output: {
         globals: {
-          vue: 'Vue'           // Global var for externals in UMD
+          vue: 'Vue'           // UMD 中外部依赖的全局变量
         }
       }
     }
@@ -32,7 +32,7 @@ export default defineConfig({
 })
 ```
 
-## Multiple Entry Points
+## 多个入口点
 
 ```ts
 export default defineConfig({
@@ -48,10 +48,10 @@ export default defineConfig({
 })
 ```
 
-## Output Formats
+## 输出格式
 
-Single entry defaults: `['es', 'umd']`
-Multiple entries defaults: `['es', 'cjs']`
+单个入口默认值：`['es', 'umd']`
+多个入口默认值：`['es', 'cjs']`
 
 ```ts
 export default defineConfig({
@@ -64,7 +64,7 @@ export default defineConfig({
 })
 ```
 
-## Custom File Names
+## 自定义文件名
 
 ```ts
 export default defineConfig({
@@ -72,15 +72,15 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'lib/main.js'),
       fileName: (format, entryName) => `${entryName}.${format}.js`,
-      cssFileName: 'styles'  // For bundled CSS
+      cssFileName: 'styles'  // 用于打包的 CSS
     }
   }
 })
 ```
 
-## Package.json Configuration
+## Package.json 配置
 
-### Single Entry
+### 单个入口
 
 ```json
 {
@@ -98,7 +98,7 @@ export default defineConfig({
 }
 ```
 
-### Multiple Entries
+### 多个入口
 
 ```json
 {
@@ -120,7 +120,7 @@ export default defineConfig({
 }
 ```
 
-### With CSS
+### 带 CSS
 
 ```json
 {
@@ -134,7 +134,7 @@ export default defineConfig({
 }
 ```
 
-## Library Entry File
+## 库入口文件
 
 ```ts
 // lib/main.js
@@ -144,13 +144,13 @@ import Bar from './Bar.vue'
 export { Foo, Bar }
 ```
 
-## Environment Variables
+## 环境变量
 
-In library mode:
-- `import.meta.env.*` is statically replaced
-- `process.env.*` is NOT replaced (consumers can change it)
+在库模式中：
+- `import.meta.env.*` 被静态替换
+- `process.env.*` 不会被替换（使用者可以更改）
 
-To replace `process.env`:
+要替换 `process.env`：
 
 ```ts
 export default defineConfig({
@@ -160,11 +160,11 @@ export default defineConfig({
 })
 ```
 
-## Notes
+## 注意事项
 
-- `assetsInlineLimit` is ignored - assets always inlined
-- `cssCodeSplit` defaults to `false`
-- For non-browser libraries, consider using [tsdown](https://tsdown.dev/) or Rolldown directly
+- `assetsInlineLimit` 被忽略 - 资源始终内联
+- `cssCodeSplit` 默认为 `false`
+- 对于非浏览器库，考虑使用 [tsdown](https://tsdown.dev/) 或直接使用 Rolldown
 
 <!-- 
 Source references:

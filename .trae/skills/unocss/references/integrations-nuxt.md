@@ -1,19 +1,19 @@
 ---
 name: unocss-nuxt-integration
-description: UnoCSS module for Nuxt applications
+description: Nuxt 应用的 UnoCSS 模块
 ---
 
-# UnoCSS Nuxt Integration
+# UnoCSS Nuxt 集成
 
-The official Nuxt module for UnoCSS.
+UnoCSS 的官方 Nuxt 模块。
 
-## Installation
+## 安装
 
 ```bash
 pnpm add -D unocss @unocss/nuxt
 ```
 
-Add to Nuxt config:
+添加到 Nuxt 配置：
 
 ```ts
 // nuxt.config.ts
@@ -24,7 +24,7 @@ export default defineNuxtConfig({
 })
 ```
 
-Create config file:
+创建配置文件：
 
 ```ts
 // uno.config.ts
@@ -37,22 +37,22 @@ export default defineConfig({
 })
 ```
 
-**Note:** The `uno.css` entry is automatically injected by the module.
+**注意：** `uno.css` 入口由模块自动注入。
 
-## Support Status
+## 支持状态
 
-| Build Tool | Nuxt 2 | Nuxt Bridge | Nuxt 3 |
+| 构建工具 | Nuxt 2 | Nuxt Bridge | Nuxt 3 |
 |------------|--------|-------------|--------|
 | Webpack Dev | ✅ | ✅ | 🚧 |
 | Webpack Build | ✅ | ✅ | ✅ |
 | Vite Dev | - | ✅ | ✅ |
 | Vite Build | - | ✅ | ✅ |
 
-## Configuration
+## 配置
 
-### Using uno.config.ts (Recommended)
+### 使用 uno.config.ts（推荐）
 
-Use a dedicated config file for best IDE support:
+使用专用配置文件以获得最佳 IDE 支持：
 
 ```ts
 // uno.config.ts
@@ -69,9 +69,9 @@ export default defineConfig({
 })
 ```
 
-### Nuxt Layers Support
+### Nuxt Layers 支持
 
-Enable automatic config merging from Nuxt layers:
+启用 Nuxt layers 的自动配置合并：
 
 ```ts
 // nuxt.config.ts
@@ -82,7 +82,7 @@ export default defineNuxtConfig({
 })
 ```
 
-Then in your root config:
+然后在你的根配置中：
 
 ```ts
 // uno.config.ts
@@ -91,7 +91,7 @@ import config from './.nuxt/uno.config.mjs'
 export default config
 ```
 
-Or extend the merged config:
+或扩展合并后的配置：
 
 ```ts
 // uno.config.ts
@@ -99,14 +99,14 @@ import { mergeConfigs } from '@unocss/core'
 import config from './.nuxt/uno.config.mjs'
 
 export default mergeConfigs([config, {
-  // Your overrides
+  // 你的覆盖
   shortcuts: {
     'custom': 'text-red-500',
   },
 }])
 ```
 
-## Common Setup Example
+## 常见设置示例
 
 ```ts
 // nuxt.config.ts
@@ -155,7 +155,7 @@ export default defineConfig({
 })
 ```
 
-## Usage in Components
+## 在组件中使用
 
 ```vue
 <template>
@@ -164,13 +164,13 @@ export default defineConfig({
       Hello UnoCSS!
     </h1>
     <button class="btn mt-4">
-      Click me
+      点击我
     </button>
   </div>
 </template>
 ```
 
-With attributify mode:
+使用 attributify 模式：
 
 ```vue
 <template>
@@ -182,16 +182,16 @@ With attributify mode:
 </template>
 ```
 
-## Inspector
+## 检查器
 
-In development, visit `/_nuxt/__unocss` to access the UnoCSS inspector.
+在开发中，访问 `/_nuxt/__unocss` 以访问 UnoCSS 检查器。
 
-## Key Differences from Vite
+## 与 Vite 的关键差异
 
-- No need to import `virtual:uno.css` - automatically injected
-- Config file discovery works the same
-- All Vite plugin features available
-- Nuxt layers config merging available
+- 无需导入 `virtual:uno.css` - 自动注入
+- 配置文件发现工作方式相同
+- 所有 Vite 插件功能可用
+- Nuxt layers 配置合并可用
 
 <!-- 
 Source references:

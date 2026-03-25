@@ -1,36 +1,36 @@
 ---
 name: uni-network
-description: Promise-based HTTP client for uni-app - axios-inspired API with uni.request as default transport
+description: 基于 Promise 的 uni-app HTTP 客户端 - 类似 axios 的 API，使用 uni.request 作为默认传输层，做什么：提供 HTTP 请求、拦截器、请求取消、上传下载等功能；何时调用：当用户需要进行网络请求、配置 HTTP 客户端、处理请求响应拦截或实现文件上传下载时调用
 ---
 
 # uni-network
 
-Promise-based HTTP client for uni-app, inspired by axios@0.27.2. Uses uni.request/uni.uploadFile/uni.downloadFile as the underlying transport.
+基于 Promise 的 uni-app HTTP 客户端，灵感来自 axios@0.27.2。使用 uni.request/uni.uploadFile/uni.downloadFile 作为底层传输。
 
-## Installation
+## 安装
 
 ```bash
 npm i @uni-helper/uni-network
 ```
 
-## Features
+## 特性
 
-- Promise-based API
-- Request/response interceptors
-- Request cancellation
-- TypeScript support
-- Composition API integration
-- Upload/download support
+- 基于 Promise 的 API
+- 请求/响应拦截器
+- 请求取消
+- TypeScript 支持
+- 组合式 API 集成
+- 上传/下载支持
 
-## Basic Usage
+## 基本用法
 
 ```ts
 import { un } from '@uni-helper/uni-network'
 
-// GET request
+// GET 请求
 un('/user/123')
 
-// POST request
+// POST 请求
 un({
   method: 'POST',
   url: '/user/123',
@@ -41,19 +41,19 @@ un({
 })
 ```
 
-## Request Aliases
+## 请求别名
 
 ```ts
 import { un } from '@uni-helper/uni-network'
 
-// HTTP verbs
+// HTTP 动词
 un.get('/users')
 un.post('/users', { name: 'John' })
 un.put('/users/1', { name: 'Jane' })
 un.patch('/users/1', { age: 30 })
 un.delete('/users/1')
 
-// Upload/download
+// 上传/下载
 un.upload({
   url: '/upload',
   filePath: tempFilePath,
@@ -65,7 +65,7 @@ un.download({
 })
 ```
 
-## Creating an Instance
+## 创建实例
 
 ```ts
 import { createUniNetwork } from '@uni-helper/uni-network'
@@ -78,19 +78,19 @@ const http = createUniNetwork({
   },
 })
 
-// Use the instance
+// 使用实例
 http.get('/users')
 ```
 
-## Interceptors
+## 拦截器
 
 ```ts
 import { un } from '@uni-helper/uni-network'
 
-// Request interceptor
+// 请求拦截器
 un.interceptors.request.use(
   (config) => {
-    // Add auth token
+    // 添加认证令牌
     const token = uni.getStorageSync('token')
     if (token) {
       config.headers = config.headers || {}
@@ -103,14 +103,14 @@ un.interceptors.request.use(
   }
 )
 
-// Response interceptor
+// 响应拦截器
 un.interceptors.response.use(
   (response) => {
-    // Transform response data
+    // 转换响应数据
     return response.data
   },
   (error) => {
-    // Handle errors globally
+    // 全局错误处理
     if (error.statusCode === 401) {
       uni.redirectTo({ url: '/pages/login/index' })
     }
@@ -119,40 +119,40 @@ un.interceptors.response.use(
 )
 ```
 
-## Configuration
+## 配置
 
 ```ts
 interface UniNetworkConfig {
   // URL
   url?: string
-  // Base URL
+  // 基础 URL
   baseURL?: string
-  // Method
+  // 请求方法
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | ...
-  // Headers
+  // 请求头
   headers?: Record<string, string>
-  // Request data
+  // 请求数据
   data?: any
-  // Query params
+  // 查询参数
   params?: Record<string, any>
-  // Timeout in ms
+  // 超时时间（毫秒）
   timeout?: number
-  // Response type
+  // 响应类型
   responseType?: 'text' | 'arraybuffer'
-  // Data type
+  // 数据类型
   dataType?: 'json' | 'string'
-  // Enable http2
+  // 启用 http2
   enableHttp2?: boolean
-  // Enable quic
+  // 启用 quic
   enableQuic?: boolean
-  // Enable cache
+  // 启用缓存
   enableCache?: boolean
-  // SSL verify
+  // SSL 验证
   sslVerify?: boolean
 }
 ```
 
-## Request Cancellation
+## 请求取消
 
 ```ts
 import { un } from '@uni-helper/uni-network'
@@ -163,13 +163,13 @@ un.get('/long-request', {
   signal: controller.signal,
 })
 
-// Cancel after 5 seconds
+// 5 秒后取消
 setTimeout(() => {
   controller.abort()
 }, 5000)
 ```
 
-## Error Handling
+## 错误处理
 
 ```ts
 import { un, UniNetworkError } from '@uni-helper/uni-network'
@@ -178,13 +178,13 @@ try {
   const response = await un.get('/users')
 } catch (error) {
   if (error instanceof UniNetworkError) {
-    console.log('Request failed:', error.message)
-    console.log('Status:', error.statusCode)
+    console.log('请求失败:', error.message)
+    console.log('状态码:', error.statusCode)
   }
 }
 ```
 
-## Composition API
+## 组合式 API
 
 ```ts
 import { useUniNetwork } from '@uni-helper/uni-network'
@@ -194,11 +194,11 @@ const { data, error, loading, execute } = useUniNetwork({
   method: 'GET',
 })
 
-// Execute manually
+// 手动执行
 await execute()
 ```
 
-## TypeScript Support
+## TypeScript 支持
 
 ```ts
 import { un } from '@uni-helper/uni-network'
@@ -209,9 +209,9 @@ interface User {
   email: string
 }
 
-// Typed response
+// 类型化的响应
 const { data } = await un.get<User>('/users/1')
-console.log(data.name) // Type-safe access
+console.log(data.name) // 类型安全访问
 ```
 
 <!--

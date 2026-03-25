@@ -1,56 +1,56 @@
 ---
 name: vitesse-uni-app
-description: Vite-powered opinionated uni-app starter template with best practices
+description: 基于 Vite 的 uni-app 启动模板 - 包含最佳实践，做什么：基于 Vite 的 uni-app 启动模板，包含预设工具、现代开发体验和最佳实践；何时调用：当用户需要了解 vitesse-uni-app 模板结构、使用其预设配置或基于该模板开发时调用
 ---
 
 # vitesse-uni-app
 
-Opinionated uni-app starter template powered by Vite. Includes best practices, pre-configured tooling, and modern development experience.
+基于 Vite 的 uni-app 启动模板，包含最佳实践。包含预设工具和现代开发体验。
 
-## Features
+## 特性
 
-- ⚡️ **Vite** - Fast development and building
-- 🌍 **uni-app** - Cross-platform development
-- 🖖 **Vue 3** - Composition API, `<script setup>`
-- 🔷 **TypeScript** - Type safety
-- 🎨 **UnoCSS** - Atomic CSS
-- 📦 **Auto Import** - Components and composables
-- 🗂 **File-based Routing** - vite-plugin-uni-pages
-- 📐 **Layout System** - Nuxt-like layouts
-- 🔧 **ESLint** - Code linting
+- ⚡️ **Vite** - 快速的开发和构建
+- 🌍 **uni-app** - 跨平台开发
+- 🖖 **Vue 3** - 组合式 API、`<script setup>`
+- 🔷 **TypeScript** - 类型安全
+- 🎨 **UnoCSS** - 原子 CSS
+- 📦 **自动导入** - 组件和组合式函数
+- 🗂 **基于文件的路由** - vite-plugin-uni-pages
+- 📐 **布局系统** - 类似 Nuxt 的布局
+- 🔧 **ESLint** - 代码检查
 
-## Quick Start
+## 快速开始
 
 ```bash
-# Create with create-uni
+# 使用 create-uni 创建
 npm create uni@latest my-app --template vitesse
 
-# Or clone directly
+# 或直接克隆
 git clone https://github.com/uni-helper/vitesse-uni-app.git my-app
 ```
 
-## Project Structure
+## 项目结构
 
 ```
 vitesse-uni-app/
 ├── src/
-│   ├── components/          # Auto-imported components
-│   ├── composables/         # Auto-imported composables
-│   ├── layouts/             # Layout components
+│   ├── components/          # 自动导入的组件
+│   ├── composables/         # 自动导入的组合式函数
+│   ├── layouts/             # 布局组件
 │   │   ├── default.vue
 │   │   └── home.vue
-│   ├── pages/               # File-based routing
+│   ├── pages/               # 基于文件的路由
 │   │   ├── index.vue
 │   │   └── about/
 │   │       └── index.vue
-│   ├── static/              # Static assets
+│   ├── static/              # 静态资源
 │   ├── stores/              # Pinia stores
-│   ├── styles/              # Global styles
+│   ├── styles/              # 全局样式
 │   ├── App.vue
 │   ├── main.ts
-│   ├── manifest.config.ts   # TypeScript manifest
-│   └── pages.config.ts      # Global pages config
-├── types/                   # Type definitions
+│   ├── manifest.config.ts   # TypeScript 清单
+│   └── pages.config.ts      # 全局页面配置
+├── types/                   # 类型定义
 ├── index.html
 ├── package.json
 ├── tsconfig.json
@@ -59,9 +59,9 @@ vitesse-uni-app/
 └── eslint.config.js
 ```
 
-## Pre-configured Plugins
+## 预设插件
 
-The template includes these pre-configured plugins:
+模板包含这些预设插件：
 
 ```ts
 // vite.config.ts
@@ -78,22 +78,22 @@ export default defineConfig({
 })
 ```
 
-## Auto Imports
+## 自动导入
 
-### Components
+### 组件
 
-Components in `src/components/` are auto-imported:
+`src/components/` 中的组件自动导入：
 
 ```vue
 <template>
-  <!-- No import needed -->
+  <!-- 无需导入 -->
   <MyButton />
 </template>
 ```
 
-### Composables
+### 组合式函数
 
-Files in `src/composables/` are auto-imported:
+`src/composables/` 中的文件自动导入：
 
 ```ts
 // src/composables/useCounter.ts
@@ -106,26 +106,26 @@ export function useCounter() {
 
 ```vue
 <script setup>
-// No import needed
+// 无需导入
 const { count, inc } = useCounter()
 </script>
 ```
 
-### Vue APIs
+### Vue API
 
-Vue APIs are auto-imported:
+Vue API 自动导入：
 
 ```vue
 <script setup>
-// No need to import ref, computed, etc.
+// 无需导入 ref、computed 等
 const count = ref(0)
 const doubled = computed(() => count.value * 2)
 </script>
 ```
 
-## Routing
+## 路由
 
-File-based routing with pages in `src/pages/`:
+`src/pages/` 中的基于文件路由：
 
 ```
 pages/
@@ -136,22 +136,22 @@ pages/
     └── [id].vue        # /pages/user/:id
 ```
 
-### Page Configuration
+### 页面配置
 
 ```vue
 <script setup>
 definePage({
   style: {
-    navigationBarTitleText: 'About',
+    navigationBarTitleText: '关于',
   },
   layout: 'default',
 })
 </script>
 ```
 
-## Layouts
+## 布局
 
-Create layouts in `src/layouts/`:
+在 `src/layouts/` 中创建布局：
 
 ```vue
 <!-- src/layouts/default.vue -->
@@ -164,7 +164,7 @@ Create layouts in `src/layouts/`:
 </template>
 ```
 
-Apply in pages:
+在页面中应用：
 
 ```vue
 <script setup>
@@ -177,23 +177,23 @@ definePage({
   <template #header>
     <NavBar />
   </template>
-  <div>Content</div>
+  <div>内容</div>
 </template>
 ```
 
-## Styling with UnoCSS
+## 使用 UnoCSS 样式
 
 ```vue
 <template>
   <view class="p-32 bg-gray-100">
     <text class="text-32 font-bold text-primary">
-      Styled with UnoCSS
+      使用 UnoCSS 设置样式
     </text>
   </view>
 </template>
 ```
 
-## State Management with Pinia
+## 使用 Pinia 状态管理
 
 ```ts
 // src/stores/user.ts
@@ -217,7 +217,7 @@ const user = useUserStore()
 </script>
 ```
 
-## Data Fetching
+## 数据获取
 
 ```vue
 <script setup>
@@ -225,8 +225,8 @@ const { data: users, pending, error } = useFetch('/api/users')
 </script>
 
 <template>
-  <view v-if="pending">Loading...</view>
-  <view v-else-if="error">Error: {{ error.message }}</view>
+  <view v-if="pending">加载中...</view>
+  <view v-else-if="error">错误: {{ error.message }}</view>
   <view v-else>
     <view v-for="user in users" :key="user.id">
       {{ user.name }}
@@ -235,21 +235,21 @@ const { data: users, pending, error } = useFetch('/api/users')
 </template>
 ```
 
-## Deployment
+## 部署
 
-### Build for production
+### 生产构建
 
 ```bash
 npm run build
 ```
 
-### Platform-specific builds
+### 平台特定构建
 
 ```bash
 # H5
 npm run build:h5
 
-# WeChat Mini Program
+# 微信小程序
 npm run build:mp-weixin
 
 # App

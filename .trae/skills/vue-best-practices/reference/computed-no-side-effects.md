@@ -1,26 +1,26 @@
 ---
-title: Computed Property Getters Must Be Side-Effect Free
+title: 计算属性 Getter 必须无副作用
 impact: HIGH
-impactDescription: Side effects in computed getters break reactivity and cause unpredictable behavior
+impactDescription: 计算属性 getter 中的副作用会破坏响应式并导致不可预测的行为
 type: efficiency
 tags: [vue3, computed, reactivity, side-effects, best-practices]
 ---
 
-# Computed Property Getters Must Be Side-Effect Free
+# 计算属性 Getter 必须无副作用
 
-**Impact: HIGH** - Computed getter functions should only perform pure computation. Side effects in computed getters break Vue's reactivity model and cause bugs that are difficult to trace.
+**影响：高** - 计算 getter 函数应该只执行纯计算。计算属性 getter 中的副作用会破坏 Vue 的响应式模型并导致难以追踪的错误。
 
-Computed properties are designed to declaratively describe how to derive a value from other reactive state. They are not meant to perform actions or modify state.
+计算属性旨在声明式地描述如何从其他响应式状态派生值。它们不意味着要执行操作或修改状态。
 
-## Task Checklist
+## 任务清单
 
-- [ ] Never mutate other reactive state inside a computed getter
-- [ ] Never make async requests or API calls inside a computed getter
-- [ ] Never perform DOM mutations inside a computed getter
-- [ ] Use watchers for reacting to state changes with side effects
-- [ ] Use event handlers for user-triggered actions
+- [ ] 永远不要在计算 getter 中变更其他响应式状态
+- [ ] 永远不要在计算 getter 中进行异步请求或 API 调用
+- [ ] 永远不要在计算 getter 中执行 DOM 变更
+- [ ] 使用监听器来响应带有副作用的状态变化
+- [ ] 使用事件处理程序来响应用户触发的操作
 
-**Incorrect:**
+**错误示例：**
 ```vue
 <script setup>
 import { ref, computed } from 'vue'
@@ -29,33 +29,33 @@ const items = ref([])
 const count = ref(0)
 const lastFetch = ref(null)
 
-// BAD: Mutates other state
+// 错误：变更其他状态
 const doubledCount = computed(() => {
-  count.value++  // Side effect - modifying state!
+  count.value++  // 副作用 - 修改状态！
   return count.value * 2
 })
 
-// BAD: Makes async request
+// 错误：进行异步请求
 const userData = computed(async () => {
-  const response = await fetch('/api/user')  // Side effect - API call!
+  const response = await fetch('/api/user')  // 副作用 - API 调用！
   return response.json()
 })
 
-// BAD: Modifies DOM
+// 错误：修改 DOM
 const highlightedItems = computed(() => {
-  document.title = `${items.value.length} items`  // Side effect - DOM mutation!
+  document.title = `${items.value.length} items`  // 副作用 - DOM 变更！
   return items.value.filter(i => i.highlighted)
 })
 
-// BAD: Writes to external state
+// 错误：写入外部状态
 const processedData = computed(() => {
-  lastFetch.value = new Date()  // Side effect - modifying state!
+  lastFetch.value = new Date()  // 副作用 - 修改状态！
   return items.value.map(i => i.name)
 })
 </script>
 ```
 
-**Correct:**
+**正确示例：**
 ```vue
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
@@ -64,44 +64,44 @@ const items = ref([])
 const count = ref(0)
 const userData = ref(null)
 
-// GOOD: Pure computation only
+// 正确：只进行纯计算
 const doubledCount = computed(() => {
   return count.value * 2
 })
 
-// GOOD: Use lifecycle hook for initial fetch
+// 正确：使用生命周期钩子进行初始获取
 onMounted(async () => {
   const response = await fetch('/api/user')
   userData.value = await response.json()
 })
 
-// GOOD: Pure filtering
+// 正确：纯过滤
 const highlightedItems = computed(() => {
   return items.value.filter(i => i.highlighted)
 })
 
-// GOOD: Use watcher for side effects
+// 正确：使用监听器处理副作用
 watch(items, (newItems) => {
   document.title = `${newItems.length} items`
 }, { immediate: true })
 
-// Increment count through event handler, not computed
+// 通过事件处理程序递增计数，而不是计算属性
 function increment() {
   count.value++
 }
 </script>
 ```
 
-## What Counts as a Side Effect
+## 什么算作副作用
 
-| Side Effect Type | Example | Alternative |
-|-----------------|---------|-------------|
-| State mutation | `otherRef.value = x` | Use watcher |
-| API calls | `fetch()`, `axios()` | Use watcher or lifecycle hook |
-| DOM manipulation | `document.title = x` | Use watcher |
-| Console logging | `console.log()` | Remove or use watcher |
-| Storage access | `localStorage.setItem()` | Use watcher |
-| Timer setup | `setTimeout()` | Use lifecycle hook |
+| 副作用类型 | 示例 | 替代方案 |
+|-----------|------|----------|
+| 状态变更 | `otherRef.value = x` | 使用监听器 |
+| API 调用 | `fetch()`, `axios()` | 使用监听器或生命周期钩子 |
+| DOM 操作 | `document.title = x` | 使用监听器 |
+| 控制台日志 | `console.log()` | 移除或使用监听器 |
+| 存储访问 | `localStorage.setItem()` | 使用监听器 |
+| 定时器设置 | `setTimeout()` | 使用生命周期钩子 |
 
-## Reference
-- [Vue.js Computed Properties - Getters Should Be Side-Effect Free](https://vuejs.org/guide/essentials/computed.html#getters-should-be-side-effect-free)
+## 参考
+- [Vue.js 计算属性 - Getter 应该无副作用](https://vuejs.org/guide/essentials/computed.html#getters-should-be-side-effect-free)

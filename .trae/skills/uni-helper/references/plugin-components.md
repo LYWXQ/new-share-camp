@@ -1,19 +1,19 @@
 ---
 name: vite-plugin-uni-components
-description: On-demand automatic component imports for uni-app - derived from unplugin-vue-components
+description: uni-app 按需自动组件导入 - 源自 unplugin-vue-components，做什么：自动从 src/components 导入组件，支持 UI 库解析器和 TypeScript 声明生成；何时调用：当用户需要配置自动组件导入、使用 UI 库解析器（如 uni-ui、wot-design-uni）或生成组件 TypeScript 声明时调用
 ---
 
 # vite-plugin-uni-components
 
-Automatic on-demand component imports for uni-app. Derived from unplugin-vue-components with uni-app specific adaptations.
+uni-app 的按需自动组件导入。源自 unplugin-vue-components，并针对 uni-app 进行了适配。
 
-## Installation
+## 安装
 
 ```bash
 npm i -D @uni-helper/vite-plugin-uni-components
 ```
 
-## Setup
+## 设置
 
 ```ts
 // vite.config.ts
@@ -23,24 +23,24 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [
-    Components(),  // Must be before Uni()
+    Components(),  // 必须在 Uni() 之前
     Uni(),
   ],
 })
 ```
 
-## Features
+## 特性
 
-- Automatic component imports from `src/components`
-- Supports UI library resolvers
-- Generates TypeScript declarations
-- Handles `default` export for third-party UI libraries
+- 自动从 `src/components` 导入组件
+- 支持 UI 库解析器
+- 生成 TypeScript 声明
+- 处理第三方 UI 库的 `default` 导出
 
-## Supported UI Libraries
+## 支持的 UI 库
 
-Built-in resolvers for:
+内置解析器：
 
-| Library | Import |
+| 库 | 导入 |
 |---------|--------|
 | Ano UI | `AnoUIResolver()` |
 | uni-ui | `UniUIResolver()` |
@@ -49,15 +49,15 @@ Built-in resolvers for:
 | uview-pro | `UviewProResolver()` |
 | z-paging | `ZPagingResolver()` |
 
-## TypeScript Declarations
+## TypeScript 声明
 
-For pnpm users, create `.npmrc`:
+对于 pnpm 用户，创建 `.npmrc`：
 
 ```ini
 shamefully-hoist = true
 ```
 
-Generated `components.d.ts` example:
+生成的 `components.d.ts` 示例：
 
 ```ts
 declare module 'vue' {
@@ -69,9 +69,9 @@ declare module 'vue' {
 }
 ```
 
-## Third-Party Component Handling
+## 第三方组件处理
 
-For third-party components like `@dcloudio/uni-ui` and `ano-ui`, the plugin automatically adds the `default` property to handle H5 compatibility issues:
+对于 `@dcloudio/uni-ui` 和 `ano-ui` 等第三方组件，插件会自动添加 `default` 属性以处理 H5 兼容性问题：
 
 ```diff
 declare module 'vue' {
@@ -82,9 +82,9 @@ declare module 'vue' {
 }
 ```
 
-## Full Configuration
+## 完整配置
 
-See [unplugin-vue-components documentation](https://github.com/antfu/unplugin-vue-components) for all options.
+请参阅 [unplugin-vue-components 文档](https://github.com/antfu/unplugin-vue-components) 了解所有选项。
 
 <!--
 Source references:

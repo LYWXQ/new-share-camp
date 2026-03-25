@@ -1,13 +1,13 @@
 ---
-name: Pages.json Configuration
-description: Page routing, tab bar, and global style configuration
+name: Pages.json 配置
+description: 页面路由、tabBar 和全局样式配置。在配置 uni-app 应用的页面路由、窗口样式、原生导航栏、tabBar 和分包时调用此技能。
 ---
 
-# Pages.json Configuration
+# Pages.json 配置
 
-`pages.json` is the global configuration file for uni-app, defining page routes, window styles, native navigation bar, and tab bar.
+`pages.json` 是 uni-app 的全局配置文件，定义页面路由、窗口样式、原生导航栏和 tabBar。
 
-## Basic Structure
+## 基础结构
 
 ```json
 {
@@ -15,7 +15,7 @@ description: Page routing, tab bar, and global style configuration
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "Home"
+        "navigationBarTitleText": "首页"
       }
     }
   ],
@@ -25,26 +25,26 @@ description: Page routing, tab bar, and global style configuration
   },
   "tabBar": {
     "list": [
-      { "pagePath": "pages/index/index", "text": "Home" }
+      { "pagePath": "pages/index/index", "text": "首页" }
     ]
   }
 }
 ```
 
-## Root Properties
+## 根属性
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| pages | Array | Yes | Page routes |
-| globalStyle | Object | No | Default window style |
-| tabBar | Object | No | Tab bar configuration |
-| condition | Object | No | Launch mode (dev only) |
-| subPackages | Array | No | Sub-packages |
-| preloadRule | Object | No | Preload rules (MP) |
-| easycom | Object | No | Auto component import |
-| leftWindow/topWindow/rightWindow | Object | No | Multi-window (H5) |
+| 属性 | 类型 | 必填 | 描述 |
+|------|------|------|------|
+| pages | Array | 是 | 页面路由 |
+| globalStyle | Object | 否 | 默认窗口样式 |
+| tabBar | Object | 否 | tabBar 配置 |
+| condition | Object | 否 | 启动模式（仅开发） |
+| subPackages | Array | 否 | 分包 |
+| preloadRule | Object | 否 | 预加载规则（小程序） |
+| easycom | Object | 否 | 自动组件导入 |
+| leftWindow/topWindow/rightWindow | Object | 否 | 多窗口（H5） |
 
-## Pages Configuration
+## Pages 配置
 
 ```json
 {
@@ -52,14 +52,14 @@ description: Page routing, tab bar, and global style configuration
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "Home",
+        "navigationBarTitleText": "首页",
         "enablePullDownRefresh": true
       }
     },
     {
       "path": "pages/detail/detail",
       "style": {
-        "navigationBarTitleText": "Detail",
+        "navigationBarTitleText": "详情",
         "navigationStyle": "custom"
       }
     }
@@ -67,30 +67,30 @@ description: Page routing, tab bar, and global style configuration
 }
 ```
 
-### Page Style Options
+### 页面样式选项
 
-| Property | Type | Description |
-|----------|------|-------------|
-| navigationBarTitleText | String | Navigation title |
-| navigationBarTextStyle | String | Title color: black/white |
-| navigationBarBackgroundColor | HexColor | Nav background |
+| 属性 | 类型 | 描述 |
+|------|------|------|
+| navigationBarTitleText | String | 导航栏标题 |
+| navigationBarTextStyle | String | 标题颜色：black/white |
+| navigationBarBackgroundColor | HexColor | 导航栏背景色 |
 | navigationStyle | String | default/custom |
-| enablePullDownRefresh | Boolean | Enable pull refresh |
-| backgroundColor | HexColor | Background color |
+| enablePullDownRefresh | Boolean | 启用下拉刷新 |
+| backgroundColor | HexColor | 背景色 |
 | backgroundTextStyle | String | dark/light |
-| onReachBottomDistance | Number | Bottom distance (px) |
-| disableScroll | Boolean | Disable scroll (MP) |
-| usingComponents | Object | Using custom components |
+| onReachBottomDistance | Number | 底部距离（px） |
+| disableScroll | Boolean | 禁用滚动（小程序） |
+| usingComponents | Object | 使用自定义组件 |
 
-## Global Style
+## 全局样式
 
-Applied to all pages unless overridden.
+应用于所有页面，除非被覆盖。
 
 ```json
 {
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "My App",
+    "navigationBarTitleText": "我的应用",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8",
     "backgroundTextStyle": "dark",
@@ -103,7 +103,7 @@ Applied to all pages unless overridden.
 }
 ```
 
-## Tab Bar Configuration
+## TabBar 配置
 
 ```json
 {
@@ -115,25 +115,25 @@ Applied to all pages unless overridden.
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "Home",
+        "text": "首页",
         "iconPath": "static/image/home.png",
         "selectedIconPath": "static/image/home-active.png"
       },
       {
         "pagePath": "pages/category/category",
-        "text": "Category",
+        "text": "分类",
         "iconPath": "static/image/cat.png",
         "selectedIconPath": "static/image/cat-active.png"
       },
       {
         "pagePath": "pages/cart/cart",
-        "text": "Cart",
+        "text": "购物车",
         "iconPath": "static/image/cart.png",
         "selectedIconPath": "static/image/cart-active.png"
       },
       {
         "pagePath": "pages/user/user",
-        "text": "User",
+        "text": "我的",
         "iconPath": "static/image/user.png",
         "selectedIconPath": "static/image/user-active.png"
       }
@@ -142,44 +142,44 @@ Applied to all pages unless overridden.
 }
 ```
 
-### Tab Bar Properties
+### TabBar 属性
 
-| Property | Type | Description |
-|----------|------|-------------|
-| color | HexColor | Unselected text color |
-| selectedColor | HexColor | Selected text color |
-| backgroundColor | HexColor | Background color |
+| 属性 | 类型 | 描述 |
+|------|------|------|
+| color | HexColor | 未选中文字颜色 |
+| selectedColor | HexColor | 选中文字颜色 |
+| backgroundColor | HexColor | 背景色 |
 | borderStyle | String | black/white |
-| list | Array | Tab items (2-5 items) |
+| list | Array | tab 项（2-5 个） |
 | position | String | bottom/top |
 
-### Tab Item Properties
+### Tab 项属性
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| pagePath | String | Yes | Page path |
-| text | String | Yes | Tab text |
-| iconPath | String | No | Icon path (81x81px) |
-| selectedIconPath | String | No | Selected icon |
+| 属性 | 类型 | 必填 | 描述 |
+|------|------|------|------|
+| pagePath | String | 是 | 页面路径 |
+| text | String | 是 | tab 文字 |
+| iconPath | String | 否 | 图标路径（81x81px） |
+| selectedIconPath | String | 否 | 选中图标 |
 
-### Custom Tab Bar (WeChat/QQ/Douyin)
+### 自定义 TabBar（微信/QQ/抖音）
 
 ```json
 {
   "tabBar": {
     "custom": true,
     "list": [
-      { "pagePath": "pages/index/index", "text": "Home" }
+      { "pagePath": "pages/index/index", "text": "首页" }
     ]
   }
 }
 ```
 
-Create `custom-tab-bar/index` component in root.
+在根目录创建 `custom-tab-bar/index` 组件。
 
-## Sub-packages
+## 分包
 
-Split app into smaller chunks for faster loading.
+将应用拆分为更小的块以加快加载速度。
 
 ```json
 {
@@ -208,7 +208,7 @@ Split app into smaller chunks for faster loading.
 }
 ```
 
-## EasyCom (Auto Component Import)
+## EasyCom（自动组件导入）
 
 ```json
 {
@@ -223,9 +223,9 @@ Split app into smaller chunks for faster loading.
 }
 ```
 
-With this config, components are auto-imported without registration.
+使用此配置，组件无需注册即可自动导入。
 
-## Conditional Compilation in Config
+## 配置中的条件编译
 
 ```json
 {
@@ -233,7 +233,7 @@ With this config, components are auto-imported without registration.
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "Home"
+        "navigationBarTitleText": "首页"
       }
     }
   ],

@@ -1,32 +1,32 @@
 ---
 name: build-production
-description: Building for production including targets, multi-page apps, and optimizations
+description: 生产环境构建，包括目标浏览器、多页面应用和优化
 ---
 
-# Building for Production
+# 生产构建
 
-## Basic Build
+## 基本构建
 
 ```bash
 vite build
 ```
 
-Uses `<root>/index.html` as entry point, outputs to `dist/`.
+使用 `<root>/index.html` 作为入口点，输出到 `dist/`。
 
-## Browser Compatibility
+## 浏览器兼容性
 
-Default target: Baseline Widely Available browsers (Chrome 111+, Edge 111+, Firefox 114+, Safari 16.4+).
+默认目标：Baseline Widely Available 浏览器（Chrome 111+、Edge 111+、Firefox 114+、Safari 16.4+）。
 
 ```ts
 export default defineConfig({
   build: {
-    target: 'es2020',  // Or specific browsers
+    target: 'es2020',  // 或特定浏览器
     // target: ['chrome64', 'firefox78', 'safari12']
   }
 })
 ```
 
-For legacy browsers:
+对于旧版浏览器：
 
 ```bash
 npm add -D @vitejs/plugin-legacy
@@ -44,23 +44,23 @@ export default defineConfig({
 })
 ```
 
-## Output Configuration
+## 输出配置
 
 ```ts
 export default defineConfig({
   build: {
-    outDir: 'dist',           // Output directory
-    assetsDir: 'assets',      // Assets subdirectory
-    emptyOutDir: true,        // Clear outDir before build
-    sourcemap: true,          // Generate sourcemaps
+    outDir: 'dist',           // 输出目录
+    assetsDir: 'assets',      // 资源子目录
+    emptyOutDir: true,        // 构建前清空 outDir
+    sourcemap: true,          // 生成 sourcemaps
     // sourcemap: 'inline' | 'hidden'
   }
 })
 ```
 
-## Public Base Path
+## 公共基础路径
 
-For deploying under a subpath:
+用于部署到子路径：
 
 ```ts
 export default defineConfig({
@@ -68,7 +68,7 @@ export default defineConfig({
 })
 ```
 
-Relative base (works anywhere):
+相对基础路径（在任何地方都可用）：
 
 ```ts
 export default defineConfig({
@@ -76,13 +76,13 @@ export default defineConfig({
 })
 ```
 
-Access in code:
+在代码中访问：
 
 ```ts
 const base = import.meta.env.BASE_URL
 ```
 
-## Multi-Page App
+## 多页面应用
 
 ```ts
 import { resolve } from 'path'
@@ -99,16 +99,16 @@ export default defineConfig({
 })
 ```
 
-## Minification
+## 压缩
 
 ```ts
 export default defineConfig({
   build: {
-    minify: 'oxc',     // Default, fastest
-    // minify: 'terser',  // More options, slower
-    // minify: false,     // Disable
+    minify: 'oxc',     // 默认，最快
+    // minify: 'terser',  // 更多选项，较慢
+    // minify: false,     // 禁用
     
-    terserOptions: {   // If using terser
+    terserOptions: {   // 如果使用 terser
       compress: {
         drop_console: true
       }
@@ -117,7 +117,7 @@ export default defineConfig({
 })
 ```
 
-## Chunk Strategy
+## 代码分割策略
 
 ```ts
 export default defineConfig({
@@ -125,7 +125,7 @@ export default defineConfig({
     rolldownOptions: {
       output: {
         codeSplitting: {
-          // Manual chunks configuration
+          // 手动代码块配置
         }
       }
     },
@@ -134,32 +134,32 @@ export default defineConfig({
 })
 ```
 
-## CSS Options
+## CSS 选项
 
 ```ts
 export default defineConfig({
   build: {
-    cssCodeSplit: true,         // CSS per async chunk
-    cssMinify: 'lightningcss',  // or 'esbuild'
-    cssTarget: 'chrome61'       // Different from JS target
+    cssCodeSplit: true,         // 每个异步块一个 CSS
+    cssMinify: 'lightningcss',  // 或 'esbuild'
+    cssTarget: 'chrome61'       // 与 JS 目标不同
   }
 })
 ```
 
-## Asset Handling
+## 资源处理
 
 ```ts
 export default defineConfig({
   build: {
-    assetsInlineLimit: 4096,    // Inline assets < 4KB as base64
-    copyPublicDir: true         // Copy public/ to outDir
+    assetsInlineLimit: 4096,    // 小于 4KB 的资源内联为 base64
+    copyPublicDir: true         // 将 public/ 复制到 outDir
   }
 })
 ```
 
 ## Manifest
 
-Generate manifest for backend integration:
+为后端集成生成 manifest：
 
 ```ts
 export default defineConfig({
@@ -169,9 +169,9 @@ export default defineConfig({
 })
 ```
 
-## Watch Mode
+## 监视模式
 
-Rebuild on file changes:
+文件更改时重新构建：
 
 ```bash
 vite build --watch
@@ -180,14 +180,14 @@ vite build --watch
 ```ts
 export default defineConfig({
   build: {
-    watch: {}  // Enable programmatically
+    watch: {}  // 以编程方式启用
   }
 })
 ```
 
-## Load Error Handling
+## 加载错误处理
 
-Handle dynamic import failures (e.g., after deployment):
+处理动态导入失败（例如部署后）：
 
 ```ts
 window.addEventListener('vite:preloadError', (event) => {
@@ -195,15 +195,15 @@ window.addEventListener('vite:preloadError', (event) => {
 })
 ```
 
-## Build Optimizations (Automatic)
+## 构建优化（自动）
 
-- **CSS code splitting** - CSS per async chunk
-- **Preload directives** - `<link rel="modulepreload">`
-- **Async chunk optimization** - Parallel fetching of dependencies
+- **CSS 代码分割** - 每个异步块一个 CSS
+- **预加载指令** - `<link rel="modulepreload">`
+- **异步块优化** - 并行获取依赖项
 
-## License Generation
+## 许可证生成
 
-Generate license file for dependencies:
+为依赖项生成许可证文件：
 
 ```ts
 export default defineConfig({

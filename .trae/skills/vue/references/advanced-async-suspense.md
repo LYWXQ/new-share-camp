@@ -1,15 +1,15 @@
 ---
 name: async-components-suspense
-description: Handle async operations, top-level await, and Suspense boundaries
+description: 处理异步操作、顶层 await 和 Suspense 边界
 ---
 
-# Async Components & Suspense
+# 异步组件与 Suspense
 
-Vue provides patterns for handling asynchronous operations in components.
+Vue 提供了在组件中处理异步操作的模式。
 
-## Top-Level await in Script Setup
+## Script Setup 中的顶层 await
 
-`<script setup>` supports top-level `await`, making the component an async dependency:
+`<script setup>` 支持顶层 `await`，使组件成为异步依赖：
 
 ```vue
 <script setup lang="ts">
@@ -21,30 +21,30 @@ const data = await fetch('/api/data').then(r => r.json())
 </template>
 ```
 
-**Important**: Components with top-level `await` **require a `<Suspense>` boundary** in a parent component, otherwise they won't render.
+**重要**：带有顶层 `await` 的组件**需要在父组件中有 `<Suspense>` 边界**，否则无法渲染。
 
 ## Suspense
 
-`<Suspense>` is a built-in component for handling async dependencies in the component tree.
+`<Suspense>` 是一个内置组件，用于处理组件树中的异步依赖。
 
 ```vue
 <template>
   <Suspense>
-    <!-- Component with async setup -->
+    <!-- 带有异步 setup 的组件 -->
     <AsyncComponent />
     
-    <!-- Fallback while loading -->
+    <!-- 加载时的回退内容 -->
     <template #fallback>
-      <div>Loading...</div>
+      <div>加载中...</div>
     </template>
   </Suspense>
 </template>
 ```
 
-### Suspense Slots
+### Suspense 插槽
 
-- **default**: The async content to render
-- **fallback**: Content shown while async dependencies are resolving
+- **default**：要渲染的异步内容
+- **fallback**：异步依赖解析时显示的内容
 
 ```vue
 <Suspense>
@@ -57,9 +57,9 @@ const data = await fetch('/api/data').then(r => r.json())
 </Suspense>
 ```
 
-## Async Components
+## 异步组件
 
-Define components that are loaded asynchronously:
+定义异步加载的组件：
 
 ```ts
 import { defineAsyncComponent } from 'vue'
@@ -68,95 +68,95 @@ const AsyncModal = defineAsyncComponent(() =>
   import('./components/Modal.vue')
 )
 
-// With options
+// 带选项
 const AsyncModalWithOptions = defineAsyncComponent({
   loader: () => import('./components/Modal.vue'),
   loadingComponent: LoadingSpinner,
   errorComponent: ErrorDisplay,
-  delay: 200,        // Delay before showing loading (ms)
-  timeout: 3000      // Timeout before showing error (ms)
+  delay: 200,        // 显示加载前的延迟（毫秒）
+  timeout: 3000      // 显示错误前的超时（毫秒）
 })
 ```
 
-## Common Async Pitfalls
+## 常见的异步陷阱
 
-### Pitfall 1: Missing Suspense Boundary
+### 陷阱 1：缺少 Suspense 边界
 
 ```vue
-<!-- ❌ Won't work - no Suspense boundary -->
+<!-- ❌ 无法工作 - 没有 Suspense 边界 -->
 <template>
   <AsyncComponent />
 </template>
 
-<!-- ✅ Works -->
+<!-- ✅ 可以工作 -->
 <template>
   <Suspense>
     <AsyncComponent />
-    <template #fallback>Loading...</template>
+    <template #fallback>加载中...</template>
   </Suspense>
 </template>
 ```
 
-### Pitfall 2: Lifecycle Hooks After await
+### 陷阱 2：await 之后的生命周期钩子
 
-Lifecycle hooks must be registered synchronously, before any `await`:
+生命周期钩子必须同步注册，在任何 `await` 之前：
 
 ```vue
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 
-// ✅ Register hooks BEFORE await
+// ✅ 在 await 之前注册钩子
 onMounted(() => console.log('mounted'))
 onUnmounted(() => console.log('unmounted'))
 
-// Now you can await
+// 现在可以 await
 const data = await fetchData()
 </script>
 ```
 
 ```vue
 <script setup lang="ts">
-// ❌ WRONG - hooks after await won't work
+// ❌ 错误 - await 之后的钩子无法工作
 const data = await fetchData()
 
 onMounted(() => {
-  // This may not be called!
+  // 这可能不会被调用！
 })
 </script>
 ```
 
-### Pitfall 3: Composables After await
+### 陷阱 3：await 之后的 Composables
 
-Composables that use lifecycle hooks must be called before `await`:
+使用生命周期钩子的 composables 必须在 `await` 之前调用：
 
 ```vue
 <script setup lang="ts">
 import { useMouse } from '@/composables/useMouse'
 
-// ✅ Call composables BEFORE await
+// ✅ 在 await 之前调用 composables
 const { x, y } = useMouse()
 
 const data = await fetchData()
 </script>
 ```
 
-### Pitfall 4: Watchers Created in Async Callbacks
+### 陷阱 4：在异步回调中创建的侦听器
 
-Watchers in async callbacks aren't auto-disposed:
+异步回调中的侦听器不会自动清理：
 
 ```ts
-// ❌ Memory leak - watcher not auto-disposed
+// ❌ 内存泄漏 - 侦听器不会自动清理
 setTimeout(() => {
-  watch(source, callback) // Must be stopped manually
+  watch(source, callback) // 必须手动停止
 }, 1000)
 
-// ✅ Watchers in setup are auto-disposed
+// ✅ setup 中的侦听器会自动清理
 watch(source, callback)
 ```
 
-## Recommended Pattern: Avoid Top-Level await
+## 推荐模式：避免顶层 await
 
-Often better to handle async in `onMounted` or with watchers:
+通常更好的做法是在 `onMounted` 或使用侦听器中处理异步：
 
 ```vue
 <script setup lang="ts">
@@ -178,30 +178,30 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="isLoading">Loading...</div>
-  <div v-else-if="error">Error: {{ error.message }}</div>
+  <div v-if="isLoading">加载中...</div>
+  <div v-else-if="error">错误：{{ error.message }}</div>
   <div v-else>{{ data }}</div>
 </template>
 ```
 
-This pattern:
-- Doesn't require Suspense
-- Gives you control over loading/error states
-- Works everywhere without special parent setup
+这种模式：
+- 不需要 Suspense
+- 可以控制加载/错误状态
+- 在任何地方都能工作，无需特殊的父组件设置
 
-## When to Use Suspense
+## 何时使用 Suspense
 
-Use Suspense when:
-- You have nested async components
-- You want coordinated loading states across multiple async children
-- You're doing SSR with async data requirements
+使用 Suspense 的场景：
+- 有嵌套的异步组件
+- 希望在多个异步子组件间协调加载状态
+- 进行 SSR 且有异步数据需求
 
-Avoid Suspense when:
-- Simple single-component async loading
-- You need fine-grained control over loading states
-- You want to avoid Suspense complexity
+避免使用 Suspense 的场景：
+- 简单的单组件异步加载
+- 需要细粒度控制加载状态
+- 希望避免 Suspense 的复杂性
 
-## Suspense Events
+## Suspense 事件
 
 ```vue
 <Suspense
@@ -213,9 +213,9 @@ Avoid Suspense when:
 </Suspense>
 ```
 
-## Error Handling with Suspense
+## Suspense 的错误处理
 
-Use `onErrorCaptured` or `<ErrorBoundary>` pattern:
+使用 `onErrorCaptured` 或 `<ErrorBoundary>` 模式：
 
 ```vue
 <script setup lang="ts">
@@ -225,15 +225,15 @@ const error = ref<Error | null>(null)
 
 onErrorCaptured((e) => {
   error.value = e
-  return false // Prevent propagation
+  return false // 阻止传播
 })
 </script>
 
 <template>
-  <div v-if="error">Error: {{ error.message }}</div>
+  <div v-if="error">错误：{{ error.message }}</div>
   <Suspense v-else>
     <AsyncComponent />
-    <template #fallback>Loading...</template>
+    <template #fallback>加载中...</template>
   </Suspense>
 </template>
 ```

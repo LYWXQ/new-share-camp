@@ -1,15 +1,15 @@
 ---
 name: component-props
-description: Declare and use props with type safety and validation
+description: 使用类型安全和验证声明和使用 props
 ---
 
-# Component Props
+# 组件 Props
 
-Props are custom attributes for passing data from parent to child components.
+Props 是用于从父组件向子组件传递数据的自定义属性。
 
-## Type-Based Declaration (Recommended)
+## 基于类型的声明（推荐）
 
-Use TypeScript interfaces with `defineProps`:
+使用 TypeScript 接口配合 `defineProps`：
 
 ```vue
 <script setup lang="ts">
@@ -23,9 +23,9 @@ const props = defineProps<Props>()
 </script>
 ```
 
-## Reactive Props Destructure (3.5+)
+## 响应式 Props 解构（3.5+）
 
-Destructure props while keeping reactivity:
+在保持响应式的同时解构 props：
 
 ```vue
 <script setup lang="ts">
@@ -36,29 +36,29 @@ interface Props {
 
 const { msg = 'hello', count = 0 } = defineProps<Props>()
 
-// Both msg and count are reactive
+// msg 和 count 都是响应式的
 watchEffect(() => {
   console.log(msg, count)
 })
 </script>
 ```
 
-### Passing destructured props to functions
+### 将解构的 props 传递给函数
 
 ```ts
 const { foo } = defineProps(['foo'])
 
-// ❌ Won't work - passes value not reactive source
+// ❌ 无法工作 - 传递的是值而非响应式源
 watch(foo, /* ... */)
 
-// ✅ Wrap in getter
+// ✅ 包装在 getter 中
 watch(() => foo, /* ... */)
 
-// ✅ For composables
+// ✅ 用于 composables
 useComposable(() => foo)
 ```
 
-## Default Values with withDefaults (3.4 and below)
+## 使用 withDefaults 设置默认值（3.4 及以下）
 
 ```vue
 <script setup lang="ts">
@@ -69,32 +69,32 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   msg: 'hello',
-  labels: () => ['one', 'two'] // Factory function for objects/arrays
+  labels: () => ['one', 'two'] // 对象/数组使用工厂函数
 })
 </script>
 ```
 
-## Runtime Declaration
+## 运行时声明
 
-For runtime validation without TypeScript:
+用于不使用 TypeScript 的运行时验证：
 
 ```vue
 <script setup lang="ts">
 const props = defineProps({
-  // Basic type check
+  // 基本类型检查
   propA: Number,
-  // Multiple types
+  // 多种类型
   propB: [String, Number],
-  // Required
+  // 必需
   propC: { type: String, required: true },
-  // With default
+  // 带默认值
   propD: { type: Number, default: 100 },
-  // Object with factory default
+  // 对象使用工厂默认值
   propE: {
     type: Object,
     default: () => ({ message: 'hello' })
   },
-  // Custom validator
+  // 自定义验证器
   propF: {
     validator(value: string) {
       return ['success', 'warning', 'danger'].includes(value)
@@ -104,12 +104,12 @@ const props = defineProps({
 </script>
 ```
 
-## Prop Types
+## Prop 类型
 
-Supported `type` values:
+支持的 `type` 值：
 - `String`, `Number`, `Boolean`, `Array`, `Object`
 - `Date`, `Function`, `Symbol`, `Error`
-- Custom classes (uses `instanceof`)
+- 自定义类（使用 `instanceof`）
 
 ```ts
 class Person {
@@ -117,11 +117,11 @@ class Person {
 }
 
 defineProps({
-  author: Person // instanceof check
+  author: Person // instanceof 检查
 })
 ```
 
-## Nullable Props
+## 可空 Props
 
 ```ts
 defineProps({
@@ -132,9 +132,9 @@ defineProps({
 })
 ```
 
-## Boolean Casting
+## 布尔类型转换
 
-Boolean props have special casting rules:
+布尔 props 有特殊的转换规则：
 
 ```vue
 <script setup lang="ts">
@@ -143,56 +143,56 @@ defineProps({
 })
 </script>
 
-<!-- equivalent to :disabled="true" -->
+<!-- 等价于 :disabled="true" -->
 <MyComponent disabled />
 
-<!-- equivalent to :disabled="false" -->
+<!-- 等价于 :disabled="false" -->
 <MyComponent />
 ```
 
-## One-Way Data Flow
+## 单向数据流
 
-Props form a one-way binding: parent → child. Never mutate props directly.
+Props 形成单向绑定：父组件 → 子组件。永远不要直接修改 props。
 
 ```ts
 const props = defineProps(['initialCounter'])
 
-// ❌ Don't mutate props
+// ❌ 不要修改 props
 props.initialCounter = 5
 
-// ✅ Use local state initialized from prop
+// ✅ 使用从 prop 初始化的本地状态
 const counter = ref(props.initialCounter)
 
-// ✅ Or use computed for transformations
+// ✅ 或使用计算属性进行转换
 const normalizedSize = computed(() => props.size.trim().toLowerCase())
 ```
 
-## Passing Props
+## 传递 Props
 
 ```vue-html
-<!-- Static -->
+<!-- 静态 -->
 <BlogPost title="My Post" />
 
-<!-- Dynamic -->
+<!-- 动态 -->
 <BlogPost :title="post.title" />
 
-<!-- Number (requires v-bind) -->
+<!-- 数字（需要 v-bind） -->
 <BlogPost :likes="42" />
 
-<!-- Boolean -->
+<!-- 布尔值 -->
 <BlogPost is-published />
 <BlogPost :is-published="false" />
 
-<!-- Object spread -->
+<!-- 对象展开 -->
 <BlogPost v-bind="post" />
-<!-- equivalent to -->
+<!-- 等价于 -->
 <BlogPost :id="post.id" :title="post.title" />
 ```
 
-## Prop Name Casing
+## Props 命名规范
 
-- Declare with camelCase in JavaScript
-- Use kebab-case in templates
+- 在 JavaScript 中使用 camelCase 声明
+- 在模板中使用 kebab-case
 
 ```ts
 defineProps({

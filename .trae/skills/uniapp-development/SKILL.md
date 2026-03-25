@@ -1,6 +1,6 @@
 ---
 name: "uniapp-development"
-description: "提供Uniapp开发支持，包括项目创建、配置、组件开发、部署等。当用户需要开发Uniapp应用时调用。"
+description: "提供 Uniapp 应用开发全流程支持。做什么：项目创建与配置、组件开发、状态管理、API 调用、原生功能集成、构建与部署。何时调用：需要创建新的 Uniapp 项目、开发 Uniapp 组件、集成原生功能、打包发布 Uniapp 应用或优化应用性能时。"
 ---
 
 # Uniapp开发

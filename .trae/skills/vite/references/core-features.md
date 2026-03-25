@@ -1,31 +1,31 @@
 ---
 name: core-features
-description: Core Vite features including TypeScript, JSX, CSS, and HTML processing
+description: Vite 核心功能，包括 TypeScript、JSX、CSS 和 HTML 处理
 ---
 
-# Core Features
+# 核心功能
 
 ## TypeScript
 
-Vite supports `.ts` files out of the box with transpilation via Oxc Transformer (20-30x faster than tsc).
+Vite 通过 Oxc Transformer 开箱即用地支持 `.ts` 文件（比 tsc 快 20-30 倍）。
 
-### Important: Transpile Only
+### 重要：仅转译
 
-Vite does NOT perform type checking. Run type checking separately:
+Vite 不执行类型检查。单独运行类型检查：
 
 ```bash
-# Production build
+# 生产构建
 tsc --noEmit && vite build
 
-# During development (separate process)
+# 开发期间（单独进程）
 tsc --noEmit --watch
 
-# Or use vite-plugin-checker for browser error reporting
+# 或使用 vite-plugin-checker 进行浏览器错误报告
 ```
 
-### TypeScript Configuration
+### TypeScript 配置
 
-Required `tsconfig.json` settings:
+必需的 `tsconfig.json` 设置：
 
 ```json
 {
@@ -37,9 +37,9 @@ Required `tsconfig.json` settings:
 }
 ```
 
-### Client Types
+### 客户端类型
 
-Add Vite's client types for `import.meta.env` and asset imports:
+添加 Vite 的客户端类型以支持 `import.meta.env` 和资源导入：
 
 ```json
 {
@@ -49,14 +49,14 @@ Add Vite's client types for `import.meta.env` and asset imports:
 }
 ```
 
-This provides types for:
-- Asset imports (`.svg`, `.png`, etc.)
-- `import.meta.env` constants
+这为以下提供类型：
+- 资源导入（`.svg`、`.png` 等）
+- `import.meta.env` 常量
 - `import.meta.hot` HMR API
 
-### Custom Type Overrides
+### 自定义类型覆盖
 
-Override default asset import types:
+覆盖默认资源导入类型：
 
 ```ts
 // vite-env-override.d.ts
@@ -66,9 +66,9 @@ declare module '*.svg' {
 }
 ```
 
-### Path Aliases with tsconfig
+### 使用 tsconfig 的路径别名
 
-Enable tsconfig paths resolution:
+启用 tsconfig 路径解析：
 
 ```ts
 // vite.config.ts
@@ -81,17 +81,17 @@ export default defineConfig({
 
 ## JSX
 
-`.jsx` and `.tsx` files are supported out of the box. Custom JSX configuration:
+开箱即用地支持 `.jsx` 和 `.tsx` 文件。自定义 JSX 配置：
 
 ```ts
 export default defineConfig({
   oxc: {
     jsx: {
-      runtime: 'classic',  // or 'automatic'
+      runtime: 'classic',  // 或 'automatic'
       pragma: 'h',
       pragmaFrag: 'Fragment'
     },
-    // Auto-inject JSX helpers
+    // 自动注入 JSX 辅助函数
     jsxInject: `import React from 'react'`
   }
 })
@@ -99,29 +99,29 @@ export default defineConfig({
 
 ## HTML
 
-`index.html` is the entry point, not tucked away in `public/`. Vite processes it as part of the module graph.
+`index.html` 是入口点，不是放在 `public/` 中。Vite 将其作为模块图的一部分进行处理。
 
-### Supported Elements
+### 支持的元素
 
-Vite processes these HTML element attributes:
+Vite 处理这些 HTML 元素属性：
 
 - `<script type="module" src>`
-- `<link href>` (stylesheets)
-- `<img src>`, `<img srcset>`
-- `<video src>`, `<video poster>`
+- `<link href>`（样式表）
+- `<img src>`、`<img srcset>`
+- `<video src>`、`<video poster>`
 - `<audio src>`
-- `<source src>`, `<source srcset>`
-- `<meta content>` (for og:image, twitter:image, etc.)
+- `<source src>`、`<source srcset>`
+- `<meta content>`（用于 og:image、twitter:image 等）
 
-### Opt-out of Processing
+### 选择退出处理
 
 ```html
 <script vite-ignore type="module" src="https://cdn.example.com/lib.js"></script>
 ```
 
-### Multi-Page Apps
+### 多页面应用
 
-Access any HTML file by its path:
+通过路径访问任何 HTML 文件：
 
 - `<root>/index.html` → `http://localhost:5173/`
 - `<root>/about.html` → `http://localhost:5173/about.html`
@@ -129,37 +129,37 @@ Access any HTML file by its path:
 
 ## JSON
 
-Direct import with named exports support:
+直接导入并支持命名导出：
 
 ```ts
-// Import entire object
+// 导入整个对象
 import json from './data.json'
 
-// Named imports (tree-shakeable)
+// 命名导入（可 tree-shake）
 import { field } from './data.json'
 ```
 
-## Framework Support
+## 框架支持
 
-Official framework plugins:
+官方框架插件：
 
-| Framework | Plugin |
-|-----------|--------|
+| 框架 | 插件 |
+|------|------|
 | Vue 3 | `@vitejs/plugin-vue` |
 | Vue 3 JSX | `@vitejs/plugin-vue-jsx` |
 | React | `@vitejs/plugin-react` |
 | React (SWC) | `@vitejs/plugin-react-swc` |
 | React Server Components | `@vitejs/plugin-rsc` |
-| Legacy browsers | `@vitejs/plugin-legacy` |
+| 旧版浏览器 | `@vitejs/plugin-legacy` |
 
-## Content Security Policy
+## 内容安全策略
 
-Configure nonce for CSP:
+为 CSP 配置 nonce：
 
 ```ts
 export default defineConfig({
   html: {
-    cspNonce: 'PLACEHOLDER'  // Replace per-request
+    cspNonce: 'PLACEHOLDER'  // 每个请求替换
   }
 })
 ```

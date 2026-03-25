@@ -1,71 +1,71 @@
 ---
-title: Prefer ref() Over reactive() for Consistency
+title: 为保持一致性优先使用 ref()
 impact: MEDIUM
-impactDescription: Using ref() as default avoids reactive() gotchas and provides consistent patterns
+impactDescription: 使用 ref() 作为默认值可以避免 reactive() 的陷阱并提供一致的模式
 type: efficiency
 tags: [vue3, reactivity, ref, reactive, composition-api, best-practice]
 ---
 
-# Prefer ref() Over reactive() for Consistency
+# 为保持一致性优先使用 ref()
 
-**Impact: MEDIUM** - The Vue documentation recommends using `ref()` as the primary API for declaring reactive state. This avoids several `reactive()` gotchas and provides a consistent pattern across your codebase.
+**影响：中** - Vue 文档推荐使用 `ref()` 作为声明响应式状态的主要 API。这可以避免 `reactive()` 的几个陷阱，并在整个代码库中提供一致的模式。
 
-While both `ref()` and `reactive()` create reactive state, `reactive()` has several limitations: it only works with objects (not primitives), cannot be reassigned, and loses reactivity when destructured. Using `ref()` consistently means one pattern to remember.
+虽然 `ref()` 和 `reactive()` 都创建响应式状态，但 `reactive()` 有几个限制：它只适用于对象（不适用于原始值），不能被重新赋值，解构时会失去响应式。始终使用 `ref()` 意味着只需要记住一种模式。
 
-## Task Checklist
+## 任务清单
 
-- [ ] Use `ref()` as the default for all reactive state
-- [ ] Only use `reactive()` when you have a specific reason (e.g., group of related state)
-- [ ] Be consistent within a codebase - pick one approach and stick with it
-- [ ] Remember: `.value` is the price for avoiding `reactive()` gotchas
+- [ ] 使用 `ref()` 作为所有响应式状态的默认值
+- [ ] 只有在有特定原因时才使用 `reactive()`（例如，一组相关的状态）
+- [ ] 在代码库中保持一致 - 选择一种方法并坚持使用
+- [ ] 记住：`.value` 是避免 `reactive()` 陷阱的代价
 
-**Incorrect:**
+**错误示例：**
 ```javascript
 import { reactive } from 'vue'
 
-// reactive() has multiple gotchas:
+// reactive() 有多个陷阱：
 
-// 1. Cannot use with primitives
-const count = reactive(0)  // Won't work - not reactive
+// 1. 不能与原始值一起使用
+const count = reactive(0)  // 不会生效 - 不是响应式的
 
-// 2. Cannot reassign the entire object
+// 2. 不能重新赋值整个对象
 let state = reactive({ items: [] })
-state = reactive({ items: [1, 2, 3] })  // Loses reactivity!
+state = reactive({ items: [1, 2, 3] })  // 失去响应式！
 
-// 3. Destructuring breaks reactivity
-const { items } = state  // items is not reactive
+// 3. 解构会破坏响应式
+const { items } = state  // items 不是响应式的
 
-// 4. Passing to functions can lose reactivity
-someFunction(state.items)  // May lose reactivity depending on usage
+// 4. 传递给函数可能会失去响应式
+someFunction(state.items)  // 根据使用情况可能失去响应式
 ```
 
-**Correct:**
+**正确示例：**
 ```javascript
 import { ref } from 'vue'
 
-// ref() works universally:
+// ref() 通用适用：
 
-// 1. Works with primitives
+// 1. 适用于原始值
 const count = ref(0)
-count.value++  // Works!
+count.value++  // 有效！
 
-// 2. Can reassign the entire object
+// 2. 可以重新赋值整个对象
 const state = ref({ items: [] })
-state.value = { items: [1, 2, 3] }  // Reactivity preserved!
+state.value = { items: [1, 2, 3] }  // 响应式已保留！
 
-// 3. No destructuring issues (you work with .value)
-const items = state.value.items  // If you need just the value
+// 3. 没有解构问题（你使用 .value 工作）
+const items = state.value.items  // 如果你只需要值
 
-// 4. Passing refs is explicit
-someFunction(state)        // Pass the ref
-someFunction(state.value)  // Or pass the value explicitly
+// 4. 传递 refs 是显式的
+someFunction(state)        // 传递 ref
+someFunction(state.value)  // 或显式传递值
 ```
 
 ```javascript
-// When reactive() makes sense: grouping related state
+// 当 reactive() 有意义时：分组相关状态
 import { reactive, toRefs } from 'vue'
 
-// Acceptable use case: form state with many related fields
+// 可接受的使用场景：具有多个相关字段的表单状态
 const form = reactive({
   username: '',
   email: '',
@@ -73,10 +73,10 @@ const form = reactive({
   confirmPassword: ''
 })
 
-// But always use toRefs() if you need to destructure
+// 但如果你需要解构，始终使用 toRefs()
 const { username, email } = toRefs(form)
 ```
 
-## Reference
-- [Vue.js Reactivity Fundamentals](https://vuejs.org/guide/essentials/reactivity-fundamentals.html)
+## 参考
+- [Vue.js 响应式基础](https://vuejs.org/guide/essentials/reactivity-fundamentals.html)
 - [Vue.js Composition API FAQ](https://vuejs.org/guide/extras/composition-api-faq.html)

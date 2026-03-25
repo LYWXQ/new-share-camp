@@ -1,52 +1,52 @@
 ---
-name: Storage
-description: Local data storage and caching APIs
+name: 存储
+description: 本地数据存储和缓存 API。在使用 uni-app 的本地存储、文件系统或缓存功能时调用此技能。
 ---
 
-# Storage
+# 存储
 
-## Synchronous Storage (Recommended for small data)
+## 同步存储（推荐用于小数据）
 
 ### uni.setStorageSync
 
-Store data synchronously.
+同步存储数据。
 
 ```javascript
-// Store simple value
+// 存储简单值
 uni.setStorageSync('username', 'John')
 
-// Store object
+// 存储对象
 uni.setStorageSync('userInfo', {
   name: 'John',
   age: 30,
   email: 'john@example.com'
 })
 
-// Store array
+// 存储数组
 uni.setStorageSync('tags', ['vue', 'uniapp', 'javascript'])
 ```
 
 ### uni.getStorageSync
 
-Retrieve data synchronously.
+同步获取数据。
 
 ```javascript
-// Get simple value
+// 获取简单值
 const username = uni.getStorageSync('username')
 console.log(username) // 'John'
 
-// Get object
+// 获取对象
 const userInfo = uni.getStorageSync('userInfo')
 console.log(userInfo.name) // 'John'
 
-// Check if exists
+// 检查是否存在
 const value = uni.getStorageSync('nonexistent')
-console.log(value) // '' (empty string if not found)
+console.log(value) // ''（不存在时返回空字符串）
 ```
 
 ### uni.removeStorageSync
 
-Remove specific key.
+移除指定键。
 
 ```javascript
 uni.removeStorageSync('username')
@@ -54,13 +54,13 @@ uni.removeStorageSync('username')
 
 ### uni.clearStorageSync
 
-Clear all storage.
+清空所有存储。
 
 ```javascript
 uni.clearStorageSync()
 ```
 
-## Asynchronous Storage (Recommended for large data)
+## 异步存储（推荐用于大数据）
 
 ### uni.setStorage
 
@@ -72,19 +72,19 @@ uni.setStorage({
     preferences: { theme: 'dark', language: 'zh' }
   },
   success: () => {
-    console.log('Storage saved')
+    console.log('存储已保存')
   },
   fail: (err) => {
-    console.error('Save failed:', err)
+    console.error('保存失败：', err)
   }
 })
 
-// Promise style
+// Promise 风格
 uni.setStorage({
   key: 'config',
   data: { debug: true }
 }).then(() => {
-  console.log('Config saved')
+  console.log('配置已保存')
 })
 ```
 
@@ -94,17 +94,17 @@ uni.setStorage({
 uni.getStorage({
   key: 'userData',
   success: (res) => {
-    console.log('Data:', res.data)
+    console.log('数据：', res.data)
   },
   fail: (err) => {
-    console.log('Key not found')
+    console.log('键不存在')
   }
 })
 
-// Promise style
+// Promise 风格
 uni.getStorage({ key: 'userData' })
   .then(res => console.log(res.data))
-  .catch(() => console.log('Not found'))
+  .catch(() => console.log('不存在'))
 ```
 
 ### uni.removeStorage
@@ -113,40 +113,40 @@ uni.getStorage({ key: 'userData' })
 uni.removeStorage({
   key: 'tempData',
   success: () => {
-    console.log('Removed successfully')
+    console.log('移除成功')
   }
 })
 ```
 
 ### uni.getStorageInfo
 
-Get storage information.
+获取存储信息。
 
 ```javascript
 uni.getStorageInfo({
   success: (res) => {
-    console.log('Keys:', res.keys)
-    console.log('Current size:', res.currentSize, 'KB')
-    console.log('Limit size:', res.limitSize, 'KB')
+    console.log('键：', res.keys)
+    console.log('当前大小：', res.currentSize, 'KB')
+    console.log('限制大小：', res.limitSize, 'KB')
   }
 })
 ```
 
-## Storage Limits
+## 存储限制
 
-| Platform | Limit |
-|----------|-------|
-| Mini Program | 10 MB (single) / 200+ MB total |
-| App | No hard limit (device dependent) |
-| H5 | ~5-10 MB (browser dependent) |
+| 平台 | 限制 |
+|------|------|
+| 小程序 | 10 MB（单个）/ 200+ MB 总计 |
+| App | 无硬性限制（取决于设备） |
+| H5 | ~5-10 MB（取决于浏览器） |
 
-## Best Practices
+## 最佳实践
 
-### Data Persistence Helper
+### 数据持久化助手
 
 ```javascript
 const storage = {
-  // Set with expiration (days)
+  // 设置带过期时间（天）
   setWithExpiry(key, value, days) {
     const item = {
       value,
@@ -155,7 +155,7 @@ const storage = {
     uni.setStorageSync(key, item)
   },
 
-  // Get with expiration check
+  // 获取并检查过期
   getWithExpiry(key) {
     const item = uni.getStorageSync(key)
     if (!item) return null
@@ -167,7 +167,7 @@ const storage = {
     return item.value
   },
 
-  // Safe get with default
+  // 安全获取带默认值
   get(key, defaultValue = null) {
     try {
       const value = uni.getStorageSync(key)
@@ -177,7 +177,7 @@ const storage = {
     }
   },
 
-  // Batch operations
+  // 批量操作
   setBatch(data) {
     Object.entries(data).forEach(([key, value]) => {
       uni.setStorageSync(key, value)
@@ -189,12 +189,12 @@ const storage = {
   }
 }
 
-// Usage
-storage.setWithExpiry('token', 'abc123', 7) // Expires in 7 days
+// 使用
+storage.setWithExpiry('token', 'abc123', 7) // 7 天后过期
 const token = storage.getWithExpiry('token')
 ```
 
-### User Session Management
+### 用户会话管理
 
 ```javascript
 const session = {
@@ -229,23 +229,23 @@ const session = {
 }
 ```
 
-## File Storage (App only)
+## 文件存储（仅 App）
 
-### Local File System
+### 本地文件系统
 
 ```javascript
-// Get file system manager
+// 获取文件系统管理器
 const fs = uni.getFileSystemManager()
 
-// Write file
+// 写入文件
 fs.writeFile({
   filePath: `${uni.env.USER_DATA_PATH}/data.json`,
   data: JSON.stringify({ name: 'test' }),
   encoding: 'utf8',
-  success: () => console.log('File written')
+  success: () => console.log('文件已写入')
 })
 
-// Read file
+// 读取文件
 fs.readFile({
   filePath: `${uni.env.USER_DATA_PATH}/data.json`,
   encoding: 'utf8',
@@ -255,21 +255,21 @@ fs.readFile({
   }
 })
 
-// Check if file exists
+// 检查文件是否存在
 fs.access({
   path: `${uni.env.USER_DATA_PATH}/data.json`,
-  success: () => console.log('File exists'),
-  fail: () => console.log('File not found')
+  success: () => console.log('文件存在'),
+  fail: () => console.log('文件不存在')
 })
 ```
 
-## Storage Comparison
+## 存储对比
 
-| Method | Data Type | Size Limit | Async | Use Case |
-|--------|-----------|------------|-------|----------|
-| StorageSync | Any | ~10MB | No | Small config data |
-| Storage | Any | ~10MB | Yes | Large data objects |
-| File System | Binary/Text | Large | Yes | Files, images |
+| 方法 | 数据类型 | 大小限制 | 异步 | 使用场景 |
+|------|----------|----------|------|----------|
+| StorageSync | 任意 | ~10MB | 否 | 小配置数据 |
+| Storage | 任意 | ~10MB | 是 | 大数据对象 |
+| 文件系统 | 二进制/文本 | 大 | 是 | 文件、图片 |
 
 <!--
 Source references:

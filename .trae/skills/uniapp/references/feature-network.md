@@ -1,16 +1,16 @@
 ---
-name: Network Requests
-description: HTTP requests, file upload/download, and WebSocket
+name: 网络请求
+description: HTTP 请求、文件上传/下载和 WebSocket。在使用 uni-app 进行网络请求、文件传输或 WebSocket 通信时调用此技能。
 ---
 
-# Network Requests
+# 网络请求
 
 ## uni.request
 
-Make HTTP requests to backend APIs.
+向后端 API 发起 HTTP 请求。
 
 ```javascript
-// GET request
+// GET 请求
 uni.request({
   url: 'https://api.example.com/data',
   method: 'GET',
@@ -27,11 +27,11 @@ uni.request({
     console.error(err)
   },
   complete: () => {
-    console.log('Request complete')
+    console.log('请求完成')
   }
 })
 
-// POST request with JSON
+// POST 请求（JSON）
 uni.request({
   url: 'https://api.example.com/submit',
   method: 'POST',
@@ -44,12 +44,12 @@ uni.request({
   },
   success: (res) => {
     if (res.statusCode === 200) {
-      console.log('Success:', res.data)
+      console.log('成功：', res.data)
     }
   }
 })
 
-// Using Promise
+// 使用 Promise
 uni.request({
   url: 'https://api.example.com/data',
   method: 'GET'
@@ -67,39 +67,39 @@ async function fetchData() {
     })
     return res.data
   } catch (err) {
-    console.error('Failed to fetch:', err)
+    console.error('获取失败：', err)
     throw err
   }
 }
 ```
 
-**Parameters:**
+**参数：**
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| url | String | Yes | Request URL |
-| data | Object/String/Array/ArrayBuffer | No | Request data |
-| header | Object | No | Request headers |
-| method | String | No | HTTP method (default: GET) |
-| timeout | Number | No | Timeout in ms (default: 60000) |
-| dataType | String | No | Response data type (default: json) |
-| responseType | String | No | Response type (default: text) |
-| sslVerify | Boolean | No | Verify SSL certificate (default: true) |
+| 参数 | 类型 | 必填 | 描述 |
+|------|------|------|------|
+| url | String | 是 | 请求 URL |
+| data | Object/String/Array/ArrayBuffer | 否 | 请求数据 |
+| header | Object | 否 | 请求头 |
+| method | String | 否 | HTTP 方法（默认：GET） |
+| timeout | Number | 否 | 超时时间（毫秒，默认：60000） |
+| dataType | String | 否 | 响应数据类型（默认：json） |
+| responseType | String | 否 | 响应类型（默认：text） |
+| sslVerify | Boolean | 否 | 验证 SSL 证书（默认：true） |
 
-**Response Object:**
+**响应对象：**
 
 ```javascript
 {
-  data: Object | String | ArrayBuffer,  // Response data
-  statusCode: Number,                   // HTTP status code
-  header: Object,                       // Response headers
-  cookies: Array                        // Response cookies
+  data: Object | String | ArrayBuffer,  // 响应数据
+  statusCode: Number,                   // HTTP 状态码
+  header: Object,                       // 响应头
+  cookies: Array                        // 响应 cookies
 }
 ```
 
 ## uni.uploadFile
 
-Upload files to server.
+上传文件到服务器。
 
 ```javascript
 uni.chooseImage({
@@ -113,71 +113,71 @@ uni.chooseImage({
       name: 'file',
       formData: {
         user: 'test',
-        description: 'Image upload'
+        description: '图片上传'
       },
       header: {
         'Authorization': 'Bearer token'
       },
       success: (res) => {
-        console.log('Upload success:', JSON.parse(res.data))
+        console.log('上传成功：', JSON.parse(res.data))
       },
       fail: (err) => {
-        console.error('Upload failed:', err)
+        console.error('上传失败：', err)
       }
     })
 
-    // Track upload progress
+    // 跟踪上传进度
     uploadTask.onProgressUpdate((res) => {
-      console.log('Progress:', res.progress)
-      console.log('Uploaded bytes:', res.totalBytesSent)
-      console.log('Total bytes:', res.totalBytesExpectedToSend)
+      console.log('进度：', res.progress)
+      console.log('已上传字节：', res.totalBytesSent)
+      console.log('总字节：', res.totalBytesExpectedToSend)
     })
 
-    // Abort upload if needed
+    // 如需可中止上传
     // uploadTask.abort()
   }
 })
 ```
 
-**Upload Task Methods:**
-- `onProgressUpdate(callback)` - Listen for progress updates
-- `abort()` - Cancel the upload
-- `offProgressUpdate(callback)` - Remove progress listener
+**上传任务方法：**
+- `onProgressUpdate(callback)` - 监听进度更新
+- `abort()` - 取消上传
+- `offProgressUpdate(callback)` - 移除进度监听
 
 ## uni.downloadFile
 
-Download files from server.
+从服务器下载文件。
 
 ```javascript
 const downloadTask = uni.downloadFile({
   url: 'https://example.com/file.pdf',
   success: (res) => {
     if (res.statusCode === 200) {
-      console.log('Downloaded to:', res.tempFilePath)
+      console.log('下载到：', res.tempFilePath)
 
-      // Save to local (App only)
+      // 保存到本地（仅 App）
       uni.saveFile({
         tempFilePath: res.tempFilePath,
         success: (saveRes) => {
-          console.log('Saved to:', saveRes.savedFilePath)
+          console.log('保存到：', saveRes.savedFilePath)
         }
       })
     }
   }
 })
 
-// Track download progress
+// 跟踪下载进度
 downloadTask.onProgressUpdate((res) => {
-  console.log('Progress:', res.progress)
+  console.log('进度：', res.progress)
 })
 ```
 
 ## WebSocket
 
-Real-time bidirectional communication.
+实时双向通信。
 
 ```javascript
-// Connect to WebSocket
+// 连接 WebSocket
 const socketTask = uni.connectSocket({
   url: 'wss://api.example.com/ws',
   protocols: ['protocol1'],
@@ -185,15 +185,15 @@ const socketTask = uni.connectSocket({
     'Authorization': 'Bearer token'
   },
   success: () => {
-    console.log('WebSocket connecting...')
+    console.log('WebSocket 连接中...')
   }
 })
 
-// Listen for connection open
+// 监听连接打开
 uni.onSocketOpen((res) => {
-  console.log('WebSocket connected')
+  console.log('WebSocket 已连接')
 
-  // Send message
+  // 发送消息
   uni.sendSocketMessage({
     data: JSON.stringify({
       type: 'message',
@@ -202,96 +202,96 @@ uni.onSocketOpen((res) => {
   })
 })
 
-// Listen for messages
+// 监听消息
 uni.onSocketMessage((res) => {
-  console.log('Received:', res.data)
+  console.log('收到：', res.data)
   const data = JSON.parse(res.data)
-  // Handle message...
+  // 处理消息...
 })
 
-// Listen for errors
+// 监听错误
 uni.onSocketError((err) => {
-  console.error('WebSocket error:', err)
+  console.error('WebSocket 错误：', err)
 })
 
-// Listen for close
+// 监听关闭
 uni.onSocketClose((res) => {
-  console.log('WebSocket closed:', res)
+  console.log('WebSocket 关闭：', res)
 })
 
-// Close connection
+// 关闭连接
 function closeSocket() {
   uni.closeSocket({
     code: 1000,
-    reason: 'User logout',
+    reason: '用户登出',
     success: () => {
-      console.log('Socket closed successfully')
+      console.log('连接已关闭')
     }
   })
 }
 ```
 
-**Socket Task Methods:**
-- `close(options)` - Close connection
-- `send(options)` - Send message
-- `onOpen(callback)` - Connection opened
-- `onMessage(callback)` - Message received
-- `onClose(callback)` - Connection closed
-- `onError(callback)` - Error occurred
+**Socket 任务方法：**
+- `close(options)` - 关闭连接
+- `send(options)` - 发送消息
+- `onOpen(callback)` - 连接已打开
+- `onMessage(callback)` - 收到消息
+- `onClose(callback)` - 连接已关闭
+- `onError(callback)` - 发生错误
 
-## Request Interceptors
+## 请求拦截器
 
-Use `uni.addInterceptor` to intercept requests.
+使用 `uni.addInterceptor` 拦截请求。
 
 ```javascript
-// Add request interceptor
+// 添加请求拦截器
 uni.addInterceptor('request', {
   invoke(args) {
-    // Before request
-    console.log('Request:', args)
+    // 请求前
+    console.log('请求：', args)
 
-    // Add auth token
+    // 添加认证 token
     args.header = args.header || {}
     args.header.Authorization = `Bearer ${getToken()}`
 
     return args
   },
   success(res) {
-    // After success
-    console.log('Response:', res)
+    // 成功后
+    console.log('响应：', res)
     return res
   },
   fail(err) {
-    // After failure
-    console.error('Request failed:', err)
+    // 失败后
+    console.error('请求失败：', err)
     return err
   },
   complete(res) {
-    // Always executed
-    console.log('Request complete')
+    // 始终执行
+    console.log('请求完成')
   }
 })
 
-// Remove interceptor
+// 移除拦截器
 uni.removeInterceptor('request')
 ```
 
-## Domain Configuration
+## 域名配置
 
-### Mini-Program
+### 小程序
 
-Configure request domains in mini-program developer console:
-- `request` domain: For `uni.request`
-- `uploadFile` domain: For `uni.uploadFile`
-- `downloadFile` domain: For `uni.downloadFile`
-- `websocket` domain: For `uni.connectSocket`
+在小程序开发者控制台配置请求域名：
+- `request` 域名：用于 `uni.request`
+- `uploadFile` 域名：用于 `uni.uploadFile`
+- `downloadFile` 域名：用于 `uni.downloadFile`
+- `websocket` 域名：用于 `uni.connectSocket`
 
 ### H5
 
-H5 uses browser's same-origin policy. Configure CORS on server or use proxy in development.
+H5 使用浏览器的同源策略。在服务器上配置 CORS 或在开发时使用代理。
 
 ```javascript
-// vite.config.js proxy configuration
+// vite.config.js 代理配置
 export default {
   server: {
     proxy: {
@@ -305,10 +305,10 @@ export default {
 }
 ```
 
-## Best Practices
+## 最佳实践
 
 ```javascript
-// Create a request wrapper
+// 创建请求封装
 const request = (options) => {
   return new Promise((resolve, reject) => {
     uni.request({
@@ -317,11 +317,11 @@ const request = (options) => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data)
         } else if (res.statusCode === 401) {
-          // Handle unauthorized
+          // 处理未授权
           uni.redirectTo({ url: '/pages/login/login' })
-          reject(new Error('Unauthorized'))
+          reject(new Error('未授权'))
         } else {
-          reject(new Error(res.data.message || 'Request failed'))
+          reject(new Error(res.data.message || '请求失败'))
         }
       },
       fail: reject
@@ -329,7 +329,7 @@ const request = (options) => {
   })
 }
 
-// Usage
+// 使用
 const api = {
   getUser: () => request({ url: '/user' }),
   updateUser: (data) => request({ url: '/user', method: 'PUT', data })

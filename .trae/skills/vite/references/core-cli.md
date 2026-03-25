@@ -1,81 +1,81 @@
 ---
 name: core-cli
-description: Vite CLI commands for development, building, and previewing
+description: Vite CLI 命令用于开发、构建和预览
 ---
 
 # Vite CLI
 
-## Dev Server
+## 开发服务器
 
-Start the development server:
+启动开发服务器：
 
 ```bash
 vite [root]
-vite dev [root]   # alias
-vite serve [root] # alias
+vite dev [root]   # 别名
+vite serve [root] # 别名
 ```
 
-### Dev Server Options
+### 开发服务器选项
 
-| Option | Description |
-|--------|-------------|
-| `--host [host]` | Specify hostname (use `0.0.0.0` for LAN access) |
-| `--port <port>` | Specify port (default: 5173) |
-| `--open [path]` | Open browser on startup |
-| `--cors` | Enable CORS |
-| `--strictPort` | Exit if port is in use |
-| `--force` | Force optimizer to re-bundle dependencies |
-| `-c, --config <file>` | Use specified config file |
-| `--base <path>` | Public base path |
-| `-m, --mode <mode>` | Set env mode |
+| 选项 | 描述 |
+|------|------|
+| `--host [host]` | 指定主机名（使用 `0.0.0.0` 进行局域网访问） |
+| `--port <port>` | 指定端口（默认：5173） |
+| `--open [path]` | 启动时打开浏览器 |
+| `--cors` | 启用 CORS |
+| `--strictPort` | 端口被占用时退出 |
+| `--force` | 强制优化器重新打包依赖 |
+| `-c, --config <file>` | 使用指定的配置文件 |
+| `--base <path>` | 公共基础路径 |
+| `-m, --mode <mode>` | 设置环境模式 |
 | `-l, --logLevel <level>` | info \| warn \| error \| silent |
-| `--clearScreen` | Allow/disable clear screen when logging |
+| `--clearScreen` | 允许/禁止日志记录时清屏 |
 
-## Build
+## 构建
 
-Build for production:
+构建生产环境：
 
 ```bash
 vite build [root]
 ```
 
-### Build Options
+### 构建选项
 
-| Option | Description |
-|--------|-------------|
-| `--target <target>` | Transpile target (default: `"modules"`) |
-| `--outDir <dir>` | Output directory (default: `dist`) |
-| `--assetsDir <dir>` | Assets directory under outDir (default: `"assets"`) |
-| `--assetsInlineLimit <number>` | Inline threshold in bytes (default: 4096) |
-| `--ssr [entry]` | Build for SSR |
-| `--sourcemap [output]` | Generate source maps (`boolean \| "inline" \| "hidden"`) |
-| `--minify [minifier]` | Minifier (`boolean \| "oxc" \| "terser" \| "esbuild"`) |
-| `--manifest [name]` | Generate build manifest JSON |
-| `--ssrManifest [name]` | Generate SSR manifest JSON |
-| `--emptyOutDir` | Force empty outDir |
-| `-w, --watch` | Watch mode for rebuilding |
+| 选项 | 描述 |
+|------|------|
+| `--target <target>` | 转译目标（默认：`"modules"`） |
+| `--outDir <dir>` | 输出目录（默认：`dist`） |
+| `--assetsDir <dir>` | outDir 下的资源目录（默认：`"assets"`） |
+| `--assetsInlineLimit <number>` | 内联阈值（字节）（默认：4096） |
+| `--ssr [entry]` | 为 SSR 构建 |
+| `--sourcemap [output]` | 生成 source maps（`boolean \| "inline" \| "hidden"`） |
+| `--minify [minifier]` | 压缩器（`boolean \| "oxc" \| "terser" \| "esbuild"`） |
+| `--manifest [name]` | 生成构建 manifest JSON |
+| `--ssrManifest [name]` | 生成 SSR manifest JSON |
+| `--emptyOutDir` | 强制清空 outDir |
+| `-w, --watch` | 监视模式重新构建 |
 
-## Preview
+## 预览
 
-Locally preview the production build:
+本地预览生产构建：
 
 ```bash
 vite preview [root]
 ```
 
-### Preview Options
+### 预览选项
 
-| Option | Description |
-|--------|-------------|
-| `--host [host]` | Specify hostname |
-| `--port <port>` | Specify port |
-| `--strictPort` | Exit if port is in use |
-| `--open [path]` | Open browser on startup |
-| `--outDir <dir>` | Output directory (default: `dist`) |
+| 选项 | 描述 |
+|------|------|
+| `--host [host]` | 指定主机名 |
+| `--port <port>` | 指定端口 |
+| `--strictPort` | 端口被占用时退出 |
+| `--open [path]` | 启动时打开浏览器 |
+| `--outDir <dir>` | 输出目录（默认：`dist`） |
 
-## Package Scripts
+## 包脚本
 
-Typical `package.json` scripts:
+典型的 `package.json` 脚本：
 
 ```json
 {
@@ -87,47 +87,47 @@ Typical `package.json` scripts:
 }
 ```
 
-## Running Vite
+## 运行 Vite
 
 ```bash
-# With npm
+# 使用 npm
 npx vite
 
-# With pnpm
+# 使用 pnpm
 pnpm vite
 
-# With yarn
+# 使用 yarn
 yarn vite
 
-# With bun
+# 使用 bun
 bunx vite
 ```
 
-## Scaffolding New Project
+## 脚手架新项目
 
 ```bash
-# Interactive prompts
+# 交互式提示
 npm create vite@latest
 
-# With project name and template
+# 带项目名称和模板
 npm create vite@latest my-app -- --template vue-ts
 
-# Available templates: vanilla, vanilla-ts, vue, vue-ts, react, react-ts,
+# 可用模板：vanilla, vanilla-ts, vue, vue-ts, react, react-ts,
 # react-swc, react-swc-ts, preact, preact-ts, lit, lit-ts, svelte, svelte-ts,
 # solid, solid-ts, qwik, qwik-ts
 ```
 
-## Debugging
+## 调试
 
 ```bash
-# Debug plugin transforms
+# 调试插件转换
 vite --debug plugin-transform
 
-# Debug with profiling
+# 带性能分析的调试
 vite --profile
-# Then press 'p + enter' to record .cpuprofile
+# 然后按 'p + enter' 记录 .cpuprofile
 
-# Filter debug logs
+# 过滤调试日志
 vite --debug -f plugin-transform
 ```
 

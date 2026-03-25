@@ -1,26 +1,26 @@
 ---
-title: Prefer Type-Based defineProps Declaration
-impact: MEDIUM
-impactDescription: Type-based declaration provides better TypeScript integration and cleaner syntax
+title: 优先使用基于类型的 defineProps 声明
+影响: 中
+影响描述: 基于类型的声明提供更好的 TypeScript 集成和更简洁的语法
 type: best-practice
 tags: [vue3, typescript, props, defineProps, composition-api]
 ---
 
-# Prefer Type-Based defineProps Declaration
+# 优先使用基于类型的 defineProps 声明
 
-**Impact: MEDIUM** - Vue 3 supports two ways to declare props with TypeScript: runtime declaration and type-based declaration. Type-based declaration is recommended as it provides more straightforward TypeScript integration and cleaner syntax.
+**影响：中** - Vue 3 支持两种用 TypeScript 声明 props 的方式：运行时声明和基于类型的声明。推荐使用基于类型的声明，因为它提供更直接的 TypeScript 集成和更简洁的语法。
 
-## Task Checklist
+## 任务清单
 
-- [ ] Use type-based declaration for new TypeScript components
-- [ ] Extract props interface for reusability and clarity
-- [ ] Use `withDefaults()` for default values (Vue 3.4 and below)
-- [ ] Use reactive props destructure for defaults (Vue 3.5+)
-- [ ] NEVER mix runtime and type-based declarations
+- [ ] 对新的 TypeScript 组件使用基于类型的声明
+- [ ] 为可复用性和清晰度提取 props 接口
+- [ ] 使用 `withDefaults()` 设置默认值（Vue 3.4 及以下）
+- [ ] 使用响应式 props 解构设置默认值（Vue 3.5+）
+- [ ] 永远不要混合运行时和基于类型的声明
 
-## The Two Declaration Styles
+## 两种声明风格
 
-**Runtime Declaration (traditional):**
+**运行时声明（传统）：**
 ```vue
 <script setup lang="ts">
 const props = defineProps({
@@ -31,7 +31,7 @@ const props = defineProps({
 </script>
 ```
 
-**Type-Based Declaration (recommended):**
+**基于类型的声明（推荐）：**
 ```vue
 <script setup lang="ts">
 interface Props {
@@ -44,25 +44,25 @@ const props = defineProps<Props>()
 </script>
 ```
 
-## Cannot Mix Both Styles
+## 不能混合两种风格
 
 ```typescript
-// WRONG: Cannot use both runtime and type-based declaration
+// 错误：不能同时使用运行时和基于类型的声明
 const props = defineProps<{ foo: string }>({
-  foo: { type: String, required: true }  // Error!
+  foo: { type: String, required: true }  // 错误！
 })
 
-// CORRECT: Choose one style
-const props = defineProps<{ foo: string }>()  // Type-based only
-// OR
-const props = defineProps({                    // Runtime only
+// 正确：选择一种风格
+const props = defineProps<{ foo: string }>()  // 仅基于类型
+// 或
+const props = defineProps({                    // 仅运行时
   foo: { type: String, required: true }
 })
 ```
 
-## Default Values with Type-Based Declaration
+## 基于类型声明的默认值
 
-Type-based declaration requires `withDefaults()` macro for default values (prior to Vue 3.5):
+基于类型的声明需要 `withDefaults()` 宏来设置默认值（Vue 3.5 之前）：
 
 ```vue
 <script setup lang="ts">
@@ -72,18 +72,18 @@ interface Props {
   config?: { theme: string }
 }
 
-// CRITICAL: Mutable types (arrays, objects) MUST use factory functions
+// 注意：可变类型（数组、对象）必须使用工厂函数
 const props = withDefaults(defineProps<Props>(), {
   msg: 'hello',
-  labels: () => ['one', 'two'],      // Factory function required!
-  config: () => ({ theme: 'light' }) // Factory function required!
+  labels: () => ['one', 'two'],      // 需要工厂函数！
+  config: () => ({ theme: 'light' }) // 需要工厂函数！
 })
 </script>
 ```
 
-## Vue 3.5+: Reactive Props Destructure
+## Vue 3.5+：响应式 Props 解构
 
-In Vue 3.5+, use destructuring with default values directly:
+在 Vue 3.5+ 中，直接在解构中使用默认值：
 
 ```vue
 <script setup lang="ts">
@@ -92,12 +92,12 @@ interface Props {
   labels?: string[]
 }
 
-// Vue 3.5+ - defaults in destructuring
+// Vue 3.5+ - 在解构中设置默认值
 const { msg = 'hello', labels = ['one', 'two'] } = defineProps<Props>()
 </script>
 ```
 
-## Import Types from External Files
+## 从外部文件导入类型
 
 ```typescript
 // types/user.ts
@@ -112,24 +112,24 @@ export interface UserProps {
 <script setup lang="ts">
 import type { UserProps } from '@/types/user'
 
-// Imported types work with defineProps (Vue 3.3+)
+// 导入的类型可以与 defineProps 一起使用（Vue 3.3+）
 const props = defineProps<UserProps>()
 </script>
 ```
 
-## When to Use Runtime Declaration
+## 何时使用运行时声明
 
-Runtime declaration is still useful when you need:
+当你需要以下功能时，运行时声明仍然有用：
 
-1. **Runtime type validation** with complex validator functions
-2. **Prop type coercion** (e.g., Boolean casting behavior)
-3. **Dynamic prop definitions** based on runtime conditions
+1. **运行时类型验证** 使用复杂的验证器函数
+2. **Prop 类型强制**（例如，布尔值强制行为）
+3. **基于运行时条件的动态 prop 定义**
 
 ```vue
 <script setup lang="ts">
 import type { PropType } from 'vue'
 
-// Runtime declaration for complex validation
+// 用于复杂验证的运行时声明
 const props = defineProps({
   status: {
     type: String as PropType<'active' | 'inactive'>,
@@ -140,32 +140,32 @@ const props = defineProps({
 </script>
 ```
 
-## TypeScript Limitations (Prior to Vue 3.3)
+## TypeScript 限制（Vue 3.3 之前）
 
-In Vue 3.2 and below, type-based declaration only supported:
-- Type literals defined inline
-- References to local interfaces
+在 Vue 3.2 及以下版本中，基于类型的声明仅支持：
+- 内联定义的类型字面量
+- 对本地接口的引用
 
-Vue 3.3+ supports:
-- Imported types
-- Limited complex types
-- BUT NOT conditional types for the entire props object
+Vue 3.3+ 支持：
+- 导入的类型
+- 有限的复杂类型
+- 但**不支持**整个 props 对象的条件类型
 
 ```typescript
-// Vue 3.3+ supports this
+// Vue 3.3+ 支持这个
 import type { UserProps } from './types'
 defineProps<UserProps>()
 
-// Still NOT supported: conditional types for entire props
+// 仍然不支持：整个 props 的条件类型
 type ConditionalProps<T> = T extends string ? { foo: string } : { bar: number }
-defineProps<ConditionalProps<SomeType>>()  // Error!
+defineProps<ConditionalProps<SomeType>>()  // 错误！
 
-// Conditional types ARE supported for individual props
+// 单个 props 的条件类型是支持的
 interface Props {
   value: SomeType extends string ? string : number  // OK
 }
 ```
 
-## Reference
+## 参考
 - [Vue.js TypeScript with Composition API - Props](https://vuejs.org/guide/typescript/composition-api.html#typing-component-props)
 - [Vue.js SFC Script Setup](https://vuejs.org/api/sfc-script-setup.html#defineprops-defineemits)

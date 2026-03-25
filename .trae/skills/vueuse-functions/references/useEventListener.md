@@ -1,12 +1,12 @@
 ---
-category: Browser
+category: 浏览器
 ---
 
 # useEventListener
 
-Use EventListener with ease. Register using [addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) on mounted, and [removeEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener) automatically on unmounted.
+轻松使用 EventListener。在挂载时使用 [addEventListener](https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener) 注册，在卸载时自动使用 [removeEventListener](https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/removeEventListener) 注销。
 
-## Usage
+## 用法
 
 ```ts
 import { useEventListener } from '@vueuse/core'
@@ -16,7 +16,7 @@ useEventListener(document, 'visibilitychange', (evt) => {
 })
 ```
 
-You can also pass a ref as the event target, `useEventListener` will unregister the previous event and register the new one when you change the target.
+您还可以将 ref 作为事件目标传递，当您更改目标时，`useEventListener` 将注销先前的事件并注册新的事件。
 
 ```vue
 <script setup lang="ts">
@@ -39,7 +39,7 @@ useEventListener(element, 'keydown', (e) => {
 </template>
 ```
 
-You can also call the returned to unregister the listener.
+您还可以调用返回的函数来注销监听器。
 
 ```ts
 import { useEventListener } from '@vueuse/core'
@@ -48,16 +48,16 @@ const cleanup = useEventListener(document, 'keydown', (e) => {
   console.log(e.key)
 })
 
-cleanup() // This will unregister the listener.
+cleanup() // 这将注销监听器。
 ```
 
-Note if your components also run in SSR (Server Side Rendering), you might get errors (like `document is not defined`) because DOM APIs like `document` and `window` are not available in Node.js. To avoid that you can put the logic inside `onMounted` hook.
+注意，如果您的组件也在 SSR（服务器端渲染）中运行，您可能会收到错误（如 `document is not defined`），因为 DOM API 如 `document` 和 `window` 在 Node.js 中不可用。为避免这种情况，您可以将逻辑放在 `onMounted` 钩子中。
 
 ```ts
 import { useEventListener } from '@vueuse/core'
 // ---cut---
-// onMounted will only be called in the client side
-// so it guarantees the DOM APIs are available.
+// onMounted 只会在客户端调用
+// 因此它保证 DOM API 可用。
 onMounted(() => {
   useEventListener(document, 'keydown', (e) => {
     console.log(e.key)
@@ -65,7 +65,7 @@ onMounted(() => {
 })
 ```
 
-## Type Declarations
+## 类型声明
 
 ```ts
 interface InferEventTarget<Events> {
@@ -79,9 +79,9 @@ export interface GeneralEventListener<E = Event> {
   (evt: E): void
 }
 /**
- * Register using addEventListener on mounted, and removeEventListener automatically on unmounted.
+ * 在挂载时使用 addEventListener 注册，在卸载时自动使用 removeEventListener 注销。
  *
- * Overload 1: Omitted Window target
+ * 重载 1：省略 Window 目标
  *
  * @see https://vueuse.org/useEventListener
  */
@@ -91,9 +91,9 @@ export declare function useEventListener<E extends keyof WindowEventMap>(
   options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn
 /**
- * Register using addEventListener on mounted, and removeEventListener automatically on unmounted.
+ * 在挂载时使用 addEventListener 注册，在卸载时自动使用 removeEventListener 注销。
  *
- * Overload 2: Explicitly Window target
+ * 重载 2：显式 Window 目标
  *
  * @see https://vueuse.org/useEventListener
  * @param target
@@ -108,9 +108,9 @@ export declare function useEventListener<E extends keyof WindowEventMap>(
   options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn
 /**
- * Register using addEventListener on mounted, and removeEventListener automatically on unmounted.
+ * 在挂载时使用 addEventListener 注册，在卸载时自动使用 removeEventListener 注销。
  *
- * Overload 3: Explicitly Document target
+ * 重载 3：显式 Document 目标
  *
  * @see https://vueuse.org/useEventListener
  */
@@ -123,9 +123,9 @@ export declare function useEventListener<E extends keyof DocumentEventMap>(
   options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn
 /**
- * Register using addEventListener on mounted, and removeEventListener automatically on unmounted.
+ * 在挂载时使用 addEventListener 注册，在卸载时自动使用 removeEventListener 注销。
  *
- * Overload 4: Explicitly ShadowRoot target
+ * 重载 4：显式 ShadowRoot 目标
  *
  * @see https://vueuse.org/useEventListener
  */
@@ -138,9 +138,9 @@ export declare function useEventListener<E extends keyof ShadowRootEventMap>(
   options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn
 /**
- * Register using addEventListener on mounted, and removeEventListener automatically on unmounted.
+ * 在挂载时使用 addEventListener 注册，在卸载时自动使用 removeEventListener 注销。
  *
- * Overload 5: Explicitly HTMLElement target
+ * 重载 5：显式 HTMLElement 目标
  *
  * @see https://vueuse.org/useEventListener
  */
@@ -151,9 +151,9 @@ export declare function useEventListener<E extends keyof HTMLElementEventMap>(
   options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn
 /**
- * Register using addEventListener on mounted, and removeEventListener automatically on unmounted.
+ * 在挂载时使用 addEventListener 注册，在卸载时自动使用 removeEventListener 注销。
  *
- * Overload 6: Custom event target with event type infer
+ * 重载 6：带有事件类型推断的自定义事件目标
  *
  * @see https://vueuse.org/useEventListener
  */
@@ -169,9 +169,9 @@ export declare function useEventListener<
   options?: MaybeRefOrGetter<boolean | AddEventListenerOptions>,
 ): Fn
 /**
- * Register using addEventListener on mounted, and removeEventListener automatically on unmounted.
+ * 在挂载时使用 addEventListener 注册，在卸载时自动使用 removeEventListener 注销。
  *
- * Overload 7: Custom event target fallback
+ * 重载 7：自定义事件目标回退
  *
  * @see https://vueuse.org/useEventListener
  */

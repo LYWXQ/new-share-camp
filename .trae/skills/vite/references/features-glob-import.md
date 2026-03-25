@@ -1,24 +1,24 @@
 ---
 name: features-glob-import
-description: Vite's import.meta.glob for batch importing modules and dynamic imports
+description: Vite 的 import.meta.glob 用于批量导入模块和动态导入
 ---
 
-# Glob Import
+# Glob 导入
 
-## Basic Usage
+## 基本用法
 
-Import multiple modules using glob patterns:
+使用 glob 模式导入多个模块：
 
 ```ts
 const modules = import.meta.glob('./dir/*.js')
-// Transformed to:
+// 转换为：
 // {
 //   './dir/foo.js': () => import('./dir/foo.js'),
 //   './dir/bar.js': () => import('./dir/bar.js'),
 // }
 ```
 
-Iterate and load:
+迭代并加载：
 
 ```ts
 for (const path in modules) {
@@ -28,13 +28,13 @@ for (const path in modules) {
 }
 ```
 
-## Eager Loading
+## 立即加载
 
-Load all modules immediately (no dynamic import):
+立即加载所有模块（无动态导入）：
 
 ```ts
 const modules = import.meta.glob('./dir/*.js', { eager: true })
-// Transformed to:
+// 转换为：
 // import * as __glob_0 from './dir/foo.js'
 // import * as __glob_1 from './dir/bar.js'
 // const modules = {
@@ -43,7 +43,7 @@ const modules = import.meta.glob('./dir/*.js', { eager: true })
 // }
 ```
 
-## Multiple Patterns
+## 多个模式
 
 ```ts
 const modules = import.meta.glob([
@@ -52,20 +52,20 @@ const modules = import.meta.glob([
 ])
 ```
 
-## Negative Patterns
+## 否定模式
 
-Exclude files with `!` prefix:
+使用 `!` 前缀排除文件：
 
 ```ts
 const modules = import.meta.glob([
   './dir/*.js',
-  '!**/bar.js'  // Exclude bar.js
+  '!**/bar.js'  // 排除 bar.js
 ])
 ```
 
-## Named Imports
+## 命名导入
 
-Import specific exports for tree-shaking:
+导入特定导出以进行 tree-shaking：
 
 ```ts
 const modules = import.meta.glob('./dir/*.js', {
@@ -74,7 +74,7 @@ const modules = import.meta.glob('./dir/*.js', {
 // './dir/foo.js': () => import('./dir/foo.js').then(m => m.setup)
 ```
 
-Import default export:
+导入默认导出：
 
 ```ts
 const modules = import.meta.glob('./dir/*.js', {
@@ -83,9 +83,9 @@ const modules = import.meta.glob('./dir/*.js', {
 })
 ```
 
-## Custom Queries
+## 自定义查询
 
-Import as raw strings or URLs:
+作为原始字符串或 URL 导入：
 
 ```ts
 const moduleStrings = import.meta.glob('./dir/*.svg', {
@@ -99,7 +99,7 @@ const moduleUrls = import.meta.glob('./dir/*.svg', {
 })
 ```
 
-Custom queries for plugins:
+插件的自定义查询：
 
 ```ts
 const modules = import.meta.glob('./dir/*.js', {
@@ -107,50 +107,50 @@ const modules = import.meta.glob('./dir/*.js', {
 })
 ```
 
-## Base Path
+## 基础路径
 
-Change the base path for imports:
+更改导入的基础路径：
 
 ```ts
 const modules = import.meta.glob('./**/*.js', {
   base: './base'
 })
-// Keys: './dir/foo.js'
-// Imports: './base/dir/foo.js'
+// 键: './dir/foo.js'
+// 导入: './base/dir/foo.js'
 ```
 
-## Important Caveats
+## 重要注意事项
 
-1. **Vite-only feature** - Not a web standard
-2. **Patterns must be literals** - Cannot use variables
-3. **Relative or absolute** - Must start with `./`, `/`, or use an alias
-4. **Glob matching** - Uses [tinyglobby](https://github.com/SuperchupuDev/tinyglobby)
+1. **Vite 专用功能** - 不是 Web 标准
+2. **模式必须是字面量** - 不能使用变量
+3. **相对或绝对** - 必须以 `./`、`/` 开头或使用别名
+4. **Glob 匹配** - 使用 [tinyglobby](https://github.com/SuperchupuDev/tinyglobby)
 
-## Dynamic Import with Variables
+## 带变量的动态导入
 
-Limited dynamic import support:
+有限的动态导入支持：
 
 ```ts
 const module = await import(`./dir/${file}.js`)
 ```
 
-**Rules:**
-- Must start with `./` or `../`
-- Must end with file extension
-- Variable represents only one level (no `foo/bar`)
-- Own directory needs filename pattern: `./prefix-${foo}.js` not `./${foo}.js`
+**规则：**
+- 必须以 `./` 或 `../` 开头
+- 必须以文件扩展名结尾
+- 变量仅代表一个级别（无 `foo/bar`）
+- 自己的目录需要文件名模式：`./prefix-${foo}.js` 而非 `./${foo}.js`
 
-## Practical Example: Loading Route Components
+## 实际示例：加载路由组件
 
 ```ts
-// Lazy load all page components
+// 懒加载所有页面组件
 const pages = import.meta.glob('./pages/*.vue')
 
 const routes = Object.keys(pages).map((path) => {
   const name = path.match(/\.\/pages\/(.*)\.vue$/)[1]
   return {
     path: `/${name.toLowerCase()}`,
-    component: pages[path]  // Lazy loaded
+    component: pages[path]  // 懒加载
   }
 })
 ```

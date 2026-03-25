@@ -1,20 +1,20 @@
 ---
-name: System Information
-description: Device info, system info, and environment detection APIs
+name: 系统信息
+description: 设备信息、系统信息和环境检测 API。在获取 uni-app 应用运行的设备信息、系统状态或进行平台检测时调用此技能。
 ---
 
-# System Information
+# 系统信息
 
 ## uni.getSystemInfo / getSystemInfoSync
 
-Get device and system information.
+获取设备和系统信息。
 
 ```javascript
-// Synchronous (faster, recommended)
+// 同步（更快，推荐）
 const info = uni.getSystemInfoSync()
 console.log(info)
 
-// Asynchronous
+// 异步
 uni.getSystemInfo({
   success: (res) => {
     console.log(res)
@@ -27,84 +27,84 @@ uni.getSystemInfo().then(res => {
 })
 ```
 
-### System Info Properties
+### 系统信息属性
 
-| Property | Type | Description |
-|----------|------|-------------|
-| brand | String | Device brand |
-| model | String | Device model |
-| pixelRatio | Number | Device pixel ratio |
-| screenWidth | Number | Screen width (px) |
-| screenHeight | Number | Screen height (px) |
-| windowWidth | Number | Window width (px) |
-| windowHeight | Number | Window height (px) |
-| statusBarHeight | Number | Status bar height (px) |
-| language | String | Language |
-| system | String | OS version |
-| version | String | WeChat/Runtime version |
-| platform | String | Platform: ios/android/windows/mac/devtools |
-| SDKVersion | String | Client base library version |
-| appId | String | App ID (DCloud) |
-| appName | String | App name |
-| appVersion | String | App version |
-| appCodeName | String | App code name |
-| uniPlatform | String | uni-app platform |
-| uniCompileVersion | String | Compilation version |
-| uniRuntimeVersion | String | Runtime version |
-| deviceId | String | Device ID |
-| deviceBrand | String | Device brand |
-| deviceModel | String | Device model |
-| deviceType | String | Device type: phone/pad |
-| osName | String | OS name |
-| osVersion | String | OS version |
-| osLanguage | String | OS language |
-| osTheme | String | OS theme: light/dark |
-| batteryLevel | Number | Battery level (0-100) |
+| 属性 | 类型 | 描述 |
+|------|------|------|
+| brand | String | 设备品牌 |
+| model | String | 设备型号 |
+| pixelRatio | Number | 设备像素比 |
+| screenWidth | Number | 屏幕宽度（px） |
+| screenHeight | Number | 屏幕高度（px） |
+| windowWidth | Number | 窗口宽度（px） |
+| windowHeight | Number | 窗口高度（px） |
+| statusBarHeight | Number | 状态栏高度（px） |
+| language | String | 语言 |
+| system | String | 操作系统版本 |
+| version | String | 微信/运行时版本 |
+| platform | String | 平台：ios/android/windows/mac/devtools |
+| SDKVersion | String | 客户端基础库版本 |
+| appId | String | 应用 ID（DCloud） |
+| appName | String | 应用名称 |
+| appVersion | String | 应用版本 |
+| appCodeName | String | 应用代码名 |
+| uniPlatform | String | uni-app 平台 |
+| uniCompileVersion | String | 编译版本 |
+| uniRuntimeVersion | String | 运行时版本 |
+| deviceId | String | 设备 ID |
+| deviceBrand | String | 设备品牌 |
+| deviceModel | String | 设备型号 |
+| deviceType | String | 设备类型：phone/pad |
+| osName | String | 操作系统名称 |
+| osVersion | String | 操作系统版本 |
+| osLanguage | String | 操作系统语言 |
+| osTheme | String | 操作系统主题：light/dark |
+| batteryLevel | Number | 电池电量（0-100） |
 
 ## uni.getAppBaseInfo
 
-Get app base information.
+获取应用基础信息。
 
 ```javascript
 const info = uni.getAppBaseInfo()
-// Returns: appId, appName, appVersion, appVersionCode, etc.
+// 返回：appId, appName, appVersion, appVersionCode 等
 ```
 
 ## uni.getDeviceInfo
 
-Get device hardware information.
+获取设备硬件信息。
 
 ```javascript
 const info = uni.getDeviceInfo()
-// Returns: brand, model, deviceId, deviceBrand, deviceModel, deviceType
+// 返回：brand, model, deviceId, deviceBrand, deviceModel, deviceType
 ```
 
 ## uni.getWindowInfo
 
-Get window information.
+获取窗口信息。
 
 ```javascript
 const info = uni.getWindowInfo()
-// Returns: pixelRatio, screenWidth, screenHeight, windowWidth, windowHeight,
-//          statusBarHeight, safeArea, screenTop
+// 返回：pixelRatio, screenWidth, screenHeight, windowWidth, windowHeight,
+//       statusBarHeight, safeArea, screenTop
 ```
 
-## Safe Area
+## 安全区域
 
-Handle notched devices and safe areas.
+处理刘海屏设备和安全区域。
 
 ```javascript
 const info = uni.getSystemInfoSync()
 
-// Safe area info
+// 安全区域信息
 const safeArea = info.safeArea
 console.log(safeArea) // { top, left, right, bottom, width, height }
 
-// Check if device has notch (unsafe area at top)
+// 检查设备是否有刘海（顶部不安全区域）
 const hasNotch = info.safeAreaInsets && info.safeAreaInsets.top > 0
 ```
 
-### Safe Area CSS Variables (App/H5)
+### 安全区域 CSS 变量（App/H5）
 
 ```css
 .safe-area-bottom {
@@ -113,7 +113,7 @@ const hasNotch = info.safeAreaInsets && info.safeAreaInsets.top > 0
 }
 ```
 
-## Network Status
+## 网络状态
 
 ### uni.getNetworkType
 
@@ -121,7 +121,7 @@ const hasNotch = info.safeAreaInsets && info.safeAreaInsets.top > 0
 uni.getNetworkType({
   success: (res) => {
     // res.networkType: wifi/2g/3g/4g/5g/unknown/none
-    console.log('Network:', res.networkType)
+    console.log('网络：', res.networkType)
   }
 })
 ```
@@ -129,30 +129,30 @@ uni.getNetworkType({
 ### uni.onNetworkStatusChange
 
 ```javascript
-// Listen for network changes
+// 监听网络变化
 uni.onNetworkStatusChange((res) => {
-  console.log('Network type:', res.networkType)
-  console.log('Is connected:', res.isConnected)
+  console.log('网络类型：', res.networkType)
+  console.log('是否连接：', res.isConnected)
 })
 
-// Remove listener
+// 移除监听
 uni.offNetworkStatusChange(callback)
 ```
 
-## Battery Info
+## 电池信息
 
 ### uni.getBatteryInfo
 
 ```javascript
 uni.getBatteryInfo({
   success: (res) => {
-    console.log('Level:', res.level) // 0-100
-    console.log('Is charging:', res.isCharging)
+    console.log('电量：', res.level) // 0-100
+    console.log('是否充电：', res.isCharging)
   }
 })
 ```
 
-## Device Orientation
+## 设备方向
 
 ### uni.onDeviceMotionChange
 
@@ -161,83 +161,83 @@ uni.startDeviceMotionListening({
   interval: 'normal', // game/ui/normal
   success: () => {
     uni.onDeviceMotionChange((res) => {
-      console.log('Alpha:', res.alpha) // 0-360
-      console.log('Beta:', res.beta)   // -180 to 180
-      console.log('Gamma:', res.gamma) // -90 to 90
+      console.log('Alpha：', res.alpha) // 0-360
+      console.log('Beta：', res.beta)   // -180 到 180
+      console.log('Gamma：', res.gamma) // -90 到 90
     })
   }
 })
 
-// Stop listening
+// 停止监听
 uni.stopDeviceMotionListening()
 ```
 
-### Screen Orientation
+### 屏幕方向
 
 ```javascript
-// Get current orientation
+// 获取当前方向
 const info = uni.getSystemInfoSync()
 const isLandscape = info.screenWidth > info.screenHeight
 
-// Lock orientation (App only)
+// 锁定方向（仅 App）
 plus.screen.lockOrientation('portrait-primary')
-// Options: portrait-primary/portrait-secondary/landscape-primary/landscape-secondary
+// 选项：portrait-primary/portrait-secondary/landscape-primary/landscape-secondary
 ```
 
-## Screen Brightness
+## 屏幕亮度
 
 ```javascript
-// Set brightness (0-1)
+// 设置亮度（0-1）
 uni.setScreenBrightness({
   value: 0.8
 })
 
-// Get brightness
+// 获取亮度
 uni.getScreenBrightness({
   success: (res) => {
-    console.log('Brightness:', res.value)
+    console.log('亮度：', res.value)
   }
 })
 
-// Keep screen on
+// 保持屏幕常亮
 uni.setKeepScreenOn({
   keepScreenOn: true
 })
 ```
 
-## Vibration
+## 振动
 
 ```javascript
-// Short vibration (15ms)
+// 短振动（15ms）
 uni.vibrateShort()
 
-// Long vibration (400ms)
+// 长振动（400ms）
 uni.vibrateLong()
 
-// Pattern vibration (App only)
-uni.vibrateLong() // or custom pattern
+// 模式振动（仅 App）
+uni.vibrateLong() // 或自定义模式
 ```
 
-## Clipboard
+## 剪贴板
 
 ```javascript
-// Set clipboard
+// 设置剪贴板
 uni.setClipboardData({
-  data: 'Text to copy',
+  data: '要复制的文本',
   success: () => {
-    uni.showToast({ title: 'Copied' })
+    uni.showToast({ title: '已复制' })
   }
 })
 
-// Get clipboard
+// 获取剪贴板
 uni.getClipboardData({
   success: (res) => {
-    console.log('Clipboard:', res.data)
+    console.log('剪贴板：', res.data)
   }
 })
 ```
 
-## Phone Call
+## 拨打电话
 
 ```javascript
 uni.makePhoneCall({
@@ -245,49 +245,49 @@ uni.makePhoneCall({
 })
 ```
 
-## Scan Code
+## 扫码
 
 ```javascript
 uni.scanCode({
-  onlyFromCamera: false, // Allow from album
-  scanType: ['qrCode', 'barCode'], // Types to scan
+  onlyFromCamera: false, // 允许从相册选择
+  scanType: ['qrCode', 'barCode'], // 扫码类型
   success: (res) => {
-    console.log('Result:', res.result)
-    console.log('Type:', res.scanType)
-    console.log('CharSet:', res.charSet)
+    console.log('结果：', res.result)
+    console.log('类型：', res.scanType)
+    console.log('字符集：', res.charSet)
   }
 })
 ```
 
-## Platform Detection
+## 平台检测
 
 ```javascript
 const info = uni.getSystemInfoSync()
 
-// Platform checks
+// 平台检查
 const isIOS = info.platform === 'ios'
 const isAndroid = info.platform === 'android'
 const isWindows = info.platform === 'windows'
 const isMac = info.platform === 'mac'
 const isDevtools = info.platform === 'devtools'
 
-// App platform checks
+// App 平台检查
 const isApp = info.uniPlatform === 'app'
 const isH5 = info.uniPlatform === 'web'
 const isWeixinMP = info.uniPlatform === 'mp-weixin'
 
-// Safe area calculation
-const safeAreaTop = info.statusBarHeight + (isApp ? 44 : 0) // 44px for nav bar
+// 安全区域计算
+const safeAreaTop = info.statusBarHeight + (isApp ? 44 : 0) // 导航栏 44px
 ```
 
-## Storage Info
+## 存储信息
 
 ```javascript
 uni.getStorageInfo({
   success: (res) => {
-    console.log('Keys:', res.keys)
-    console.log('Current size:', res.currentSize)
-    console.log('Limit size:', res.limitSize)
+    console.log('键：', res.keys)
+    console.log('当前大小：', res.currentSize)
+    console.log('限制大小：', res.limitSize)
   }
 })
 ```

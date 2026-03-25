@@ -1,19 +1,19 @@
 ---
 name: vite-plugin-uni-layouts
-description: Nuxt-like layouts system for Vite-powered uni-app projects
+description: 类似 Nuxt 的 uni-app 布局系统 - 使用可复用布局组件包裹页面，做什么：提供类似 Nuxt 的布局系统，支持通过 definePage 配置布局、动态布局切换和布局引用访问；何时调用：当用户需要创建布局、在页面中应用布局或实现动态布局切换时调用
 ---
 
 # vite-plugin-uni-layouts
 
-Provides a Nuxt-like layout system for uni-app. Wraps pages with reusable layout components.
+为 uni-app 提供类似 Nuxt 的布局系统。使用可复用的布局组件包裹页面。
 
-## Installation
+## 安装
 
 ```bash
 npm i -D @uni-helper/vite-plugin-uni-layouts
 ```
 
-## Setup
+## 设置
 
 ```ts
 // vite.config.ts
@@ -26,24 +26,24 @@ export default defineConfig({
 })
 ```
 
-## Creating Layouts
+## 创建布局
 
-Create layout files in `src/layouts/` directory:
+在 `src/layouts/` 目录中创建布局文件：
 
 ```vue
 <!-- src/layouts/default.vue -->
 <template>
   <view class="layout">
     <slot name="header" />
-    <slot>main content</slot>
+    <slot>主要内容</slot>
     <slot name="footer" />
   </view>
 </template>
 ```
 
-## Applying Layouts
+## 应用布局
 
-### Via pages.json (traditional)
+### 通过 pages.json（传统方式）
 
 ```json
 {
@@ -53,12 +53,12 @@ Create layout files in `src/layouts/` directory:
   },
   {
     "path": "pages/about/index",
-    "layout": false  // Disable layout
+    "layout": false  // 禁用布局
   }]
 }
 ```
 
-### Via definePage (recommended)
+### 通过 definePage（推荐）
 
 ```vue
 <script setup>
@@ -68,9 +68,9 @@ definePage({
 </script>
 ```
 
-## Dynamic Layouts
+## 动态布局
 
-Use the `<uni-layout>` component for dynamic layout switching:
+使用 `<uni-layout>` 组件进行动态布局切换：
 
 ```vue
 <script setup>
@@ -78,40 +78,40 @@ const layoutName = ref('default')
 </script>
 
 <template>
-  <!-- Disable page layout first -->
+  <!-- 先禁用页面布局 -->
   <uni-layout :name="layoutName">
     <template #header>
-      <text>Header content</text>
+      <text>头部内容</text>
     </template>
 
-    Main content here
+    主要内容在这里
 
     <template #footer>
-      <text>Footer content</text>
+      <text>底部内容</text>
     </template>
   </uni-layout>
 </template>
 ```
 
-### Accessing Layout Ref
+### 访问布局引用
 
 ```vue
 <script setup>
 const uniLayout = ref()
 
 onMounted(() => {
-  console.log(uniLayout.value)  // Access layout component
+  console.log(uniLayout.value)  // 访问布局组件
 })
 </script>
 
 <template>
   <uni-layout ref="uniLayout">
-    Content
+    内容
   </uni-layout>
 </template>
 ```
 
-Options API:
+Options API：
 
 ```vue
 <script>
@@ -123,18 +123,18 @@ export default {
 </script>
 ```
 
-## How It Works
+## 工作原理
 
-The plugin does two things:
+插件做两件事：
 
-1. Auto-scans and globally registers components from `layouts/` directory
-2. Wraps pages with the specified layout component
+1. 自动扫描并全局注册 `layouts/` 目录中的组件
+2. 使用指定的布局组件包裹页面
 
-> **Note:** WeChat Mini Program limitation - If using `web-view` component, layout wrapping may not work properly.
+> **注意：** 微信小程序限制 - 如果使用 `web-view` 组件，布局包裹可能无法正常工作。
 
-## Configuration
+## 配置
 
-See [type definitions](https://github.com/uni-helper/vite-plugin-uni-layouts/blob/main/src/types.ts) for all options.
+请参阅 [类型定义](https://github.com/uni-helper/vite-plugin-uni-layouts/blob/main/src/types.ts) 了解所有选项。
 
 <!--
 Source references:

@@ -1,54 +1,54 @@
 ---
 name: component-slots
-description: Pass template content to child components with default, named, and scoped slots
+description: 使用默认插槽、具名插槽和作用域插槽向子组件传递模板内容
 ---
 
-# Component Slots
+# 组件插槽
 
-Slots allow parent components to pass template content into child components.
+插槽允许父组件向子组件传递模板内容。
 
-## Basic Slot
+## 基本插槽
 
-Child component with slot outlet:
+带有插槽出口的子组件：
 
 ```vue
 <!-- FancyButton.vue -->
 <template>
   <button class="fancy-btn">
-    <slot></slot> <!-- slot outlet -->
+    <slot></slot> <!-- 插槽出口 -->
   </button>
 </template>
 ```
 
-Parent passes slot content:
+父组件传递插槽内容：
 
 ```vue-html
 <FancyButton>
-  Click me!
+  点击我！
 </FancyButton>
 ```
 
-Renders as:
+渲染为：
 
 ```html
-<button class="fancy-btn">Click me!</button>
+<button class="fancy-btn">点击我！</button>
 ```
 
-## Fallback Content
+## 后备内容
 
-Provide default content when no slot content is provided:
+当没有提供插槽内容时提供默认内容：
 
 ```vue
 <template>
   <button>
-    <slot>Submit</slot> <!-- "Submit" is fallback -->
+    <slot>提交</slot> <!-- "提交" 是后备内容 -->
   </button>
 </template>
 ```
 
-## Named Slots
+## 具名插槽
 
-Use multiple slots with names:
+使用多个带名称的插槽：
 
 ```vue
 <!-- BaseLayout.vue -->
@@ -58,7 +58,7 @@ Use multiple slots with names:
       <slot name="header"></slot>
     </header>
     <main>
-      <slot></slot> <!-- default slot -->
+      <slot></slot> <!-- 默认插槽 -->
     </main>
     <footer>
       <slot name="footer"></slot>
@@ -67,25 +67,25 @@ Use multiple slots with names:
 </template>
 ```
 
-Use `v-slot` or `#` shorthand to target named slots:
+使用 `v-slot` 或 `#` 简写来指定具名插槽：
 
 ```vue-html
 <BaseLayout>
   <template #header>
-    <h1>Page Title</h1>
+    <h1>页面标题</h1>
   </template>
 
-  <p>Main content goes here</p>
+  <p>主要内容放在这里</p>
 
   <template #footer>
-    <p>Contact info</p>
+    <p>联系信息</p>
   </template>
 </BaseLayout>
 ```
 
-## Scoped Slots
+## 作用域插槽
 
-Pass data from child to parent slot content:
+从子组件向父组件插槽内容传递数据：
 
 ```vue
 <!-- MyComponent.vue -->
@@ -100,20 +100,20 @@ const greetingMessage = 'hello'
 </script>
 ```
 
-Receive slot props in parent:
+在父组件中接收插槽 props：
 
 ```vue-html
 <MyComponent v-slot="slotProps">
   {{ slotProps.text }} {{ slotProps.count }}
 </MyComponent>
 
-<!-- Or with destructuring -->
+<!-- 或使用解构 -->
 <MyComponent v-slot="{ text, count }">
   {{ text }} {{ count }}
 </MyComponent>
 ```
 
-### Named Scoped Slots
+### 具名作用域插槽
 
 ```vue-html
 <MyComponent>
@@ -127,9 +127,9 @@ Receive slot props in parent:
 </MyComponent>
 ```
 
-## Conditional Slots
+## 条件插槽
 
-Check if a slot has content using `$slots`:
+使用 `$slots` 检查插槽是否有内容：
 
 ```vue
 <template>
@@ -145,7 +145,7 @@ Check if a slot has content using `$slots`:
 </template>
 ```
 
-## Dynamic Slot Names
+## 动态插槽名
 
 ```vue-html
 <template #[dynamicSlotName]>
@@ -153,9 +153,9 @@ Check if a slot has content using `$slots`:
 </template>
 ```
 
-## Renderless Components
+## 无渲染组件
 
-Components that only provide logic via scoped slots:
+仅通过作用域插槽提供逻辑的组件：
 
 ```vue
 <!-- MouseTracker.vue -->
@@ -179,21 +179,21 @@ onUnmounted(() => window.removeEventListener('mousemove', update))
 </template>
 ```
 
-Usage:
+使用：
 
 ```vue-html
 <MouseTracker v-slot="{ x, y }">
-  Mouse: {{ x }}, {{ y }}
+  鼠标：{{ x }}, {{ y }}
 </MouseTracker>
 ```
 
-> Note: Composables are often preferred over renderless components for pure logic reuse.
+> 注意：对于纯逻辑复用，通常更推荐使用 Composables 而非无渲染组件。
 
-## Render Scope
+## 渲染作用域
 
-- Slot content has access to parent scope
-- Slot content does NOT have access to child scope
-- Use scoped slots to expose child data
+- 插槽内容可以访问父组件作用域
+- 插槽内容**不能**访问子组件作用域
+- 使用作用域插槽来暴露子组件数据
 
 <!-- 
 Source references:

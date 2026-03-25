@@ -1,13 +1,13 @@
 ---
 name: advanced-backend
-description: Integrating Vite with traditional backend frameworks
+description: 将 Vite 与传统后端框架集成
 ---
 
-# Backend Integration
+# 后端集成
 
-Integrate Vite with traditional backends (Rails, Laravel, etc.) for asset serving.
+将 Vite 与传统后端（Rails、Laravel 等）集成以提供资源服务。
 
-## Configuration
+## 配置
 
 ```ts
 // vite.config.ts
@@ -18,34 +18,34 @@ export default defineConfig({
     }
   },
   build: {
-    manifest: true,  // Generate .vite/manifest.json
+    manifest: true,  // 生成 .vite/manifest.json
     rolldownOptions: {
-      input: '/path/to/main.js'  // Override HTML entry
+      input: '/path/to/main.js'  // 覆盖 HTML 入口
     }
   }
 })
 ```
 
-Import polyfill in entry:
+在入口中导入 polyfill：
 
 ```ts
 // main.js
 import 'vite/modulepreload-polyfill'
 ```
 
-## Development
+## 开发环境
 
-Inject Vite client and entry in your backend template:
+在后端模板中注入 Vite 客户端和入口：
 
 ```html
-<!-- Development only -->
+<!-- 仅开发环境 -->
 <script type="module" src="http://localhost:5173/@vite/client"></script>
 <script type="module" src="http://localhost:5173/main.js"></script>
 ```
 
-### React Setup
+### React 设置
 
-Add before other scripts:
+在其他脚本之前添加：
 
 ```html
 <script type="module">
@@ -57,11 +57,11 @@ Add before other scripts:
 </script>
 ```
 
-### Asset Proxying
+### 资源代理
 
-Either:
-1. Proxy static asset requests to Vite
-2. Set `server.origin`:
+选择以下方式之一：
+1. 将静态资源请求代理到 Vite
+2. 设置 `server.origin`：
 
 ```ts
 export default defineConfig({
@@ -71,9 +71,9 @@ export default defineConfig({
 })
 ```
 
-## Production
+## 生产环境
 
-Build generates `.vite/manifest.json`:
+构建生成 `.vite/manifest.json`：
 
 ```json
 {
@@ -91,42 +91,42 @@ Build generates `.vite/manifest.json`:
 }
 ```
 
-## Rendering Tags
+## 渲染标签
 
-For entry `views/foo.js`, render in this order:
+对于入口 `views/foo.js`，按以下顺序渲染：
 
 ```html
-<!-- 1. Entry CSS -->
+<!-- 1. 入口 CSS -->
 <link rel="stylesheet" href="/assets/foo-5UjPuW-k.css" />
 
-<!-- 2. Imported chunks' CSS (recursive) -->
+<!-- 2. 导入块的 CSS（递归） -->
 <link rel="stylesheet" href="/assets/shared-ChJ_j-JJ.css" />
 
-<!-- 3. Entry script -->
+<!-- 3. 入口脚本 -->
 <script type="module" src="/assets/foo-BRBmoGS9.js"></script>
 
-<!-- 4. Optional: preload imports -->
+<!-- 4. 可选：预加载导入 -->
 <link rel="modulepreload" href="/assets/shared-B7PI925R.js" />
 ```
 
-## Manifest Structure
+## Manifest 结构
 
 ```ts
 interface ManifestChunk {
-  src?: string           // Input file name
-  file: string          // Output file name
-  css?: string[]        // CSS files (JS chunks only)
-  assets?: string[]     // Non-CSS assets (JS chunks only)
-  isEntry?: boolean     // Is entry point
-  isDynamicEntry?: boolean  // Is dynamic import
-  imports?: string[]    // Static imports (manifest keys)
-  dynamicImports?: string[]  // Dynamic imports (manifest keys)
+  src?: string           // 输入文件名
+  file: string          // 输出文件名
+  css?: string[]        // CSS 文件（仅限 JS 块）
+  assets?: string[]     // 非 CSS 资源（仅限 JS 块）
+  isEntry?: boolean     // 是否为入口点
+  isDynamicEntry?: boolean  // 是否为动态导入
+  imports?: string[]    // 静态导入（manifest 键）
+  dynamicImports?: string[]  // 动态导入（manifest 键）
 }
 ```
 
-## Processing Imports
+## 处理导入
 
-Recursively collect all imported chunks:
+递归收集所有导入的块：
 
 ```ts
 function getImportedChunks(manifest, name) {
@@ -149,14 +149,14 @@ function getImportedChunks(manifest, name) {
 }
 ```
 
-## Existing Integrations
+## 现有集成
 
-Check [Awesome Vite](https://github.com/vitejs/awesome-vite#integrations-with-backends) for:
+查看 [Awesome Vite](https://github.com/vitejs/awesome-vite#integrations-with-backends) 了解：
 - Laravel (laravel-vite)
 - Rails
 - Django
 - Flask
-- And more
+- 等等
 
 <!-- 
 Source references:

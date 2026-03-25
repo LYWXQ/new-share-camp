@@ -1,51 +1,51 @@
 ---
 name: advanced-performance
-description: Performance optimization tips for Vite dev server and builds
+description: Vite 开发服务器和构建的性能优化技巧
 ---
 
-# Performance Optimization
+# 性能优化
 
-## Browser Setup
+## 浏览器设置
 
-- Use dev-only browser profile without extensions
-- Disable "Disable Cache" in DevTools when using Vite
-- Extensions can interfere with requests and slow startup
+- 使用仅用于开发的浏览器配置文件，不安装扩展
+- 使用 Vite 时在 DevTools 中禁用"禁用缓存"
+- 扩展可能会干扰请求并降低启动速度
 
-## Audit Plugin Performance
+## 审计插件性能
 
-1. **Lazy load large dependencies** in plugins
-2. **Avoid long operations** in `buildStart`, `config`, `configResolved`
-3. **Optimize transform hooks** - check `id` extension before processing
+1. **延迟加载大型依赖** 在插件中
+2. **避免长时间操作** 在 `buildStart`、`config`、`configResolved` 中
+3. **优化 transform 钩子** - 在处理前检查 `id` 扩展名
 
-Debug transform times:
+调试转换时间：
 
 ```bash
 vite --debug plugin-transform
 ```
 
-Use [vite-plugin-inspect](https://github.com/antfu/vite-plugin-inspect) to inspect transforms.
+使用 [vite-plugin-inspect](https://github.com/antfu/vite-plugin-inspect) 检查转换。
 
-## Profiling
+## 性能分析
 
 ```bash
 vite --profile
-# Visit site, press 'p + enter' to record .cpuprofile
-# Open in https://www.speedscope.app
+# 访问网站，按 'p + enter' 记录 .cpuprofile
+# 在 https://www.speedscope.app 中打开
 ```
 
-## Reduce Resolve Operations
+## 减少解析操作
 
-Be explicit with extensions to avoid filesystem checks:
+明确指定扩展名以避免文件系统检查：
 
 ```ts
-// Slow: checks .mjs, .js, .mts, .ts, .jsx, .tsx, .json
+// 慢：检查 .mjs, .js, .mts, .ts, .jsx, .tsx, .json
 import Component from './Component'
 
-// Fast: direct hit
+// 快：直接命中
 import Component from './Component.tsx'
 ```
 
-Enable TypeScript path resolution for explicit imports:
+为明确导入启用 TypeScript 路径解析：
 
 ```json
 {
@@ -56,21 +56,21 @@ Enable TypeScript path resolution for explicit imports:
 }
 ```
 
-## Avoid Barrel Files
+## 避免 Barrel 文件
 
-Barrel files (`index.js` re-exporting everything) cause all files to load:
+Barrel 文件（`index.js` 重新导出所有内容）会导致加载所有文件：
 
 ```ts
-// Slow: loads all utils
+// 慢：加载所有 utils
 import { slash } from './utils'
 
-// Fast: loads only slash.js
+// 快：仅加载 slash.js
 import { slash } from './utils/slash.js'
 ```
 
-## Warm Up Frequently Used Files
+## 预热常用文件
 
-Pre-transform files that are always loaded:
+预转换始终加载的文件：
 
 ```ts
 export default defineConfig({
@@ -86,21 +86,21 @@ export default defineConfig({
 })
 ```
 
-Find files to warm up:
+查找要预热的文件：
 
 ```bash
 vite --debug transform
 ```
 
-## Use Native/Less Tooling
+## 使用原生/更少工具
 
-**Do less work:**
-- CSS instead of Sass/Less (PostCSS has nesting)
-- Don't transform SVGs to components - import as strings/URLs
-- Skip Babel in `@vitejs/plugin-react` if not needed
+**减少工作量：**
+- 使用 CSS 而非 Sass/Less（PostCSS 有嵌套支持）
+- 不要将 SVG 转换为组件 - 作为字符串/URL 导入
+- 如果不需要，跳过 `@vitejs/plugin-react` 中的 Babel
 
-**Use native tools:**
-- Try Lightning CSS for faster CSS processing
+**使用原生工具：**
+- 尝试使用 Lightning CSS 进行更快的 CSS 处理
 
 ```ts
 export default defineConfig({
@@ -110,11 +110,11 @@ export default defineConfig({
 })
 ```
 
-## Server Options
+## 服务器选项
 
-### Open Browser Automatically
+### 自动打开浏览器
 
-Triggers warmup of entry point:
+触发入口点预热：
 
 ```ts
 export default defineConfig({
@@ -124,7 +124,7 @@ export default defineConfig({
 })
 ```
 
-### Limit File Watching
+### 限制文件监视
 
 ```ts
 export default defineConfig({
@@ -136,11 +136,11 @@ export default defineConfig({
 })
 ```
 
-## Build Performance
+## 构建性能
 
-### Disable Reporting
+### 禁用报告
 
-Skip gzip size calculation for large projects:
+对于大型项目跳过 gzip 大小计算：
 
 ```ts
 export default defineConfig({
@@ -152,7 +152,7 @@ export default defineConfig({
 
 ### Sourcemaps
 
-Disable if not needed:
+如果不需要则禁用：
 
 ```ts
 export default defineConfig({

@@ -1,15 +1,15 @@
 ---
 name: component-v-model
-description: Implement two-way data binding on custom components
+description: 在自定义组件上实现双向数据绑定
 ---
 
-# Component v-model
+# 组件 v-model
 
-Create two-way bindings between parent and child components.
+在父组件和子组件之间创建双向绑定。
 
-## defineModel() (3.4+, Recommended)
+## defineModel()（3.4+，推荐）
 
-The simplest way to implement v-model:
+实现 v-model 的最简单方式：
 
 ```vue
 <!-- Child.vue -->
@@ -27,23 +27,23 @@ const model = defineModel<string>()
 <Child v-model="searchText" />
 ```
 
-`defineModel()` returns a ref that:
-- Syncs with parent's bound value
-- Emits `update:modelValue` when mutated
+`defineModel()` 返回一个 ref，它：
+- 与父组件绑定的值同步
+- 变更时触发 `update:modelValue`
 
-### With Options
+### 带选项
 
 ```ts
-// Required model
+// 必需的 model
 const model = defineModel<string>({ required: true })
 
-// With default
+// 带默认值
 const model = defineModel<number>({ default: 0 })
 ```
 
-## Named v-model
+## 具名 v-model
 
-Use arguments for multiple v-models:
+使用参数实现多个 v-model：
 
 ```vue
 <!-- UserName.vue -->
@@ -65,9 +65,9 @@ const lastName = defineModel<string>('lastName')
 />
 ```
 
-## v-model Modifiers
+## v-model 修饰符
 
-Access and handle modifiers:
+访问和处理修饰符：
 
 ```vue-html
 <MyComponent v-model.capitalize="text" />
@@ -81,9 +81,9 @@ console.log(modifiers) // { capitalize: true }
 </script>
 ```
 
-### Transform with Modifiers
+### 使用修饰符进行转换
 
-Use `get` and `set` options:
+使用 `get` 和 `set` 选项：
 
 ```vue
 <script setup lang="ts">
@@ -102,7 +102,7 @@ const [model, modifiers] = defineModel<string>({
 </template>
 ```
 
-### Modifiers with Named v-model
+### 具名 v-model 的修饰符
 
 ```vue-html
 <MyComponent v-model:title.capitalize="title" />
@@ -113,9 +113,9 @@ const [title, titleModifiers] = defineModel<string>('title')
 console.log(titleModifiers) // { capitalize: true }
 ```
 
-## Manual Implementation (Pre-3.4)
+## 手动实现（3.4 之前）
 
-Understanding what `defineModel` does under the hood:
+了解 `defineModel` 的底层实现：
 
 ```vue
 <script setup lang="ts">
@@ -136,40 +136,40 @@ const emit = defineEmits<{
 </template>
 ```
 
-For named v-model `v-model:title`:
+对于具名 v-model `v-model:title`：
 
 ```ts
 defineProps<{ title: string }>()
 defineEmits<{ 'update:title': [value: string] }>()
 ```
 
-## Typing defineModel
+## 为 defineModel 添加类型
 
 ```ts
-// Basic
+// 基本
 const model = defineModel<string>()
 //    ^? Ref<string | undefined>
 
-// Required (removes undefined)
+// 必需（移除 undefined）
 const model = defineModel<string>({ required: true })
 //    ^? Ref<string>
 
-// With modifiers
+// 带修饰符
 const [model, modifiers] = defineModel<string, 'trim' | 'capitalize'>()
 //            ^? Record<'trim' | 'capitalize', true | undefined>
 ```
 
-## Warning: Default Values
+## 警告：默认值
 
-Having a default in `defineModel` without providing a value from parent causes desync:
+在 `defineModel` 中设置默认值而不从父组件提供值会导致不同步：
 
 ```vue
-<!-- Child: model is 1 -->
+<!-- 子组件：model 是 1 -->
 <script setup>
 const model = defineModel({ default: 1 })
 </script>
 
-<!-- Parent: myRef is undefined -->
+<!-- 父组件：myRef 是 undefined -->
 <script setup>
 const myRef = ref()
 </script>

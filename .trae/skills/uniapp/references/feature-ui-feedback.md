@@ -1,55 +1,55 @@
 ---
-name: UI Feedback
-description: Toast, modal, loading, and action sheet APIs
+name: UI 反馈
+description: Toast、模态框、加载和动作面板 API。在使用 uni-app 的提示、弹窗、加载等 UI 反馈相关 API 时调用此技能。
 ---
 
-# UI Feedback
+# UI 反馈
 
-## Toast Messages
+## Toast 消息
 
 ### uni.showToast
 
-Display success/error messages.
+显示成功/错误消息。
 
 ```javascript
-// Success toast
+// 成功 toast
 uni.showToast({
-  title: 'Success!',
+  title: '成功！',
   icon: 'success',
   duration: 2000,
   mask: false
 })
 
-// Loading toast
+// 加载 toast
 uni.showToast({
-  title: 'Loading...',
+  title: '加载中...',
   icon: 'loading',
   duration: 10000
 })
 
-// Text only (no icon)
+// 仅文字（无图标）
 uni.showToast({
-  title: 'Please wait',
+  title: '请稍候',
   icon: 'none',
   duration: 2000
 })
 
-// Error toast
+// 错误 toast
 uni.showToast({
-  title: 'Failed!',
+  title: '失败！',
   icon: 'error'
 })
 ```
 
-**Parameters:**
+**参数：**
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| title | String | Required | Message text |
+| 参数 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| title | String | 必填 | 消息文本 |
 | icon | String | success | success/loading/none/error |
-| duration | Number | 1500 | Duration in ms |
-| mask | Boolean | false | Prevent touch during display |
-| position | String | | top/center/bottom (App) |
+| duration | Number | 1500 | 显示时长（毫秒） |
+| mask | Boolean | false | 显示期间阻止触摸 |
+| position | String | | top/center/bottom（App） |
 
 ### uni.hideToast
 
@@ -57,17 +57,17 @@ uni.showToast({
 uni.hideToast()
 ```
 
-## Loading
+## 加载
 
 ### uni.showLoading
 
 ```javascript
 uni.showLoading({
-  title: 'Loading...',
-  mask: true // Prevent interaction
+  title: '加载中...',
+  mask: true // 阻止交互
 })
 
-// Hide after operation
+// 操作完成后隐藏
 setTimeout(() => {
   uni.hideLoading()
 }, 2000)
@@ -79,64 +79,64 @@ setTimeout(() => {
 uni.hideLoading()
 ```
 
-## Modal Dialogs
+## 模态框
 
 ### uni.showModal
 
-Alert and confirm dialogs.
+警告和确认对话框。
 
 ```javascript
-// Alert (single button)
+// 警告（单按钮）
 uni.showModal({
-  title: 'Notice',
-  content: 'Operation completed',
+  title: '提示',
+  content: '操作已完成',
   showCancel: false
 })
 
-// Confirm (two buttons)
+// 确认（双按钮）
 uni.showModal({
-  title: 'Confirm',
-  content: 'Are you sure?',
-  cancelText: 'Cancel',
+  title: '确认',
+  content: '确定吗？',
+  cancelText: '取消',
   cancelColor: '#999',
-  confirmText: 'Confirm',
+  confirmText: '确认',
   confirmColor: '#007AFF',
   success: (res) => {
     if (res.confirm) {
-      console.log('User confirmed')
+      console.log('用户确认')
     } else if (res.cancel) {
-      console.log('User cancelled')
+      console.log('用户取消')
     }
   }
 })
 
-// Editable modal
+// 可编辑模态框
 uni.showModal({
-  title: 'Input',
-  content: 'Enter your name',
+  title: '输入',
+  content: '请输入您的姓名',
   editable: true,
-  placeholderText: 'Name',
+  placeholderText: '姓名',
   success: (res) => {
     if (res.confirm) {
-      console.log('Input:', res.content)
+      console.log('输入：', res.content)
     }
   }
 })
 ```
 
-## Action Sheet
+## 动作面板
 
 ### uni.showActionSheet
 
-Bottom action menu.
+底部动作菜单。
 
 ```javascript
 uni.showActionSheet({
-  itemList: ['Take Photo', 'Choose from Album', 'Cancel'],
+  itemList: ['拍照', '从相册选择', '取消'],
   itemColor: '#000000',
   success: (res) => {
     // res.tapIndex: 0, 1, 2...
-    console.log('Selected:', res.tapIndex)
+    console.log('选择：', res.tapIndex)
     switch (res.tapIndex) {
       case 0:
         this.takePhoto()
@@ -147,14 +147,14 @@ uni.showActionSheet({
     }
   },
   fail: (err) => {
-    console.log('Cancelled')
+    console.log('取消')
   }
 })
 ```
 
-## Pull to Refresh
+## 下拉刷新
 
-### Enable in pages.json
+### 在 pages.json 中启用
 
 ```json
 {
@@ -168,12 +168,12 @@ uni.showActionSheet({
 }
 ```
 
-### Handle in Page
+### 在页面中处理
 
 ```javascript
 export default {
   onPullDownRefresh() {
-    console.log('Pull down triggered')
+    console.log('触发下拉刷新')
     this.refreshData().finally(() => {
       uni.stopPullDownRefresh()
     })
@@ -181,43 +181,43 @@ export default {
 }
 ```
 
-### Programmatic Control
+### 编程控制
 
 ```javascript
-// Start pull refresh
+// 开始下拉刷新
 uni.startPullDownRefresh()
 
-// Stop pull refresh
+// 停止下拉刷新
 uni.stopPullDownRefresh()
 ```
 
-## Navigation Bar Loading
+## 导航栏加载
 
 ```javascript
-// Show loading in nav bar
+// 在导航栏显示加载
 uni.showNavigationBarLoading()
 
-// Hide loading
+// 隐藏加载
 uni.hideNavigationBarLoading()
 ```
 
-## Tab Bar Operations
+## TabBar 操作
 
-### Show/Hide Tab Bar
+### 显示/隐藏 TabBar
 
 ```javascript
-// Hide tab bar
+// 隐藏 tabBar
 uni.hideTabBar({
   animation: true
 })
 
-// Show tab bar
+// 显示 tabBar
 uni.showTabBar({
   animation: true
 })
 ```
 
-### Set Tab Bar Style
+### 设置 TabBar 样式
 
 ```javascript
 uni.setTabBarStyle({
@@ -228,47 +228,47 @@ uni.setTabBarStyle({
 })
 ```
 
-### Set Tab Bar Item
+### 设置 TabBar 项
 
 ```javascript
 uni.setTabBarItem({
   index: 0,
-  text: 'Home',
+  text: '首页',
   iconPath: '/static/home.png',
   selectedIconPath: '/static/home-active.png'
 })
 ```
 
-### Add/Remove Tab Bar Badge
+### 添加/移除 TabBar 红点
 
 ```javascript
-// Show badge
+// 显示红点
 uni.showTabBarRedDot({
-  index: 2 // Tab index
+  index: 2 // Tab 索引
 })
 
-// Hide badge
+// 隐藏红点
 uni.hideTabBarRedDot({
   index: 2
 })
 
-// Set badge text
+// 设置红点文字
 uni.setTabBarBadge({
   index: 2,
   text: '5'
 })
 
-// Remove badge text
+// 移除红点文字
 uni.removeTabBarBadge({
   index: 2
 })
 ```
 
-## Preview Image
+## 预览图片
 
 ```javascript
 uni.previewImage({
-  current: 'https://example.com/1.jpg', // Current image
+  current: 'https://example.com/1.jpg', // 当前图片
   urls: [
     'https://example.com/1.jpg',
     'https://example.com/2.jpg',
@@ -277,28 +277,28 @@ uni.previewImage({
   indicator: 'default', // default/number/none
   loop: false,
   longPressActions: {
-    itemList: ['Save Image', 'Share'],
+    itemList: ['保存图片', '分享'],
     success: (data) => {
-      console.log('Long press:', data.tapIndex)
+      console.log('长按：', data.tapIndex)
     }
   }
 })
 ```
 
-## Save Image to Photos
+## 保存图片到相册
 
 ```javascript
 uni.saveImageToPhotosAlbum({
   filePath: 'temp://path/to/image.jpg',
   success: () => {
-    uni.showToast({ title: 'Saved' })
+    uni.showToast({ title: '已保存' })
   }
 })
 ```
 
-## Best Practices
+## 最佳实践
 
-### Toast Helper
+### Toast 助手
 
 ```javascript
 const toast = {
@@ -308,7 +308,7 @@ const toast = {
   error(message, duration = 2000) {
     uni.showToast({ title: message, icon: 'error', duration })
   },
-  loading(message = 'Loading...') {
+  loading(message = '加载中...') {
     uni.showLoading({ title: message, mask: true })
   },
   hide() {
@@ -320,15 +320,15 @@ const toast = {
   }
 }
 
-// Usage
+// 使用
 toast.loading()
 fetchData()
-  .then(() => toast.success('Loaded'))
-  .catch(() => toast.error('Failed'))
+  .then(() => toast.success('加载完成'))
+  .catch(() => toast.error('加载失败'))
   .finally(() => toast.hide())
 ```
 
-### Modal Helper
+### 模态框助手
 
 ```javascript
 const modal = {
@@ -364,12 +364,12 @@ const modal = {
   }
 }
 
-// Usage
+// 使用
 async function deleteItem(id) {
-  const confirmed = await modal.confirm('Delete', 'Are you sure?')
+  const confirmed = await modal.confirm('删除', '确定吗？')
   if (confirmed) {
     await api.delete(id)
-    toast.success('Deleted')
+    toast.success('已删除')
   }
 }
 ```

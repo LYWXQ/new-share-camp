@@ -1,16 +1,16 @@
 ---
-category: State
+category: 状态
 ---
 
 # useLocalStorage
 
-Reactive [LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage).
+响应式 [LocalStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/localStorage)。
 
-## Usage
+## 用法
 
-Please refer to `useStorage`.
+请参阅 `useStorage`。
 
-## Type Declarations
+## 类型声明
 
 ```ts
 export declare function useLocalStorage(

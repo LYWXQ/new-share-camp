@@ -1,19 +1,19 @@
 ---
-name: Manifest.json Configuration
-description: App configuration, permissions, and platform-specific settings
+name: Manifest.json 配置
+description: 应用配置、权限和平台特定设置。在配置 uni-app 应用的基本信息、权限声明、平台特定功能（如微信小程序、支付宝小程序、App 等）时调用此技能。
 ---
 
-# Manifest.json Configuration
+# Manifest.json 配置
 
-`manifest.json` is the application configuration file, defining app name, icon, permissions, and platform-specific settings.
+`manifest.json` 是应用配置文件，定义应用名称、图标、权限和平台特定设置。
 
-## Basic Configuration
+## 基础配置
 
 ```json
 {
-  "name": "My App",
+  "name": "我的应用",
   "appid": "__UNI__XXXXXXX",
-  "description": "App description",
+  "description": "应用描述",
   "versionName": "1.0.0",
   "versionCode": 100,
   "locale": "auto",
@@ -21,21 +21,21 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-### Basic Properties
+### 基础属性
 
-| Property | Type | Description |
-|----------|------|-------------|
-| name | String | App name |
-| appid | String | DCloud app ID |
-| description | String | App description |
-| versionName | String | Version name (1.0.0) |
-| versionCode | Number | Version code (integer) |
-| locale | String | Default language |
-| debug | Boolean | Debug mode |
-| networkTimeout | Object | Network timeout settings |
-| uniStatistics | Object | Statistics configuration |
+| 属性 | 类型 | 描述 |
+|------|------|------|
+| name | String | 应用名称 |
+| appid | String | DCloud 应用 ID |
+| description | String | 应用描述 |
+| versionName | String | 版本名称（1.0.0） |
+| versionCode | Number | 版本号（整数） |
+| locale | String | 默认语言 |
+| debug | Boolean | 调试模式 |
+| networkTimeout | Object | 网络超时设置 |
+| uniStatistics | Object | 统计配置 |
 
-## Network Timeout
+## 网络超时
 
 ```json
 {
@@ -48,7 +48,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-## App Configuration (app-plus)
+## App 配置（app-plus）
 
 ```json
 {
@@ -93,17 +93,17 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-### Splash Screen
+### 启动页
 
-| Property | Type | Description |
-|----------|------|-------------|
-| alwaysShowBeforeRender | Boolean | Show until first page renders |
-| autoclose | Boolean | Auto close splash screen |
-| waiting | Boolean | Show loading indicator |
+| 属性 | 类型 | 描述 |
+|------|------|------|
+| alwaysShowBeforeRender | Boolean | 直到首页渲染完成前显示 |
+| autoclose | Boolean | 自动关闭启动页 |
+| waiting | Boolean | 显示加载指示器 |
 
-## Mini-Program Configuration
+## 小程序配置
 
-### WeChat (mp-weixin)
+### 微信小程序（mp-weixin）
 
 ```json
 {
@@ -118,7 +118,7 @@ description: App configuration, permissions, and platform-specific settings
     "usingComponents": true,
     "permission": {
       "scope.userLocation": {
-        "desc": "Your location is needed"
+        "desc": "需要您的位置信息"
       }
     },
     "requiredPrivateInfos": [
@@ -128,7 +128,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-### Alipay (mp-alipay)
+### 支付宝小程序（mp-alipay）
 
 ```json
 {
@@ -140,7 +140,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-### Baidu (mp-baidu)
+### 百度小程序（mp-baidu）
 
 ```json
 {
@@ -151,7 +151,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-### Douyin (mp-toutiao)
+### 抖音小程序（mp-toutiao）
 
 ```json
 {
@@ -165,12 +165,12 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-## H5 Configuration
+## H5 配置
 
 ```json
 {
   "h5": {
-    "title": "My App",
+    "title": "我的应用",
     "template": "index.html",
     "router": {
       "mode": "hash",
@@ -197,7 +197,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-## Vue Configuration
+## Vue 配置
 
 ### Vue 2
 
@@ -216,9 +216,9 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-## Permission Configuration
+## 权限配置
 
-### Android Permissions
+### Android 权限
 
 ```json
 {
@@ -238,7 +238,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-### iOS Privacy Descriptions
+### iOS 隐私描述
 
 ```json
 {
@@ -246,9 +246,9 @@ description: App configuration, permissions, and platform-specific settings
     "distribute": {
       "ios": {
         "privacyDescription": {
-          "NSCameraUsageDescription": "Camera access is needed for scanning QR codes",
-          "NSPhotoLibraryUsageDescription": "Photo access is needed for uploading images",
-          "NSLocationWhenInUseUsageDescription": "Location is needed for finding nearby stores"
+          "NSCameraUsageDescription": "需要相机权限用于扫描二维码",
+          "NSPhotoLibraryUsageDescription": "需要相册权限用于上传图片",
+          "NSLocationWhenInUseUsageDescription": "需要位置权限用于查找附近门店"
         }
       }
     }
@@ -256,9 +256,9 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-## Common Module Configuration
+## 常用模块配置
 
-### OAuth (Login)
+### OAuth（登录）
 
 ```json
 {
@@ -281,7 +281,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-### Payment
+### 支付
 
 ```json
 {
@@ -303,7 +303,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-### Push Notifications
+### 推送通知
 
 ```json
 {
@@ -322,7 +322,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-### Share
+### 分享
 
 ```json
 {
@@ -343,7 +343,7 @@ description: App configuration, permissions, and platform-specific settings
 }
 ```
 
-## Statistics Configuration
+## 统计配置
 
 ```json
 {
