@@ -1,13 +1,13 @@
 ---
 name: testing
-description: 使用 @pinia/testing 对 store 和组件进行单元测试
+description: Unit testing stores and components with @pinia/testing
 ---
 
-# Store 测试
+# Testing Stores
 
-## Store 单元测试
+## Unit Testing Stores
 
-为每个测试创建一个新的 pinia 实例：
+Create a fresh pinia instance for each test:
 
 ```ts
 import { setActivePinia, createPinia } from 'pinia'
@@ -27,7 +27,7 @@ describe('Counter Store', () => {
 })
 ```
 
-### 使用插件
+### With Plugins
 
 ```ts
 import { setActivePinia, createPinia } from 'pinia'
@@ -43,15 +43,15 @@ beforeEach(() => {
 })
 ```
 
-## 组件测试
+## Testing Components
 
-安装 `@pinia/testing`：
+Install `@pinia/testing`:
 
 ```bash
 npm i -D @pinia/testing
 ```
 
-使用 `createTestingPinia()`：
+Use `createTestingPinia()`:
 
 ```ts
 import { mount } from '@vue/test-utils'
@@ -66,18 +66,18 @@ const wrapper = mount(Counter, {
 
 const store = useSomeStore()
 
-// 直接操作 state
+// Manipulate state directly
 store.name = 'new name'
 store.$patch({ name: 'new name' })
 
-// Actions 默认被存根
+// Actions are stubbed by default
 store.someAction()
 expect(store.someAction).toHaveBeenCalledTimes(1)
 ```
 
-## 初始状态
+## Initial State
 
-为测试设置初始状态：
+Set initial state for tests:
 
 ```ts
 const wrapper = mount(Counter, {
@@ -85,7 +85,7 @@ const wrapper = mount(Counter, {
     plugins: [
       createTestingPinia({
         initialState: {
-          counter: { n: 20 }, // Store 名称 → 初始状态
+          counter: { n: 20 }, // Store name → initial state
         },
       }),
     ],
@@ -93,23 +93,23 @@ const wrapper = mount(Counter, {
 })
 ```
 
-## Action 存根
+## Action Stubbing
 
-### 执行真实 Actions
+### Execute Real Actions
 
 ```ts
 createTestingPinia({ stubActions: false })
 ```
 
-### 选择性存根
+### Selective Stubbing
 
 ```ts
-// 仅存根特定 actions
+// Only stub specific actions
 createTestingPinia({
   stubActions: ['increment', 'reset'],
 })
 
-// 或使用函数
+// Or use a function
 createTestingPinia({
   stubActions: (actionName, store) => {
     if (actionName.startsWith('set')) return true
@@ -118,33 +118,33 @@ createTestingPinia({
 })
 ```
 
-### 模拟 Action 返回值
+### Mock Action Return Values
 
 ```ts
 import type { Mock } from 'vitest'
 
-// 获取 store 后
+// After getting store
 store.someAction.mockResolvedValue('mocked value')
 ```
 
-## 模拟 Getters
+## Mocking Getters
 
-Getters 在测试中是可写的：
+Getters are writable in tests:
 
 ```ts
 const pinia = createTestingPinia()
 const counter = useCounterStore(pinia)
 
-counter.double = 3 // 覆盖计算值
+counter.double = 3 // Override computed value
 
-// 重置为默认行为
+// Reset to default behavior
 counter.double = undefined
-counter.double // 现在正常计算
+counter.double // Now computed normally
 ```
 
-## 自定义 Spy 函数
+## Custom Spy Function
 
-如果不使用 Jest/Vitest 全局模式：
+If not using Jest/Vitest with globals:
 
 ```ts
 import { vi } from 'vitest'
@@ -154,7 +154,7 @@ createTestingPinia({
 })
 ```
 
-使用 Sinon：
+With Sinon:
 
 ```ts
 import sinon from 'sinon'
@@ -164,9 +164,9 @@ createTestingPinia({
 })
 ```
 
-## 测试中的 Pinia 插件
+## Pinia Plugins in Tests
 
-将插件传递给 `createTestingPinia()`：
+Pass plugins to `createTestingPinia()`:
 
 ```ts
 import { somePlugin } from '../src/stores/plugin'
@@ -177,9 +177,9 @@ createTestingPinia({
 })
 ```
 
-**不要使用** `testingPinia.use(MyPlugin)` - 在选项中传递插件。
+**Don't use** `testingPinia.use(MyPlugin)` - pass plugins in options.
 
-## 类型安全的模拟 Store
+## Type-Safe Mocked Store
 
 ```ts
 import type { Mock } from 'vitest'
@@ -197,14 +197,14 @@ function mockedStore<TStoreDef extends () => unknown>(
   return useStore() as any
 }
 
-// 使用
+// Usage
 const store = mockedStore(useSomeStore)
-store.someAction.mockResolvedValue('value') // 有类型！
+store.someAction.mockResolvedValue('value') // Typed!
 ```
 
-## E2E 测试
+## E2E Tests
 
-不需要特殊处理 - Pinia 正常工作。
+No special handling needed - Pinia works normally.
 
 <!--
 Source references:

@@ -1,20 +1,20 @@
 ---
-name: 媒体组件
-description: 图片、视频、音频和相机组件。在使用 uni-app 的 image、video、camera、live-player、map 等媒体相关组件时调用此技能。
+name: Media Components
+description: Image, video, audio, and camera components
 ---
 
-# 媒体组件
+# Media Components
 
 ## image
 
-显示图片，支持多种模式选项。
+Display images with various mode options.
 
 ```vue
 <template>
-  <!-- 基础用法 -->
+  <!-- Basic usage -->
   <image src="/static/logo.png" mode="aspectFit" />
 
-  <!-- 带事件处理 -->
+  <!-- With event handling -->
   <image
     :src="imageUrl"
     mode="aspectFill"
@@ -26,35 +26,35 @@ description: 图片、视频、音频和相机组件。在使用 uni-app 的 ima
 </template>
 ```
 
-**属性：**
+**Properties:**
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| src | String | | 图片源 URL |
-| mode | String | scaleToFill | 显示模式（见下方） |
-| lazy-load | Boolean | false | 懒加载图片 |
-| show-menu-by-longpress | Boolean | false | 长按显示菜单 |
-| webp | Boolean | false | 解析 WebP 格式（Android） |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| src | String | | Image source URL |
+| mode | String | scaleToFill | Display mode (see below) |
+| lazy-load | Boolean | false | Lazy load image |
+| show-menu-by-longpress | Boolean | false | Show menu on long press |
+| webp | Boolean | false | Parse WebP format (Android) |
 
-**模式值：**
+**Mode Values:**
 
-| 模式 | 描述 |
-|------|------|
-| scaleToFill | 填充容器，可能变形 |
-| aspectFit | 在容器内完整显示 |
-| aspectFill | 覆盖容器，可能裁剪 |
-| widthFix | 宽度固定，高度自适应 |
-| heightFix | 高度固定，宽度自适应 |
-| top / bottom / center / left / right | 对齐到位置 |
-| top left / top right / bottom left / bottom right | 角落对齐 |
+| Mode | Description |
+|------|-------------|
+| scaleToFill | Fill container, may distort |
+| aspectFit | Contain within container |
+| aspectFill | Cover container, may clip |
+| widthFix | Width fixed, height auto |
+| heightFix | Height fixed, width auto |
+| top / bottom / center / left / right | Align to position |
+| top left / top right / bottom left / bottom right | Corner alignment |
 
-**事件：**
-- `@load` - 图片加载成功
-- `@error` - 图片加载失败
+**Events:**
+- `@load` - Image loaded successfully
+- `@error` - Image failed to load
 
 ## video
 
-视频播放器组件。
+Video player component.
 
 ```vue
 <template>
@@ -102,38 +102,38 @@ export default {
       this.videoContext.playbackRate(rate)
     },
     onFullscreenChange(e) {
-      console.log('全屏：', e.detail.fullScreen)
+      console.log('Fullscreen:', e.detail.fullScreen)
     }
   }
 }
 </script>
 ```
 
-**属性：**
+**Properties:**
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| src | String | | 视频源 URL |
-| controls | Boolean | true | 显示控制条 |
-| autoplay | Boolean | false | 自动播放 |
-| loop | Boolean | false | 循环播放 |
-| muted | Boolean | false | 静音 |
-| initial-time | Number | 0 | 开始时间（秒） |
-| duration | Number | | 总时长（秒） |
-| poster | String | | 封面图 URL |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| src | String | | Video source URL |
+| controls | Boolean | true | Show controls |
+| autoplay | Boolean | false | Auto play |
+| loop | Boolean | false | Loop playback |
+| muted | Boolean | false | Muted |
+| initial-time | Number | 0 | Start time (s) |
+| duration | Number | | Total duration (s) |
+| poster | String | | Poster image URL |
 | object-fit | String | contain | contain/cover/fill |
-| danmu-list | Array | | 弹幕列表 |
-| danmu-btn | Boolean | false | 显示弹幕按钮 |
-| enable-danmu | Boolean | false | 启用弹幕 |
-| show-center-play-btn | Boolean | true | 显示中间播放按钮 |
-| show-play-btn | Boolean | true | 显示播放按钮 |
-| show-fullscreen-btn | Boolean | true | 显示全屏按钮 |
-| page-gesture | Boolean | false | 启用页面手势 |
-| enable-progress-gesture | Boolean | true | 启用进度手势 |
+| danmu-list | Array | | Danmu list |
+| danmu-btn | Boolean | false | Show danmu button |
+| enable-danmu | Boolean | false | Enable danmu |
+| show-center-play-btn | Boolean | true | Show center play button |
+| show-play-btn | Boolean | true | Show play button |
+| show-fullscreen-btn | Boolean | true | Show fullscreen button |
+| page-gesture | Boolean | false | Enable page gesture |
+| enable-progress-gesture | Boolean | true | Enable progress gesture |
 
 ## audio
 
-音频播放器（已弃用，请使用 `uni.getBackgroundAudioManager`）。
+Audio player (deprecated, use `uni.getBackgroundAudioManager` instead).
 
 ```vue
 <template>
@@ -154,7 +154,7 @@ export default {
 
 ## camera
 
-相机组件，用于拍摄照片/视频。
+Camera component for capturing photos/videos.
 
 ```vue
 <template>
@@ -167,9 +167,9 @@ export default {
     @error="onCameraError"
     @initdone="onCameraReady"
   />
-  <button @click="takePhoto">拍照</button>
-  <button @click="startRecord">开始录像</button>
-  <button @click="stopRecord">停止录像</button>
+  <button @click="takePhoto">Take Photo</button>
+  <button @click="startRecord">Start Record</button>
+  <button @click="stopRecord">Stop Record</button>
 </template>
 
 <script>
@@ -188,7 +188,7 @@ export default {
     },
     startRecord() {
       this.cameraContext.startRecord({
-        success: () => console.log('开始录像')
+        success: () => console.log('Recording started')
       })
     },
     stopRecord() {
@@ -203,10 +203,10 @@ export default {
 </script>
 ```
 
-**属性：**
+**Properties:**
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
 | mode | String | normal | normal/scanCode |
 | resolution | String | medium | low/medium/high |
 | device-position | String | back | front/back |
@@ -215,11 +215,11 @@ export default {
 
 ## live-player / live-pusher
 
-直播组件（仅小程序）。
+Live streaming components (mini-program only).
 
 ```vue
 <template>
-  <!-- 直播播放器 -->
+  <!-- Live player -->
   <live-player
     src="rtmp://example.com/live/stream"
     mode="live"
@@ -235,7 +235,7 @@ export default {
 
 ## map
 
-地图组件，用于显示地图和标记。
+Map component for displaying maps and markers.
 
 ```vue
 <template>
@@ -266,7 +266,7 @@ export default {
         id: 1,
         latitude: 39.909,
         longitude: 116.39742,
-        title: '标记 1',
+        title: 'Marker 1',
         iconPath: '/static/marker.png',
         width: 30,
         height: 30

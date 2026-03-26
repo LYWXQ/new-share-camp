@@ -1,21 +1,21 @@
 ---
 name: hot-module-replacement
-description: 启用 HMR 以在开发期间保留 store 状态
+description: Enable HMR to preserve store state during development
 ---
 
-# 热模块替换 (HMR)
+# Hot Module Replacement (HMR)
 
-Pinia 支持 HMR 以在不重新加载页面的情况下编辑 store，保留现有状态。
+Pinia supports HMR to edit stores without page reload, preserving existing state.
 
-## 设置
+## Setup
 
-在每个 store 定义后添加此代码片段：
+Add this snippet after each store definition:
 
 ```ts
 import { defineStore, acceptHMRUpdate } from 'pinia'
 
 export const useAuth = defineStore('auth', {
-  // store 选项...
+  // store options...
 })
 
 if (import.meta.hot) {
@@ -23,7 +23,7 @@ if (import.meta.hot) {
 }
 ```
 
-## Setup Store 示例
+## Setup Store Example
 
 ```ts
 import { defineStore, acceptHMRUpdate } from 'pinia'
@@ -39,21 +39,21 @@ if (import.meta.hot) {
 }
 ```
 
-## 构建工具支持
+## Bundler Support
 
-- **Vite：** 通过 `import.meta.hot` 官方支持
-- **Webpack：** 使用 `import.meta.webpackHot`
-- 任何实现 `import.meta.hot` 规范的构建工具都应该可以工作
+- **Vite:** Officially supported via `import.meta.hot`
+- **Webpack:** Uses `import.meta.webpackHot`
+- Any bundler implementing the `import.meta.hot` spec should work
 
 ## Nuxt
 
-使用 `@pinia/nuxt` 时，`acceptHMRUpdate` 自动导入，但仍需手动添加 HMR 代码片段。
+With `@pinia/nuxt`, `acceptHMRUpdate` is auto-imported but you still need to add the HMR snippet manually.
 
-## 好处
+## Benefits
 
-- 编辑 store 逻辑而不丢失状态
-- 动态添加/删除 state、actions 和 getters
-- 更快的开发迭代
+- Edit store logic without losing state
+- Add/remove state, actions, and getters on the fly
+- Faster development iteration
 
 <!--
 Source references:

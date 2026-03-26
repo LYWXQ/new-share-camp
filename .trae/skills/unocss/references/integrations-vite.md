@@ -1,13 +1,13 @@
 ---
 name: unocss-vite-integration
-description: 使用 Vite 设置 UnoCSS 和框架特定技巧
+description: Setting up UnoCSS with Vite and framework-specific tips
 ---
 
-# UnoCSS Vite 集成
+# UnoCSS Vite Integration
 
-Vite 插件是使用 UnoCSS 的最常见方式。
+The Vite plugin is the most common way to use UnoCSS.
 
-## 安装
+## Installation
 
 ```bash
 pnpm add -D unocss
@@ -25,7 +25,7 @@ export default defineConfig({
 })
 ```
 
-创建配置文件：
+Create config file:
 
 ```ts
 // uno.config.ts
@@ -38,18 +38,18 @@ export default defineConfig({
 })
 ```
 
-添加到入口：
+Add to entry:
 
 ```ts
 // main.ts
 import 'virtual:uno.css'
 ```
 
-## 模式
+## Modes
 
-### global（默认）
+### global (default)
 
-标准模式 - 通过 `uno.css` 导入生成全局 CSS。
+Standard mode - generates global CSS injected via `uno.css` import.
 
 ```ts
 import 'virtual:uno.css'
@@ -57,7 +57,7 @@ import 'virtual:uno.css'
 
 ### vue-scoped
 
-将生成的 CSS 注入 Vue SFC `<style scoped>`。
+Injects generated CSS into Vue SFC `<style scoped>`.
 
 ```ts
 UnoCSS({
@@ -67,7 +67,7 @@ UnoCSS({
 
 ### shadow-dom
 
-用于使用 Shadow DOM 的 Web 组件：
+For Web Components using Shadow DOM:
 
 ```ts
 UnoCSS({
@@ -75,7 +75,7 @@ UnoCSS({
 })
 ```
 
-在组件样式中添加占位符：
+Add placeholder in component styles:
 
 ```ts
 const template = document.createElement('template')
@@ -88,26 +88,26 @@ template.innerHTML = `
 `
 ```
 
-### per-module（实验性）
+### per-module (experimental)
 
-为每个模块生成 CSS，可选作用域。
+Generates CSS per module with optional scoping.
 
-### dist-chunk（实验性）
+### dist-chunk (experimental)
 
-为 MPA 在构建时为每个块生成 CSS。
+Generates CSS per chunk on build for MPA.
 
-## DevTools 支持
+## DevTools Support
 
-直接在浏览器 DevTools 中编辑类：
+Edit classes directly in browser DevTools:
 
 ```ts
 import 'virtual:uno.css'
 import 'virtual:unocss-devtools'
 ```
 
-**警告：** 使用 MutationObserver 检测更改。脚本中的动态类也会被包含。
+**Warning:** Uses MutationObserver to detect changes. Dynamic classes from scripts will also be included.
 
-## 框架特定设置
+## Framework-Specific Setup
 
 ### React
 
@@ -118,17 +118,17 @@ import UnoCSS from 'unocss/vite'
 
 export default {
   plugins: [
-    UnoCSS(), // 使用 attributify 时必须放在 React 之前
+    UnoCSS(), // Must be before React when using attributify
     React(),
   ],
 }
 ```
 
-**注意：** 使用 `@unocss/preset-attributify` 时从构建脚本中移除 `tsc`。
+**Note:** Remove `tsc` from build script if using `@unocss/preset-attributify`.
 
 ### Vue
 
-与 `@vitejs/plugin-vue` 开箱即用。
+Works out of the box with `@vitejs/plugin-vue`.
 
 ### Svelte
 
@@ -147,11 +147,11 @@ export default {
 }
 ```
 
-支持 `class:foo` 和 `class:foo={bar}` 语法。
+Supports `class:foo` and `class:foo={bar}` syntax.
 
 ### SvelteKit
 
-与 Svelte 相同，使用 `@sveltejs/kit/vite` 中的 `sveltekit()`。
+Same as Svelte, use `sveltekit()` from `@sveltejs/kit/vite`.
 
 ### Solid
 
@@ -195,7 +195,7 @@ export default {
 }
 ```
 
-### Web Components（Lit）
+### Web Components (Lit)
 
 ```ts
 UnoCSS({
@@ -217,19 +217,19 @@ export class MyElement extends LitElement {
 }
 ```
 
-支持 `part-[<part-name>]:<utility>` 用于 `::part` 样式。
+Supports `part-[<part-name>]:<utility>` for `::part` styling.
 
-## 检查器
+## Inspector
 
-在开发模式下访问 `http://localhost:5173/__unocss` 以：
+Visit `http://localhost:5173/__unocss` in dev mode to:
 
-- 检查生成的 CSS 规则
-- 查看每个文件应用的类
-- 在 REPL 中测试工具类
+- Inspect generated CSS rules
+- See applied classes per file
+- Test utilities in REPL
 
-## 旧版浏览器支持
+## Legacy Browser Support
 
-与 `@vitejs/plugin-legacy` 一起使用：
+With `@vitejs/plugin-legacy`:
 
 ```ts
 import legacy from '@vitejs/plugin-legacy'
@@ -252,7 +252,7 @@ export default {
 
 ## VanillaJS / TypeScript
 
-默认情况下，`.js` 和 `.ts` 文件不会被提取。配置以包含：
+By default, `.js` and `.ts` files are not extracted. Configure to include:
 
 ```ts
 // uno.config.ts
@@ -268,7 +268,7 @@ export default defineConfig({
 })
 ```
 
-或在文件中使用魔法注释：
+Or use magic comment in files:
 
 ```ts
 // @unocss-include

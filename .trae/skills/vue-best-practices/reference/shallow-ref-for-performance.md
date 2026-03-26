@@ -1,77 +1,77 @@
 ---
-title: 对大型对象和外部数据使用 shallowRef
+title: Use shallowRef for Large Objects and External Data
 impact: MEDIUM
-impactDescription: 大型对象的深度响应式会导致性能开销 - shallowRef 只追踪 .value 的变化
+impactDescription: Deep reactivity on large objects causes performance overhead - shallowRef only tracks .value changes
 type: efficiency
 tags: [vue3, reactivity, shallowRef, performance, optimization]
 ---
 
-# 对大型对象和外部数据使用 shallowRef
+# Use shallowRef for Large Objects and External Data
 
-**影响：中** - 默认情况下，`ref()` 使对象深度响应式，将所有嵌套属性包装在 Proxy 中。对于大型数据结构、外部库或不可变数据，这会造成不必要的开销。使用 `shallowRef()` 只追踪 `.value` 的变化。
+**Impact: MEDIUM** - By default, `ref()` makes objects deeply reactive, wrapping all nested properties in Proxies. For large data structures, external libraries, or immutable data, this causes unnecessary overhead. Use `shallowRef()` to only track `.value` changes.
 
-`shallowRef()` 非常适合来自 API 的大型数据集、外部库对象、DOM 节点或由外部库管理的对象。Vue 只追踪 `.value` 何时被替换，而不是内部变更，显著降低响应式开销。
+`shallowRef()` is ideal for large datasets from APIs, class instances, DOM nodes, or objects managed by external libraries. Vue only tracks when `.value` is replaced, not internal mutations, significantly reducing reactivity overhead.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 对不会被变更的大型 API 响应数据使用 `shallowRef()`
-- [ ] 对外部库对象（地图、图表等）使用 `shallowRef()`
-- [ ] 对具有自己状态管理的类实例使用 `shallowRef()`
-- [ ] 对永远不应该响应式的对象使用 `markRaw()`（例如，第三方实例）
-- [ ] 记住：使用 shallowRef，你必须完全替换 `.value` 才能触发更新
+- [ ] Use `shallowRef()` for large API response data that won't be mutated
+- [ ] Use `shallowRef()` for external library objects (maps, charts, etc.)
+- [ ] Use `shallowRef()` for class instances with their own state management
+- [ ] Use `markRaw()` for objects that should never be reactive (e.g., third-party instances)
+- [ ] Remember: with shallowRef, you must replace `.value` entirely to trigger updates
 
-**错误示例：**
+**Incorrect:**
 ```javascript
 import { ref } from 'vue'
 
-// 低效：大型数据集上的深度响应式
-const users = ref(await fetchUsers()) // 10,000 个用户，每个都是深度响应式的
+// INEFFICIENT: Deep reactivity on large dataset
+const users = ref(await fetchUsers()) // 10,000 users, each deeply reactive
 
-// 低效：外部库包装在 Proxy 中
+// INEFFICIENT: External library wrapped in Proxy
 const mapInstance = ref(new mapboxgl.Map({ /* ... */ }))
 
-// 低效：大型不可变 API 响应
+// INEFFICIENT: Large immutable API response
 const apiResponse = ref(await fetch('/api/big-data').then(r => r.json()))
 ```
 
-**正确示例：**
+**Correct:**
 ```javascript
 import { shallowRef, markRaw, triggerRef } from 'vue'
 
-// 高效：只追踪 .value 替换
+// EFFICIENT: Only .value replacement is tracked
 const users = shallowRef(await fetchUsers())
 
-// 通过替换整个数组来更新
+// Update by replacing the entire array
 users.value = await fetchUsers()
 
-// 如果你进行了变更并需要触发更新，使用 triggerRef
+// If you mutate and need to trigger update, use triggerRef
 users.value.push(newUser)
-triggerRef(users) // 手动触发监听器
+triggerRef(users) // Manually trigger watchers
 
-// 高效：外部库对象
+// EFFICIENT: External library object
 const mapInstance = shallowRef(null)
 onMounted(() => {
   mapInstance.value = new mapboxgl.Map({ /* ... */ })
 })
 
-// 对永远不应该响应式的对象使用最佳方案
+// BEST for objects that should NEVER be reactive
 const thirdPartyLib = markRaw(new SomeLibrary())
-// 这个对象即使在 reactive() 中使用也不会被包装在 Proxy 中
+// This object won't be wrapped in Proxy even if used in reactive()
 ```
 
 ```vue
 <script setup>
 import { shallowRef } from 'vue'
 
-// 大型分页数据 - 只关心页面变化时
+// Large paginated data - only care when page changes
 const pageData = shallowRef([])
 
 async function loadPage(page) {
-  // 完全替换以触发响应式
+  // Replace entirely to trigger reactivity
   pageData.value = await api.getPage(page)
 }
 
-// 模板仍然有效 - shallowRef 在模板中解包
+// Template still works - shallowRef unwraps in template
 </script>
 
 <template>
@@ -82,9 +82,9 @@ async function loadPage(page) {
 ```
 
 ```javascript
-// 比较：ref() vs shallowRef()
+// Comparison: ref() vs shallowRef()
 
-// 使用 ref()：Vue 包装每个嵌套属性
+// With ref(): Vue wraps EVERY nested property
 const deep = ref({
   level1: {
     level2: {
@@ -92,9 +92,9 @@ const deep = ref({
     }
   }
 })
-deep.value.level1.level2.level3.value++ // 被追踪！
+deep.value.level1.level2.level3.value++ // Tracked!
 
-// 使用 shallowRef()：只追踪 .value
+// With shallowRef(): Only .value is tracked
 const shallow = shallowRef({
   level1: {
     level2: {
@@ -102,11 +102,11 @@ const shallow = shallowRef({
     }
   }
 })
-shallow.value.level1.level2.level3.value++ // 不被追踪！
-shallow.value = { /* 新对象 */ } // 被追踪！
+shallow.value.level1.level2.level3.value++ // NOT tracked!
+shallow.value = { /* new object */ } // Tracked!
 ```
 
-## 参考
-- [Vue.js 响应式基础 - 减少大型不可变结构的响应式开销](https://vuejs.org/guide/best-practices/performance.html#reduce-reactivity-overhead-for-large-immutable-structures)
+## Reference
+- [Vue.js Reactivity Fundamentals - Reducing Reactivity Overhead](https://vuejs.org/guide/best-practices/performance.html#reduce-reactivity-overhead-for-large-immutable-structures)
 - [Vue.js shallowRef API](https://vuejs.org/api/reactivity-advanced.html#shallowref)
 - [Vue.js markRaw API](https://vuejs.org/api/reactivity-advanced.html#markraw)

@@ -1,51 +1,51 @@
 ---
 name: features-dep-bundling
-description: 依赖预打包配置和缓存
+description: Dependency pre-bundling configuration and caching
 ---
 
-# 依赖预打包
+# Dependency Pre-Bundling
 
-Vite 在首次运行时预打包依赖项以加快开发服务器启动速度。
+Vite pre-bundles dependencies on first run for faster dev server startup.
 
-## 为什么预打包
+## Why Pre-Bundling
 
-1. **CommonJS/UMD 转 ESM** - 转换非 ESM 依赖
-2. **性能** - 将许多内部模块打包为单个文件（例如，lodash-es 有 600+ 个模块）
+1. **CommonJS/UMD to ESM** - Convert non-ESM dependencies
+2. **Performance** - Bundle many internal modules into single file (e.g., lodash-es has 600+ modules)
 
 ```ts
-// 得益于智能导入分析而工作
+// Works thanks to smart import analysis
 import React, { useState } from 'react'
 ```
 
-## 自动发现
+## Automatic Discovery
 
-Vite 爬取源代码以查找裸导入并使用 Rolldown 预打包它们。
+Vite crawls source code to find bare imports and pre-bundles them with Rolldown.
 
-服务器启动后发现的新依赖项会触发重新打包。
+New dependencies discovered after server start trigger re-bundling.
 
-## 包含依赖项
+## Including Dependencies
 
-强制预打包未自动发现的依赖项：
+Force pre-bundling for dependencies not auto-discovered:
 
 ```ts
 export default defineConfig({
   optimizeDeps: {
     include: [
       'some-package',
-      'another-package/nested'  // 深层导入
+      'another-package/nested'  // Deep imports
     ]
   }
 })
 ```
 
-**何时包含：**
-- 动态导入（通过插件转换）
-- 具有许多内部模块的大型依赖项
-- CommonJS 依赖项
+**When to include:**
+- Dynamically imported (via plugin transform)
+- Large dependencies with many internal modules
+- CommonJS dependencies
 
-## 排除依赖项
+## Excluding Dependencies
 
-跳过小型纯 ESM 依赖项的预打包：
+Skip pre-bundling for small ESM-only dependencies:
 
 ```ts
 export default defineConfig({
@@ -55,9 +55,9 @@ export default defineConfig({
 })
 ```
 
-## Monorepo 链接依赖
+## Monorepo Linked Dependencies
 
-链接的包默认被视为源代码。如果不是 ESM：
+Linked packages are treated as source code by default. If not ESM:
 
 ```ts
 export default defineConfig({
@@ -67,52 +67,52 @@ export default defineConfig({
 })
 ```
 
-更改链接依赖后使用 `--force` 重新启动。
+Restart with `--force` after making changes to linked deps.
 
-## 自定义 Rolldown 选项
+## Custom Rolldown Options
 
 ```ts
 export default defineConfig({
   optimizeDeps: {
     rolldownOptions: {
-      plugins: [/* Rolldown 插件 */],
-      // 其他 Rolldown 选项
+      plugins: [/* Rolldown plugins */],
+      // Other Rolldown options
     }
   }
 })
 ```
 
-## 缓存
+## Caching
 
-### 文件系统缓存
+### File System Cache
 
-位于 `node_modules/.vite`。在以下情况下重新运行：
+Located in `node_modules/.vite`. Re-runs when:
 
-- 包锁定文件更改（`package-lock.json`、`pnpm-lock.yaml` 等）
-- Patches 文件夹修改
-- `vite.config.js` 更改
-- `NODE_ENV` 更改
+- Package lockfile changes (`package-lock.json`, `pnpm-lock.yaml`, etc.)
+- Patches folder modified
+- `vite.config.js` changes
+- `NODE_ENV` changes
 
-强制重新打包：
+Force re-bundle:
 
 ```bash
 vite --force
-# 或删除 node_modules/.vite
+# Or delete node_modules/.vite
 ```
 
-### 浏览器缓存
+### Browser Cache
 
-预打包的依赖项使用 `max-age=31536000,immutable` 缓存。
+Pre-bundled deps are cached with `max-age=31536000,immutable`.
 
-要使用本地编辑调试依赖项：
+To debug dependencies with local edits:
 
-1. 在浏览器 DevTools 网络选项卡中禁用缓存
-2. 使用 `--force` 重新启动 Vite
-3. 重新加载页面
+1. Disable cache in browser DevTools Network tab
+2. Restart Vite with `--force`
+3. Reload page
 
-## 入口
+## Entries
 
-指定自定义入口点进行发现：
+Specify custom entry points for discovery:
 
 ```ts
 export default defineConfig({
@@ -125,18 +125,18 @@ export default defineConfig({
 })
 ```
 
-默认情况下，所有 HTML 文件都用作入口。
+By default, all HTML files are used as entries.
 
-## esbuildOptions（已弃用）
+## esbuildOptions (Deprecated)
 
-改用 `rolldownOptions`：
+Use `rolldownOptions` instead:
 
 ```ts
 export default defineConfig({
   optimizeDeps: {
-    // 已弃用
+    // Deprecated
     esbuildOptions: {},
-    // 改用
+    // Use instead
     rolldownOptions: {}
   }
 })

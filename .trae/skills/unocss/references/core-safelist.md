@@ -1,27 +1,27 @@
 ---
 name: unocss-safelist-blocklist
-description: 强制包含或排除特定工具类
+description: Force include or exclude specific utilities
 ---
 
-# 安全列表和黑名单
+# Safelist and Blocklist
 
-控制哪些工具类始终包含或排除。
+Control which utilities are always included or excluded.
 
-## 安全列表
+## Safelist
 
-无论是否检测到都始终包含的工具类：
+Utilities always included, regardless of detection:
 
 ```ts
 export default defineConfig({
   safelist: [
     'p-1', 'p-2', 'p-3',
-    // 动态生成
+    // Dynamic generation
     ...Array.from({ length: 4 }, (_, i) => `p-${i + 1}`),
   ],
 })
 ```
 
-### 函数形式
+### Function Form
 
 ```ts
 safelist: [
@@ -34,16 +34,16 @@ safelist: [
 ]
 ```
 
-### 常见用例
+### Common Use Cases
 
 ```ts
 safelist: [
-  // 来自 CMS 的动态颜色
+  // Dynamic colors from CMS
   () => ['primary', 'secondary'].flatMap(c => [
     `bg-${c}`, `text-${c}`, `border-${c}`,
   ]),
   
-  // 组件变体
+  // Component variants
   () => {
     const variants = ['primary', 'danger']
     const sizes = ['sm', 'md', 'lg']
@@ -52,49 +52,49 @@ safelist: [
 ]
 ```
 
-## 黑名单
+## Blocklist
 
-永不生成的工具类：
-
-```ts
-blocklist: [
-  'p-1',           // 精确匹配
-  /^p-[2-4]$/,     // 正则表达式
-]
-```
-
-### 带消息
+Utilities never generated:
 
 ```ts
 blocklist: [
-  ['bg-red-500', { message: '请改用 bg-red-600' }],
-  [/^text-xs$/, { message: '为可访问性请使用 text-sm' }],
+  'p-1',           // Exact match
+  /^p-[2-4]$/,     // Regex
 ]
 ```
 
-## 安全列表与黑名单对比
+### With Messages
 
-| 特性 | 安全列表 | 黑名单 |
+```ts
+blocklist: [
+  ['bg-red-500', { message: 'Use bg-red-600 instead' }],
+  [/^text-xs$/, { message: 'Use text-sm for accessibility' }],
+]
+```
+
+## Safelist vs Blocklist
+
+| Feature | Safelist | Blocklist |
 |---------|----------|-----------|
-| 用途 | 始终包含 | 始终排除 |
-| 字符串 | ✅ | ✅ |
-| 正则表达式 | ❌ | ✅ |
-| 函数 | ✅ | ❌ |
+| Purpose | Always include | Always exclude |
+| Strings | ✅ | ✅ |
+| Regex | ❌ | ✅ |
+| Functions | ✅ | ❌ |
 
-**注意：** 如果工具类同时在两者中，黑名单优先。
+**Note:** Blocklist wins if utility is in both.
 
-## 最佳实践
+## Best Practice
 
-优先使用静态映射而非安全列表：
+Prefer static mappings over safelist:
 
 ```ts
-// 更好：UnoCSS 自动提取
+// Better: UnoCSS extracts automatically
 const sizes = {
   sm: 'text-sm p-2',
   md: 'text-base p-4',
 }
 
-// 避免：大型安全列表
+// Avoid: Large safelist
 safelist: ['text-sm', 'text-base', 'p-2', 'p-4']
 ```
 

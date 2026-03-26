@@ -1,25 +1,25 @@
 ---
-title: 对外部状态库使用 shallowRef 模式
+title: Use shallowRef Pattern for External State Libraries
 impact: MEDIUM
-impactDescription: 外部状态系统（Immer、XState、Redux）应该使用 shallowRef 以避免在代理中双重包装
+impactDescription: External state systems (Immer, XState, Redux) should use shallowRef to avoid double-wrapping in proxies
 type: efficiency
 tags: [vue3, reactivity, shallowRef, external-state, immer, xstate, integration]
 ---
 
-# 对外部状态库使用 shallowRef 模式
+# Use shallowRef Pattern for External State Libraries
 
-**影响：中** - 当将 Vue 与外部状态管理库（Immer、XState、Redux、MobX）集成时，使用 `shallowRef()` 来保存外部状态。这可以防止 Vue 将外部状态深度包装在代理中，这可能导致冲突和性能问题。
+**Impact: MEDIUM** - When integrating Vue with external state management libraries (Immer, XState, Redux, MobX), use `shallowRef()` to hold the external state. This prevents Vue from deep-wrapping the external state in proxies, which can cause conflicts and performance issues.
 
-模式：将外部状态保存在 `shallowRef` 中，当外部系统更新时完全替换 `.value`。这给了 Vue 响应式，同时让外部库管理状态内部。
+The pattern: hold external state in a `shallowRef`, and replace `.value` entirely when the external system updates. This gives Vue reactivity while letting the external library manage state internals.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 使用 `shallowRef()` 保存外部库状态
-- [ ] 当外部状态变化时完全替换 `.value`（不要变更）
-- [ ] 集成产生新状态对象的更新函数
-- [ ] 考虑将此模式用于不可变数据结构
+- [ ] Use `shallowRef()` to hold external library state
+- [ ] Replace `.value` entirely when external state changes (don't mutate)
+- [ ] Integrate update functions that produce new state objects
+- [ ] Consider this pattern for immutable data structures
 
-**与 Immer 集成：**
+**Integrating with Immer:**
 ```javascript
 import { produce } from 'immer'
 import { shallowRef } from 'vue'
@@ -28,27 +28,27 @@ export function useImmer(baseState) {
   const state = shallowRef(baseState)
 
   function update(updater) {
-    // Immer 产生一个新的不可变状态
-    // 完全替换 shallowRef 值以触发响应式
+    // Immer produces a new immutable state
+    // Replace shallowRef value entirely to trigger reactivity
     state.value = produce(state.value, updater)
   }
 
   return [state, update]
 }
 
-// 使用
+// Usage
 const [todos, updateTodos] = useImmer([
   { id: 1, text: 'Learn Vue', done: false }
 ])
 
-// 使用 Immer 的可变 API 更新（产生不可变结果）
+// Update with Immer's mutable API (produces immutable result)
 updateTodos(draft => {
   draft[0].done = true
   draft.push({ id: 2, text: 'Use Immer', done: false })
 })
 ```
 
-**与 XState 集成：**
+**Integrating with XState:**
 ```javascript
 import { createMachine, interpret } from 'xstate'
 import { shallowRef, onUnmounted } from 'vue'
@@ -59,7 +59,7 @@ export function useMachine(options) {
 
   const service = interpret(machine)
     .onTransition((newState) => {
-      // 每次转换时完全替换状态
+      // Replace state entirely on each transition
       state.value = newState
     })
     .start()
@@ -71,7 +71,7 @@ export function useMachine(options) {
   return { state, send }
 }
 
-// 使用
+// Usage
 const { state, send } = useMachine({
   id: 'toggle',
   initial: 'inactive',
@@ -81,11 +81,11 @@ const { state, send } = useMachine({
   }
 })
 
-// 在模板中：state.value.matches('active')
+// In template: state.value.matches('active')
 send('TOGGLE')
 ```
 
-**与 Redux 风格的存储集成：**
+**Integrating with Redux-style stores:**
 ```javascript
 import { shallowRef, readonly } from 'vue'
 
@@ -101,13 +101,13 @@ export function createStore(reducer, initialState) {
   }
 
   return {
-    state: readonly(state),  // 防止直接变更
+    state: readonly(state),  // Prevent direct mutations
     dispatch,
     getState
   }
 }
 
-// 使用
+// Usage
 const store = createStore(
   (state, action) => {
     switch (action.type) {
@@ -124,42 +124,42 @@ store.dispatch({ type: 'INCREMENT' })
 console.log(store.state.value.count) // 1
 ```
 
-**为什么对外部状态不使用 ref()：**
+**Why NOT use ref() for external state:**
 ```javascript
 import { ref } from 'vue'
 import { produce } from 'immer'
 
-// 错误：ref() 深度包装状态
+// WRONG: ref() deep-wraps the state
 const state = ref({ nested: { value: 1 } })
 
-// 这会产生双重代理：
-// 1. Vue 将 state 包装在 Proxy 中
-// 2. 外部库可能也包装/期望原始对象
-// 3. 导致身份问题和潜在冲突
+// This creates double-proxying:
+// 1. Vue wraps state in Proxy
+// 2. External library may also wrap/expect raw objects
+// 3. Causes identity issues and potential conflicts
 
-// 错误：用 Immer 变更 ref
+// WRONG: Mutating ref with Immer
 state.value = produce(state.value, draft => {
   draft.nested.value = 2
 })
-// Vue 对 state.value 的深度代理可能干扰 Immer 的代理
+// Vue's deep proxy on state.value may interfere with Immer's proxies
 ```
 
-**使用 shallowRef 的正确模式：**
+**Correct pattern with shallowRef:**
 ```javascript
 import { shallowRef } from 'vue'
 
-// 正确：shallowRef 只追踪 .value 替换
+// CORRECT: shallowRef only tracks .value replacement
 const state = shallowRef({ nested: { value: 1 } })
 
-// 外部库使用内部的原始对象工作
+// External library works with raw objects inside
 state.value = produce(state.value, draft => {
   draft.nested.value = 2
 })
-// 清晰的分离：Vue 追踪外部 ref，库管理内部状态
+// Clean separation: Vue tracks outer ref, library manages inner state
 ```
 
-## 参考
-- [Vue.js 深入响应式 - 与外部状态集成](https://vuejs.org/guide/extras/reactivity-in-depth.html#integration-with-external-state-systems)
+## Reference
+- [Vue.js Reactivity in Depth - Integration with External State](https://vuejs.org/guide/extras/reactivity-in-depth.html#integration-with-external-state-systems)
 - [Vue.js shallowRef API](https://vuejs.org/api/reactivity-advanced.html#shallowref)
-- [Immer 文档](https://immerjs.github.io/immer/)
-- [XState 文档](https://xstate.js.org/)
+- [Immer Documentation](https://immerjs.github.io/immer/)
+- [XState Documentation](https://xstate.js.org/)

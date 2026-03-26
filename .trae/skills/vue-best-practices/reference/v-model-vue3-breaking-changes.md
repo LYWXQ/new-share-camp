@@ -1,42 +1,42 @@
 ---
-title: Vue 2 到 Vue 3 的 v-model 破坏性变更
+title: v-model Breaking Changes from Vue 2 to Vue 3
 impact: HIGH
-impactDescription: Vue 3 更改了 v-model 的 prop/event 名称并移除了 .sync 修饰符 - 需要迁移
+impactDescription: Vue 3 changed v-model prop/event names and removed .sync modifier - migration required
 type: migration
 tags: [vue3, vue2, v-model, migration, breaking-changes, sync]
 ---
 
-# Vue 2 到 Vue 3 的 v-model 破坏性变更
+# v-model Breaking Changes from Vue 2 to Vue 3
 
-**影响：高** - Vue 3 从根本上改变了 v-model 在自定义组件上的工作方式。使用 Vue 2 模式的代码将静默失败 - 组件不会接收 prop 值，更改也不会传播到父级。
+**Impact: HIGH** - Vue 3 fundamentally changed how v-model works on custom components. Code using the Vue 2 pattern will silently fail - the component won't receive the prop value and changes won't propagate to the parent.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 将 prop 名称从 `value` 改为 `modelValue`
-- [ ] 将事件名称从 `input` 改为 `update:modelValue`
-- [ ] 用 `v-model:propName` 替换 `.sync` 修饰符
-- [ ] 移除 `model` 组件选项（使用 defineModel 或命名 v-model）
-- [ ] 将任何 v-bind.sync 更新为带命名参数的 v-model
+- [ ] Change prop name from `value` to `modelValue`
+- [ ] Change event name from `input` to `update:modelValue`
+- [ ] Replace `.sync` modifier with `v-model:propName`
+- [ ] Remove `model` component option (use defineModel or named v-model)
+- [ ] Update any v-bind.sync to v-model with named argument
 
-## 关键破坏性变更
+## Key Breaking Changes
 
-| 特性 | Vue 2 | Vue 3 |
-|------|-------|-------|
-| 默认 prop | `value` | `modelValue` |
-| 默认事件 | `input` | `update:modelValue` |
-| 自定义名称 | `model: { prop, event }` | `v-model:customName` |
-| Sync 修饰符 | `v-bind:prop.sync` | `v-model:prop` |
-| 多个模型 | 不支持 | 完全支持 |
+| Feature | Vue 2 | Vue 3 |
+|---------|-------|-------|
+| Default prop | `value` | `modelValue` |
+| Default event | `input` | `update:modelValue` |
+| Custom name | `model: { prop, event }` | `v-model:customName` |
+| Sync modifier | `v-bind:prop.sync` | `v-model:prop` |
+| Multiple models | Not supported | Fully supported |
 
-**Vue 2 模式（在 Vue 3 中不再有效）：**
+**Vue 2 Pattern (No longer works in Vue 3):**
 ```vue
-<!-- Vue 2 子组件 -->
+<!-- Vue 2 Child Component -->
 <script>
 export default {
-  props: ['value'],  // 在 Vue 3 中错误
+  props: ['value'],  // WRONG in Vue 3
   methods: {
     update(val) {
-      this.$emit('input', val)  // 在 Vue 3 中错误
+      this.$emit('input', val)  // WRONG in Vue 3
     }
   }
 }
@@ -47,16 +47,16 @@ export default {
 </template>
 ```
 
-**Vue 3 模式（Options API）：**
+**Vue 3 Pattern (Options API):**
 ```vue
-<!-- Vue 3 子组件 -->
+<!-- Vue 3 Child Component -->
 <script>
 export default {
-  props: ['modelValue'],  // 从 'value' 更改
-  emits: ['update:modelValue'],  // 声明 emits
+  props: ['modelValue'],  // Changed from 'value'
+  emits: ['update:modelValue'],  // Declare emits
   methods: {
     update(val) {
-      this.$emit('update:modelValue', val)  // 从 'input' 更改
+      this.$emit('update:modelValue', val)  // Changed from 'input'
     }
   }
 }
@@ -67,11 +67,11 @@ export default {
 </template>
 ```
 
-**Vue 3 模式（Composition API with defineModel）：**
+**Vue 3 Pattern (Composition API with defineModel):**
 ```vue
-<!-- Vue 3 子组件 - 推荐 -->
+<!-- Vue 3 Child Component - Recommended -->
 <script setup>
-const model = defineModel()  // 自动处理 prop 和 emit
+const model = defineModel()  // Handles prop and emit automatically
 </script>
 
 <template>
@@ -79,34 +79,34 @@ const model = defineModel()  // 自动处理 prop 和 emit
 </template>
 ```
 
-## 迁移 .sync 修饰符
+## Migrating the .sync Modifier
 
-Vue 2 的 `.sync` 修饰符已被移除。改用命名 v-model。
+Vue 2's `.sync` modifier is removed. Use named v-model instead.
 
-**Vue 2：**
+**Vue 2:**
 ```vue
-<!-- 父组件 -->
+<!-- Parent -->
 <MyComponent :title.sync="pageTitle" />
 
-<!-- 子组件 -->
+<!-- Child -->
 <script>
 export default {
   props: ['title'],
   methods: {
     updateTitle(val) {
-      this.$emit('update:title', val)  // .sync 模式
+      this.$emit('update:title', val)  // .sync pattern
     }
   }
 }
 </script>
 ```
 
-**Vue 3：**
+**Vue 3:**
 ```vue
-<!-- 父组件 -->
+<!-- Parent -->
 <MyComponent v-model:title="pageTitle" />
 
-<!-- 子组件 with defineModel -->
+<!-- Child with defineModel -->
 <script setup>
 const title = defineModel('title')
 </script>
@@ -115,7 +115,7 @@ const title = defineModel('title')
   <input v-model="title">
 </template>
 
-<!-- 子组件 with 手动 props/emits -->
+<!-- Child with manual props/emits -->
 <script setup>
 const props = defineProps(['title'])
 const emit = defineEmits(['update:title'])
@@ -129,11 +129,11 @@ const emit = defineEmits(['update:title'])
 </template>
 ```
 
-## 迁移自定义 model 选项
+## Migrating Custom model Option
 
-Vue 2 的 `model` 组件选项已被移除。
+Vue 2's `model` component option is removed.
 
-**Vue 2：**
+**Vue 2:**
 ```vue
 <script>
 export default {
@@ -146,31 +146,31 @@ export default {
 </script>
 ```
 
-**Vue 3：**
+**Vue 3:**
 ```vue
-<!-- 改用命名 v-model 参数 -->
-<!-- 父组件 -->
+<!-- Use named v-model argument instead -->
+<!-- Parent -->
 <MyCheckbox v-model:checked="isChecked" />
 
-<!-- 子组件 -->
+<!-- Child -->
 <script setup>
 const checked = defineModel('checked')
 </script>
 ```
 
-## 多个 v-model 绑定（Vue 3 新增）
+## Multiple v-model Bindings (New in Vue 3)
 
-Vue 3 允许在单个组件上使用多个 v-model 指令：
+Vue 3 allows multiple v-model directives on a single component:
 
 ```vue
-<!-- 父组件 -->
+<!-- Parent -->
 <UserForm
   v-model:firstName="first"
   v-model:lastName="last"
   v-model:email="email"
 />
 
-<!-- 子组件 -->
+<!-- Child -->
 <script setup>
 const firstName = defineModel('firstName')
 const lastName = defineModel('lastName')
@@ -178,12 +178,12 @@ const email = defineModel('email')
 </script>
 
 <template>
-  <input v-model="firstName" placeholder="名字">
-  <input v-model="lastName" placeholder="姓氏">
-  <input v-model="email" type="email" placeholder="邮箱">
+  <input v-model="firstName" placeholder="First Name">
+  <input v-model="lastName" placeholder="Last Name">
+  <input v-model="email" type="email" placeholder="Email">
 </template>
 ```
 
-## 参考
-- [Vue 3 迁移指南 - v-model](https://v3-migration.vuejs.org/breaking-changes/v-model)
-- [Vue.js 组件 v-model](https://vuejs.org/guide/components/v-model.html)
+## Reference
+- [Vue 3 Migration Guide - v-model](https://v3-migration.vuejs.org/breaking-changes/v-model)
+- [Vue.js Component v-model](https://vuejs.org/guide/components/v-model.html)

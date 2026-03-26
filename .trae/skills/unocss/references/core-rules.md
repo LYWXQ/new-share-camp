@@ -1,15 +1,15 @@
 ---
 name: unocss-rules
-description: 在 UnoCSS 中生成 CSS 工具类的静态和动态规则
+description: Static and dynamic rules for generating CSS utilities in UnoCSS
 ---
 
-# UnoCSS 规则
+# UnoCSS Rules
 
-规则定义了工具类及其生成的 CSS。UnoCSS 通过预设提供了许多内置规则，并允许自定义规则。
+Rules define utility classes and the CSS they generate. UnoCSS has many built-in rules via presets and allows custom rules.
 
-## 静态规则
+## Static Rules
 
-从类名到 CSS 属性的简单映射：
+Simple mapping from class name to CSS properties:
 
 ```ts
 rules: [
@@ -18,31 +18,31 @@ rules: [
 ]
 ```
 
-用法：`<div class="m-1">` 生成 `.m-1 { margin: 0.25rem; }`
+Usage: `<div class="m-1">` generates `.m-1 { margin: 0.25rem; }`
 
-**注意：** 使用带连字符的 CSS 属性语法（例如 `font-weight` 而不是 `fontWeight`）。带连字符的属性需要用引号包裹。
+**Note:** Use CSS property syntax with hyphens (e.g., `font-weight` not `fontWeight`). Quote properties with hyphens.
 
-## 动态规则
+## Dynamic Rules
 
-使用 RegExp 匹配器和函数体实现灵活的工具类：
+Use RegExp matcher with function body for flexible utilities:
 
 ```ts
 rules: [
-  // 匹配 m-1, m-2, m-100 等
+  // Match m-1, m-2, m-100, etc.
   [/^m-(\d+)$/, ([, d]) => ({ margin: `${d / 4}rem` })],
   
-  // 访问主题和上下文
+  // Access theme and context
   [/^p-(\d+)$/, (match, ctx) => ({ padding: `${match[1] / 4}rem` })],
 ]
 ```
 
-函数接收：
-1. RegExp 匹配结果（解构以获取捕获组）
-2. 包含 `theme`、`symbols` 等的上下文对象
+The function receives:
+1. RegExp match result (destructure to get captured groups)
+2. Context object with `theme`, `symbols`, etc.
 
-## CSS 回退值
+## CSS Fallback Values
 
-返回二维数组以实现 CSS 属性回退（浏览器兼容性）：
+Return 2D array for CSS property fallbacks (browser compatibility):
 
 ```ts
 rules: [
@@ -53,11 +53,11 @@ rules: [
 ]
 ```
 
-生成：`.h-100dvh { height: 100vh; height: 100dvh; }`
+Generates: `.h-100dvh { height: 100vh; height: 100dvh; }`
 
-## 特殊符号
+## Special Symbols
 
-使用 `@unocss/core` 中的符号控制 CSS 输出：
+Control CSS output with symbols from `@unocss/core`:
 
 ```ts
 import { symbols } from '@unocss/core'
@@ -70,22 +70,22 @@ rules: [
 ]
 ```
 
-### 可用符号
+### Available Symbols
 
-| 符号 | 描述 |
+| Symbol | Description |
 |--------|-------------|
-| `symbols.parent` | 父级包装器（例如 `@supports`、`@media`） |
-| `symbols.selector` | 修改选择器的函数 |
-| `symbols.layer` | 设置 UnoCSS 层 |
-| `symbols.variants` | 变体处理器数组 |
-| `symbols.shortcutsNoMerge` | 在快捷方式中禁用合并 |
-| `symbols.noMerge` | 禁用规则合并 |
-| `symbols.sort` | 覆盖排序顺序 |
-| `symbols.body` | 完全控制 CSS 主体 |
+| `symbols.parent` | Parent wrapper (e.g., `@supports`, `@media`) |
+| `symbols.selector` | Function to modify the selector |
+| `symbols.layer` | Set the UnoCSS layer |
+| `symbols.variants` | Array of variant handlers |
+| `symbols.shortcutsNoMerge` | Disable merging in shortcuts |
+| `symbols.noMerge` | Disable rule merging |
+| `symbols.sort` | Override sorting order |
+| `symbols.body` | Full control of CSS body |
 
-## 多选择器规则
+## Multi-Selector Rules
 
-使用生成器函数生成多个 CSS 规则：
+Use generator functions to yield multiple CSS rules:
 
 ```ts
 rules: [
@@ -99,11 +99,11 @@ rules: [
 ]
 ```
 
-同时生成 `.button-red { background: red; }` 和 `.button-red:hover { ... }`
+Generates both `.button-red { background: red; }` and `.button-red:hover { ... }`
 
-## 完全控制规则
+## Fully Controlled Rules
 
-返回字符串以实现完全控制 CSS（高级）：
+Return a string for complete CSS control (advanced):
 
 ```ts
 import { defineConfig, toEscapedSelector as e } from 'unocss'
@@ -122,11 +122,11 @@ ${selector}::after { content: 'after'; }
 ]
 ```
 
-**警告：** 完全控制规则不适用于 `hover:` 等变体。
+**Warning:** Fully controlled rules don't work with variants like `hover:`.
 
-## 使用 symbols.body 支持变体
+## Symbols.body for Variant Support
 
-使用 `symbols.body` 在保持变体支持的同时使用自定义 CSS：
+Use `symbols.body` to keep variant support with custom CSS:
 
 ```ts
 rules: [
@@ -141,24 +141,24 @@ rules: [
 ]
 ```
 
-## 规则排序
+## Rule Ordering
 
-后面的规则优先级更高。动态规则输出在组内按字母顺序排序。
+Later rules have higher priority. Dynamic rules output is sorted alphabetically within the group.
 
-## 规则合并
+## Rule Merging
 
-UnoCSS 合并具有相同 CSS 主体的规则：
+UnoCSS merges rules with identical CSS bodies:
 
 ```html
 <div class="m-2 hover:m2">
 ```
 
-生成：
+Generates:
 ```css
 .hover\:m2:hover, .m-2 { margin: 0.5rem; }
 ```
 
-使用 `symbols.noMerge` 禁用。
+Use `symbols.noMerge` to disable.
 
 <!-- 
 Source references:

@@ -25,6 +25,16 @@
         <text class="label">邮箱</text>
         <input class="input" v-model="form.email" placeholder="请输入邮箱" />
       </view>
+
+      <view class="form-item">
+        <text class="label">学校</text>
+        <input class="input" v-model="form.school" placeholder="请输入学校" />
+      </view>
+
+      <view class="form-item">
+        <text class="label">专业</text>
+        <input class="input" v-model="form.major" placeholder="请输入专业" />
+      </view>
     </view>
 
     <button class="save-btn" @click="handleSave" :disabled="loading">
@@ -46,7 +56,9 @@ const form = ref<Partial<UserInfo>>({
   studentId: '',
   phone: '',
   email: '',
-  avatar: ''
+  avatar: '',
+  school: '',
+  major: ''
 })
 
 onMounted(() => {

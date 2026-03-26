@@ -1,15 +1,15 @@
 ---
 name: template-refs
-description: 直接访问 DOM 元素和子组件实例
+description: Access DOM elements and child component instances directly
 ---
 
-# 模板引用
+# Template Refs
 
-模板引用提供对 DOM 元素和子组件实例的直接访问。
+Template refs provide direct access to DOM elements and child component instances.
 
-## 基本用法（3.5+）
+## Basic Usage (3.5+)
 
-使用 `useTemplateRef()` 实现类型安全的引用：
+Use `useTemplateRef()` for type-safe refs:
 
 ```vue
 <script setup lang="ts">
@@ -27,9 +27,9 @@ onMounted(() => {
 </template>
 ```
 
-## 传统方式（3.5 之前）
+## Legacy Approach (Pre-3.5)
 
-使用同名 ref：
+Use a ref with matching name:
 
 ```vue
 <script setup lang="ts">
@@ -47,9 +47,9 @@ onMounted(() => {
 </template>
 ```
 
-## v-for 中的引用
+## Refs in v-for
 
-将多个引用收集到数组中：
+Collect multiple refs into an array:
 
 ```vue
 <script setup lang="ts">
@@ -68,11 +68,11 @@ const itemRefs = ref<HTMLLIElement[]>([])
 </template>
 ```
 
-> 注意：ref 数组顺序不保证与源数组顺序一致。
+> Note: ref array order is not guaranteed to match source array order.
 
-## 函数式引用
+## Function Refs
 
-使用函数以获得完全控制：
+Use a function for full control:
 
 ```vue
 <script setup lang="ts">
@@ -94,9 +94,9 @@ function setItemRef(el: HTMLElement | null, id: number) {
 </template>
 ```
 
-## 组件引用
+## Component Refs
 
-访问子组件实例：
+Access child component instance:
 
 ```vue
 <script setup lang="ts">
@@ -107,7 +107,7 @@ type ChildInstance = InstanceType<typeof Child>
 const childRef = useTemplateRef<ChildInstance>('child')
 
 onMounted(() => {
-  // 访问暴露的属性/方法
+  // Access exposed properties/methods
   childRef.value?.someMethod()
 })
 </script>
@@ -117,9 +117,9 @@ onMounted(() => {
 </template>
 ```
 
-### 暴露组件属性
+### Exposing Component Properties
 
-默认情况下，`<script setup>` 组件是封闭的。使用 `defineExpose`：
+By default, `<script setup>` components are closed. Use `defineExpose`:
 
 ```vue
 <!-- Child.vue -->
@@ -129,7 +129,7 @@ import { ref } from 'vue'
 const count = ref(0)
 const increment = () => count.value++
 
-// 只有这些可以通过 ref 访问
+// Only these are accessible via ref
 defineExpose({
   count,
   increment
@@ -137,9 +137,9 @@ defineExpose({
 </script>
 ```
 
-## 常见用例
+## Common Use Cases
 
-### 焦点管理
+### Focus Management
 
 ```vue
 <script setup lang="ts">
@@ -153,7 +153,7 @@ function focusInput() {
 </script>
 ```
 
-### 滚动控制
+### Scroll Control
 
 ```vue
 <script setup lang="ts">
@@ -170,7 +170,7 @@ function scrollToBottom() {
 </script>
 ```
 
-### 第三方库集成
+### Third-Party Library Integration
 
 ```vue
 <script setup lang="ts">
@@ -183,7 +183,7 @@ let chart: Chart | null = null
 onMounted(() => {
   if (canvasRef.value) {
     chart = new Chart(canvasRef.value, {
-      // 选项
+      // options
     })
   }
 })
@@ -198,12 +198,12 @@ onUnmounted(() => {
 </template>
 ```
 
-## 重要说明
+## Important Notes
 
-1. **挂载前引用为 null** - 在 `onMounted` 或之后访问
-2. **条件引用可能为 null** - 带有 `v-if` 的元素可能不存在
-3. **使用可选链** - `ref.value?.method()` 以确保安全
-4. **避免过度使用** - 尽可能优先使用声明式方法
+1. **Refs are null before mount** - access in `onMounted` or later
+2. **Conditional refs can be null** - elements with `v-if` may not exist
+3. **Use optional chaining** - `ref.value?.method()` for safety
+4. **Avoid overusing** - prefer declarative approaches when possible
 
 <!-- 
 Source references:

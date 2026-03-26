@@ -29,8 +29,8 @@
       <view class="item-basic-info">
         <text class="item-title">{{ item.title }}</text>
         <view class="price-row">
-          <text class="item-price">¥{{ item.price.toFixed(2) }}/天</text>
-          <text class="item-deposit">押金 ¥{{ item.deposit.toFixed(2) }}</text>
+          <text class="item-price">¥{{ Number(item.price).toFixed(2) }}/天</text>
+          <text class="item-deposit">押金 ¥{{ Number(item.deposit).toFixed(2) }}</text>
         </view>
         <view class="item-meta">
           <text class="meta-item">{{ item.category }}</text>
@@ -43,7 +43,10 @@
       <view v-if="item.user" class="owner-section">
         <view class="owner-header">
           <text class="section-title">发布者</text>
-          <view v-if="item.user.isVerified" class="verified-badge">
+          <view v-if="isOwnItem" class="self-badge">
+            <text class="self-text">本人发布</text>
+          </view>
+          <view v-else-if="item.user.isVerified" class="verified-badge">
             <text class="verified-text">已认证</text>
           </view>
         </view>
@@ -138,16 +141,100 @@
       </view>
 
       <!-- 操作按钮 -->
-      <view class="action-buttons">
-        <button class="chat-button" @click="contactOwner">联系发布者</button>
+      <view class="action-buttons" v-if="!isOwnItem">
         <button 
-          class="borrow-button" 
-          :class="{ 'disabled': !canBorrow }"
-          :disabled="!canBorrow"
-          @click="borrowItem"
+          class="favorite-button" 
+          :class="{ 'is-favorite': isFavorite }"
+          @click="toggleFavorite"
         >
-          {{ borrowButtonText }}
+          {{ isFavorite ? '取消收藏' : '收藏' }}
         </button>
+        <button class="chat-button" @click="contactOwner">联系发布者</button>
+      </view>
+    </view>
+
+    <!-- 借用信息弹窗 -->
+    <view class="borrow-dialog-mask" v-if="showBorrowDialog" @click="closeBorrowDialog">
+      <view class="borrow-dialog" @click.stop>
+        <view class="dialog-header">
+          <text class="dialog-title">借用信息</text>
+          <text class="dialog-close" @click="closeBorrowDialog">×</text>
+        </view>
+        <view class="dialog-content">
+          <view class="form-item">
+            <text class="form-label">物品名称</text>
+            <text class="form-value">{{ item?.title }}</text>
+          </view>
+          <view class="form-item">
+            <text class="form-label">租金</text>
+            <text class="form-value price">¥{{ item?.price }}/天</text>
+          </view>
+          <view class="form-item">
+            <text class="form-label">开始时间</text>
+            <view class="datetime-picker" @click="openDateTimePicker('start')">
+              <text class="picker-value" :class="{ 'placeholder': !orderForm.startDate }">
+                {{ orderForm.startDate ? formatDateTime(orderForm.startDate) : '请选择开始时间' }}
+              </text>
+              <text class="picker-arrow">></text>
+            </view>
+          </view>
+          <view class="form-item">
+            <text class="form-label">结束时间</text>
+            <view class="datetime-picker" @click="openDateTimePicker('end')">
+              <text class="picker-value" :class="{ 'placeholder': !orderForm.endDate }">
+                {{ orderForm.endDate ? formatDateTime(orderForm.endDate) : '请选择结束时间' }}
+              </text>
+              <text class="picker-arrow">></text>
+            </view>
+          </view>
+          <view class="form-item" v-if="orderForm.startDate && orderForm.endDate">
+            <text class="form-label">借用时长</text>
+            <text class="form-value duration">{{ calculateDuration }}</text>
+          </view>
+          <view class="form-item">
+            <text class="form-label">备注信息</text>
+            <textarea 
+              class="form-textarea" 
+              v-model="orderForm.note" 
+              placeholder="请输入备注信息（可选）"
+              maxlength="200"
+            />
+          </view>
+        </view>
+        <view class="dialog-footer">
+          <button class="btn-cancel" @click="closeBorrowDialog">取消</button>
+          <button class="btn-confirm" @click="submitOrder" :disabled="!canSubmit">确认借用</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 日期时间选择器 -->
+    <view class="datetime-picker-mask" v-if="showDateTimePicker" @click="closeDateTimePicker">
+      <view class="datetime-picker-container" @click.stop>
+        <view class="picker-header">
+          <text class="picker-cancel" @click="closeDateTimePicker">取消</text>
+          <text class="picker-title">选择{{ pickerType === 'start' ? '开始' : '结束' }}时间</text>
+          <text class="picker-confirm" @click="confirmDateTime">确定</text>
+        </view>
+        <view class="picker-view-container">
+          <picker-view class="picker-view" :value="pickerValue" @change="onPickerChange">
+            <picker-view-column>
+              <view class="picker-item" v-for="year in years" :key="year">{{ year }}年</view>
+            </picker-view-column>
+            <picker-view-column>
+              <view class="picker-item" v-for="month in months" :key="month">{{ month }}月</view>
+            </picker-view-column>
+            <picker-view-column>
+              <view class="picker-item" v-for="day in days" :key="day">{{ day }}日</view>
+            </picker-view-column>
+            <picker-view-column>
+              <view class="picker-item" v-for="hour in hours" :key="hour">{{ hour }}时</view>
+            </picker-view-column>
+            <picker-view-column>
+              <view class="picker-item" v-for="minute in minutes" :key="minute">{{ minute }}分</view>
+            </picker-view-column>
+          </picker-view>
+        </view>
       </view>
     </view>
   </view>
@@ -159,17 +246,36 @@ import { onLoad } from '@dcloudio/uni-app'
 import { getItemDetail, type Item } from '@/api/items'
 import { createOrder, type CreateOrderParams } from '@/api/orders'
 import { getItemReviews, type Review } from '@/api/reviews'
+import { addFavorite, removeFavorite, checkFavoriteStatus } from '@/api/favorites'
 import { useAuthStore } from '@/stores/auth'
 import { formatItemStatus, getBorrowButtonText, canBorrow as canBorrowItem } from '@/utils/constants'
 
 const authStore = useAuthStore()
 
-const showDatePicker = ref(false)
+// 收藏状态
+const isFavorite = ref(false)
+const favoriteLoading = ref(false)
+
+// 弹窗显示状态
+const showBorrowDialog = ref(false)
+const showDateTimePicker = ref(false)
+const pickerType = ref<'start' | 'end'>('start')
+
+// 订单表单
 const orderForm = ref({
   startDate: '',
   endDate: '',
   note: ''
 })
+
+// 日期时间选择器数据
+const years = ref<string[]>([])
+const months = ref<string[]>([])
+const days = ref<string[]>([])
+const hours = ref<string[]>([])
+const minutes = ref<string[]>([])
+const pickerValue = ref<number[]>([0, 0, 0, 0, 0])
+const tempPickerValue = ref<number[]>([0, 0, 0, 0, 0])
 
 // 物品 ID
 const itemId = ref<number>(0)
@@ -189,10 +295,59 @@ const canBorrow = computed(() => {
   return item.value ? canBorrowItem(item.value.status) : false
 })
 
+// 计算属性：是否可以提交订单
+const canSubmit = computed(() => {
+  return orderForm.value.startDate && orderForm.value.endDate
+})
+
+// 计算属性：是否是本人发布的物品
+const isOwnItem = computed(() => {
+  if (!item.value || !item.value.user || !authStore.userInfo) {
+    return false
+  }
+  const itemUserId = String(item.value.user.id)
+  const currentUserId = String(authStore.userInfo.id)
+  return itemUserId === currentUserId
+})
+
 // 计算属性：借用按钮文字
 const borrowButtonText = computed(() => {
   return item.value ? getBorrowButtonText(item.value.status) : '立即借用'
 })
+
+// 计算属性：计算借用时长
+const calculateDuration = computed(() => {
+  if (!orderForm.value.startDate || !orderForm.value.endDate) return ''
+  const start = new Date(orderForm.value.startDate)
+  const end = new Date(orderForm.value.endDate)
+  const diffMs = end.getTime() - start.getTime()
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+  if (diffDays < 1) return '不足1天'
+  return `${diffDays}天`
+})
+
+// 初始化日期时间选择器数据
+const initPickerData = () => {
+  const currentYear = new Date().getFullYear()
+  // 生成年份（当前年到后2年）
+  years.value = Array.from({ length: 3 }, (_, i) => String(currentYear + i))
+  // 生成月份
+  months.value = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'))
+  // 生成日期（根据年月动态生成）
+  updateDays()
+  // 生成小时
+  hours.value = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))
+  // 生成分钟
+  minutes.value = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
+}
+
+// 更新日期列表
+const updateDays = () => {
+  const year = parseInt(years.value[pickerValue.value[0]] || new Date().getFullYear())
+  const month = parseInt(months.value[pickerValue.value[1]] || 1)
+  const daysInMonth = new Date(year, month, 0).getDate()
+  days.value = Array.from({ length: daysInMonth }, (_, i) => String(i + 1).padStart(2, '0'))
+}
 
 // 获取图片 URL
 const getImageUrl = (url: string): string => {
@@ -228,6 +383,18 @@ const formatDate = (dateStr: string): string => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
   return date.toLocaleDateString('zh-CN')
+}
+
+// 格式化日期时间
+const formatDateTime = (dateStr: string): string => {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hour = String(date.getHours()).padStart(2, '0')
+  const minute = String(date.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hour}:${minute}`
 }
 
 // 格式化评价时间
@@ -301,6 +468,47 @@ const loadItemDetail = async () => {
   }
 }
 
+// 检查收藏状态
+const checkFavorite = async () => {
+  if (!authStore.isLoggedIn || !itemId.value) return
+  
+  try {
+    const res = await checkFavoriteStatus(itemId.value)
+    isFavorite.value = res.isFavorite
+  } catch (error) {
+    console.error('检查收藏状态失败:', error)
+  }
+}
+
+// 切换收藏状态
+const toggleFavorite = async () => {
+  if (!authStore.isLoggedIn) {
+    uni.navigateTo({ url: '/pages/login/login' })
+    return
+  }
+  
+  if (favoriteLoading.value) return
+  
+  favoriteLoading.value = true
+  
+  try {
+    if (isFavorite.value) {
+      await removeFavorite(itemId.value)
+      isFavorite.value = false
+      uni.showToast({ title: '已取消收藏', icon: 'success' })
+    } else {
+      await addFavorite(itemId.value)
+      isFavorite.value = true
+      uni.showToast({ title: '收藏成功', icon: 'success' })
+    }
+  } catch (error: any) {
+    console.error('收藏操作失败:', error)
+    uni.showToast({ title: error.message || '操作失败', icon: 'none' })
+  } finally {
+    favoriteLoading.value = false
+  }
+}
+
 // 联系发布者
 const contactOwner = () => {
   if (!item.value?.user) {
@@ -311,11 +519,11 @@ const contactOwner = () => {
     uni.navigateTo({ url: '/pages/login/login' })
     return
   }
-  uni.navigateTo({ url: `/pages/chat/chat?userId=${item.value.user.id}` })
+  uni.navigateTo({ url: `/pages/chat/chat?itemId=${itemId.value}&userId=${item.value.user.id}` })
 }
 
-// 借用物品
-const borrowItem = () => {
+// 打开借用弹窗
+const openBorrowDialog = () => {
   if (!canBorrow.value) return
   if (!authStore.isLoggedIn) {
     uni.navigateTo({ url: '/pages/login/login' })
@@ -323,58 +531,130 @@ const borrowItem = () => {
   }
   if (!item.value) return
 
-  const today = new Date().toISOString().split('T')[0]
+  // 初始化默认时间
+  const now = new Date()
+  const startDate = new Date(now)
+  startDate.setMinutes(0, 0, 0)
+  startDate.setHours(startDate.getHours() + 1)
   
-  uni.showModal({
-    title: '借用信息',
-    editable: true,
-    placeholderText: '请输入备注信息（可选）',
-    content: `请选择借用时间\n开始日期：\n结束日期：`,
-    success: (modalRes) => {
-      if (modalRes.confirm) {
-        showDatePickerModal(today)
-      }
-    }
-  })
+  const endDate = new Date(startDate)
+  endDate.setDate(endDate.getDate() + 7)
+  
+  orderForm.value.startDate = startDate.toISOString()
+  orderForm.value.endDate = endDate.toISOString()
+  orderForm.value.note = ''
+  
+  showBorrowDialog.value = true
 }
 
-const showDatePickerModal = (today: string) => {
-  uni.showActionSheet({
-    itemList: ['选择开始日期', '选择结束日期', '直接借用（今天起7天）'],
-    success: async (actionRes) => {
-      if (actionRes.tapIndex === 0) {
-        uni.showToast({ title: '请使用日期选择器', icon: 'none' })
-        showSimpleBorrowModal(today)
-      } else if (actionRes.tapIndex === 1) {
-        showSimpleBorrowModal(today)
-      } else if (actionRes.tapIndex === 2) {
-        const endDate = new Date()
-        endDate.setDate(endDate.getDate() + 7)
-        orderForm.value.startDate = today
-        orderForm.value.endDate = endDate.toISOString().split('T')[0]
-        submitOrder()
-      }
-    }
-  })
+// 关闭借用弹窗
+const closeBorrowDialog = () => {
+  showBorrowDialog.value = false
 }
 
-const showSimpleBorrowModal = (today: string) => {
-  uni.showModal({
-    title: '确认借用',
-    content: `确定借用"${item.value?.title}"吗？\n默认借用7天`,
-    success: async (res) => {
-      if (res.confirm) {
-        const endDate = new Date()
-        endDate.setDate(endDate.getDate() + 7)
-        orderForm.value.startDate = today
-        orderForm.value.endDate = endDate.toISOString().split('T')[0]
-        await submitOrder()
-      }
-    }
-  })
+// 打开日期时间选择器
+const openDateTimePicker = (type: 'start' | 'end') => {
+  pickerType.value = type
+  initPickerData()
+  
+  // 根据当前选择的值设置 picker
+  const currentDate = type === 'start' 
+    ? (orderForm.value.startDate ? new Date(orderForm.value.startDate) : new Date())
+    : (orderForm.value.endDate ? new Date(orderForm.value.endDate) : new Date())
+  
+  const year = currentDate.getFullYear()
+  const month = currentDate.getMonth()
+  const day = currentDate.getDate() - 1
+  const hour = currentDate.getHours()
+  const minute = currentDate.getMinutes()
+  
+  const yearIndex = years.value.findIndex(y => parseInt(y) === year)
+  pickerValue.value = [
+    yearIndex >= 0 ? yearIndex : 0,
+    month,
+    day,
+    hour,
+    minute
+  ]
+  tempPickerValue.value = [...pickerValue.value]
+  
+  updateDays()
+  showDateTimePicker.value = true
 }
 
+// 关闭日期时间选择器
+const closeDateTimePicker = () => {
+  showDateTimePicker.value = false
+}
+
+// picker 值改变
+const onPickerChange = (e: any) => {
+  tempPickerValue.value = e.detail.value
+  // 如果年份或月份改变，更新日期
+  if (tempPickerValue.value[0] !== pickerValue.value[0] || tempPickerValue.value[1] !== pickerValue.value[1]) {
+    pickerValue.value = [...tempPickerValue.value]
+    updateDays()
+  }
+}
+
+// 确认日期时间选择
+const confirmDateTime = () => {
+  const year = parseInt(years.value[tempPickerValue.value[0]])
+  const month = parseInt(months.value[tempPickerValue.value[1]])
+  const day = parseInt(days.value[tempPickerValue.value[2]] || '1')
+  const hour = parseInt(hours.value[tempPickerValue.value[3]])
+  const minute = parseInt(minutes.value[tempPickerValue.value[4]])
+  
+  const selectedDate = new Date(year, month - 1, day, hour, minute)
+  
+  // 验证时间
+  const now = new Date()
+  if (pickerType.value === 'start' && selectedDate < now) {
+    uni.showToast({ title: '开始时间不能早于当前时间', icon: 'none' })
+    return
+  }
+  
+  if (pickerType.value === 'end' && orderForm.value.startDate) {
+    const startDate = new Date(orderForm.value.startDate)
+    if (selectedDate <= startDate) {
+      uni.showToast({ title: '结束时间必须晚于开始时间', icon: 'none' })
+      return
+    }
+  }
+  
+  if (pickerType.value === 'start') {
+    orderForm.value.startDate = selectedDate.toISOString()
+    // 如果结束时间早于新的开始时间，清空结束时间
+    if (orderForm.value.endDate) {
+      const endDate = new Date(orderForm.value.endDate)
+      if (endDate <= selectedDate) {
+        const newEndDate = new Date(selectedDate)
+        newEndDate.setDate(newEndDate.getDate() + 1)
+        orderForm.value.endDate = newEndDate.toISOString()
+      }
+    }
+  } else {
+    orderForm.value.endDate = selectedDate.toISOString()
+  }
+  
+  closeDateTimePicker()
+}
+
+// 提交订单
 const submitOrder = async () => {
+  if (!orderForm.value.startDate || !orderForm.value.endDate) {
+    uni.showToast({ title: '请选择借用时间', icon: 'none' })
+    return
+  }
+  
+  const startDate = new Date(orderForm.value.startDate)
+  const endDate = new Date(orderForm.value.endDate)
+  
+  if (endDate <= startDate) {
+    uni.showToast({ title: '结束时间必须晚于开始时间', icon: 'none' })
+    return
+  }
+  
   try {
     uni.showLoading({ title: '提交中...' })
     const params: CreateOrderParams = {
@@ -386,6 +666,7 @@ const submitOrder = async () => {
     await createOrder(params)
     uni.hideLoading()
     uni.showToast({ title: '借用申请已提交', icon: 'success' })
+    closeBorrowDialog()
     setTimeout(() => {
       uni.switchTab({ url: '/pages/orders/orders' })
     }, 1500)
@@ -400,7 +681,9 @@ onLoad((options) => {
   const id = options?.id
   if (id) {
     itemId.value = parseInt(id, 10)
-    loadItemDetail()
+    loadItemDetail().then(() => {
+      checkFavorite()
+    })
   } else {
     error.value = '缺少物品ID参数'
   }
@@ -554,6 +837,17 @@ onLoad((options) => {
   color: #ffffff;
 }
 
+.self-badge {
+  background-color: #1890ff;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.self-text {
+  font-size: 20rpx;
+  color: #ffffff;
+}
+
 .owner-info {
   display: flex;
   align-items: center;
@@ -660,31 +954,30 @@ onLoad((options) => {
   box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
 }
 
+.favorite-button {
+  flex: 1;
+  height: 88rpx;
+  line-height: 88rpx;
+  border-radius: 44rpx;
+  background: linear-gradient(135deg, #ff9500 0%, #ff6b00 100%);
+  color: #ffffff;
+  font-size: 28rpx;
+  border: none;
+}
+
+.favorite-button.is-favorite {
+  background: linear-gradient(135deg, #999999 0%, #666666 100%);
+}
+
 .chat-button {
   flex: 1;
   height: 88rpx;
   line-height: 88rpx;
   border-radius: 44rpx;
-  background-color: #f0f0f0;
-  color: #333333;
-  font-size: 28rpx;
-  border: none;
-}
-
-.borrow-button {
-  flex: 1;
-  height: 88rpx;
-  line-height: 88rpx;
-  border-radius: 44rpx;
-  background-color: #007aff;
+  background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
   color: #ffffff;
   font-size: 28rpx;
   border: none;
-}
-
-.borrow-button.disabled {
-  background-color: #cccccc;
-  color: #ffffff;
 }
 
 /* 物品评价 */
@@ -788,5 +1081,218 @@ onLoad((options) => {
   width: 140rpx;
   height: 140rpx;
   border-radius: 8rpx;
+}
+
+/* 借用弹窗 */
+.borrow-dialog-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.borrow-dialog {
+  width: 80%;
+  max-width: 600rpx;
+  max-height: 80vh;
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.dialog-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.dialog-close {
+  font-size: 48rpx;
+  color: #999999;
+  line-height: 1;
+  padding: 0 8rpx;
+}
+
+.dialog-content {
+  padding: 32rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.form-item {
+  margin-bottom: 24rpx;
+}
+
+.form-item:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-size: 26rpx;
+  color: #666666;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.form-value {
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.form-value.price {
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+.form-value.duration {
+  color: #007aff;
+  font-weight: 500;
+}
+
+.datetime-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  background-color: #f5f5f5;
+  border-radius: 12rpx;
+  border: 2rpx solid #e5e5e5;
+}
+
+.picker-value {
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.picker-value.placeholder {
+  color: #999999;
+}
+
+.picker-arrow {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.form-textarea {
+  width: 100%;
+  height: 160rpx;
+  padding: 20rpx 24rpx;
+  background-color: #f5f5f5;
+  border-radius: 12rpx;
+  border: 2rpx solid #e5e5e5;
+  font-size: 28rpx;
+  color: #333333;
+  box-sizing: border-box;
+}
+
+.dialog-footer {
+  display: flex;
+  gap: 24rpx;
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  border-top: 2rpx solid #f0f0f0;
+}
+
+.btn-cancel,
+.btn-confirm {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+.btn-cancel {
+  background-color: #f0f0f0;
+  color: #666666;
+}
+
+.btn-confirm {
+  background-color: #007aff;
+  color: #ffffff;
+}
+
+.btn-confirm[disabled] {
+  background-color: #cccccc;
+  color: #ffffff;
+}
+
+/* 日期时间选择器 */
+.datetime-picker-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  z-index: 1001;
+}
+
+.datetime-picker-container {
+  background-color: #ffffff;
+  border-radius: 24rpx 24rpx 0 0;
+  overflow: hidden;
+}
+
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.picker-cancel {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.picker-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.picker-confirm {
+  font-size: 28rpx;
+  color: #007aff;
+  font-weight: 500;
+}
+
+.picker-view-container {
+  height: 400rpx;
+}
+
+.picker-view {
+  height: 100%;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #333333;
+  height: 80rpx;
 }
 </style>

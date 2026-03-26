@@ -1,87 +1,87 @@
 ---
 name: preset-typography
-description: 为原始 HTML 内容添加排版默认值的 Prose 类
+description: Prose classes for typographic defaults on vanilla HTML content
 ---
 
 # Preset Typography
 
-为原始 HTML 内容添加排版默认值的 Prose 类。
+Prose classes for adding typographic defaults to vanilla HTML content.
 
-## 安装
+## Installation
 
 ```ts
 import { defineConfig, presetTypography, presetWind3 } from 'unocss'
 
 export default defineConfig({
   presets: [
-    presetWind3(), // 必需！
+    presetWind3(), // Required!
     presetTypography(),
   ],
 })
 ```
 
-## 基本用法
+## Basic Usage
 
 ```html
 <article class="prose">
-  <h1>我的文章</h1>
-  <p>使用排版默认值进行样式设置...</p>
+  <h1>My Article</h1>
+  <p>This is styled with typographic defaults...</p>
 </article>
 ```
 
-## 尺寸
+## Sizes
 
 ```html
-<article class="prose prose-sm">小</article>
-<article class="prose prose-base">基础（默认）</article>
-<article class="prose prose-lg">大</article>
-<article class="prose prose-xl">特大</article>
-<article class="prose prose-2xl">2X 大</article>
+<article class="prose prose-sm">Small</article>
+<article class="prose prose-base">Base (default)</article>
+<article class="prose prose-lg">Large</article>
+<article class="prose prose-xl">Extra large</article>
+<article class="prose prose-2xl">2X large</article>
 ```
 
-响应式：
+Responsive:
 ```html
 <article class="prose prose-sm md:prose-base lg:prose-lg">
-  响应式排版
+  Responsive typography
 </article>
 ```
 
-## 颜色
+## Colors
 
 ```html
-<article class="prose prose-gray">灰色（默认）</article>
-<article class="prose prose-slate">石板色</article>
-<article class="prose prose-blue">蓝色</article>
+<article class="prose prose-gray">Gray (default)</article>
+<article class="prose prose-slate">Slate</article>
+<article class="prose prose-blue">Blue</article>
 ```
 
-## 深色模式
+## Dark Mode
 
 ```html
 <article class="prose dark:prose-invert">
-  深色模式排版
+  Dark mode typography
 </article>
 ```
 
-## 排除元素
+## Excluding Elements
 
 ```html
 <article class="prose">
-  <p>已设置样式</p>
+  <p>Styled</p>
   <div class="not-prose">
-    <p>未设置样式</p>
+    <p>NOT styled</p>
   </div>
 </article>
 ```
 
-**注意：** `not-prose` 只能作为 class 使用。
+**Note:** `not-prose` only works as a class.
 
-## 选项
+## Options
 
 ```ts
 presetTypography({
-  selectorName: 'prose',      // 自定义选择器
-  cssVarPrefix: '--un-prose', // CSS 变量前缀
-  important: false,           // 设为 !important
+  selectorName: 'prose',      // Custom selector
+  cssVarPrefix: '--un-prose', // CSS variable prefix
+  important: false,           // Make !important
   cssExtend: {
     'code': { color: '#8b5cf6' },
     'a:hover': { color: '#f43f5e' },

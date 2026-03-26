@@ -1,34 +1,34 @@
 ---
-title: 在 onUnmounted 中清理事件监听器和定时器
+title: Clean Up Event Listeners and Intervals in onUnmounted
 impact: HIGH
-impactDescription: 未能清理副作用会导致内存泄漏和幽灵事件处理程序
+impactDescription: Failing to clean up side effects causes memory leaks and ghost event handlers
 type: capability
 tags: [vue3, lifecycle, memory-leak, event-listeners, intervals, cleanup]
 ---
 
-# 在 onUnmounted 中清理事件监听器和定时器
+# Clean Up Event Listeners and Intervals in onUnmounted
 
-**影响：高** - 当组件卸载时未能清理事件监听器、定时器、超时和订阅会导致内存泄漏和继续运行的幽灵处理程序，在单页应用中导致性能下降和微妙的错误。
+**Impact: HIGH** - Failing to clean up event listeners, intervals, timeouts, and subscriptions when a component unmounts causes memory leaks and ghost handlers that continue running, leading to performance degradation and subtle bugs in Single Page Applications.
 
-当使用自定义事件、定时器、WebSocket 连接或第三方库时，始终在 `onUnmounted`（Composition API）或 `unmounted`（Options API）中清理。
+When using custom events, timers, WebSocket connections, or third-party libraries, always clean up in `onUnmounted` (Composition API) or `unmounted` (Options API).
 
-## 任务清单
+## Task Checklist
 
-- [ ] 跟踪所有 addEventListener 调用并在 onUnmounted 中移除它们
-- [ ] 在 onUnmounted 中清除所有 setInterval 和 setTimeout 调用
-- [ ] 取消订阅外部事件发射器和 observables
-- [ ] 断开 WebSocket 连接和第三方库实例
-- [ ] 如果清理必须在 DOM 移除之前发生，使用 `onBeforeUnmount`
+- [ ] Track all addEventListener calls and remove them in onUnmounted
+- [ ] Clear all setInterval and setTimeout calls in onUnmounted
+- [ ] Unsubscribe from external event emitters and observables
+- [ ] Disconnect WebSocket connections and third-party library instances
+- [ ] Use `onBeforeUnmount` if cleanup must happen before DOM removal
 
-**错误示例：**
+**Incorrect:**
 ```javascript
-// Composition API - 错误：没有清理
+// Composition API - WRONG: No cleanup
 import { onMounted } from 'vue'
 
 export default {
   setup() {
     onMounted(() => {
-      // 这些在组件卸载后继续运行！
+      // These keep running after component unmounts!
       window.addEventListener('resize', handleResize)
       setInterval(pollServer, 5000)
       socket.on('message', handleMessage)
@@ -38,19 +38,19 @@ export default {
 ```
 
 ```javascript
-// Options API - 错误：没有清理
+// Options API - WRONG: No cleanup
 export default {
   mounted() {
     window.addEventListener('scroll', this.handleScroll)
     this.timer = setInterval(this.refresh, 10000)
   }
-  // 组件卸载，但监听器和定时器持续存在！
+  // Component unmounts, but listeners and timers persist!
 }
 ```
 
-**正确示例：**
+**Correct:**
 ```javascript
-// Composition API - 正确：适当清理
+// Composition API - CORRECT: Proper cleanup
 import { onMounted, onUnmounted, ref } from 'vue'
 
 export default {
@@ -58,11 +58,11 @@ export default {
     const intervalId = ref(null)
 
     const handleResize = () => {
-      // 处理 resize
+      // handle resize
     }
 
     const handleMessage = (msg) => {
-      // 处理 message
+      // handle message
     }
 
     onMounted(() => {
@@ -72,7 +72,7 @@ export default {
     })
 
     onUnmounted(() => {
-      // 清理所有内容！
+      // Clean up everything!
       window.removeEventListener('resize', handleResize)
 
       if (intervalId.value) {
@@ -86,7 +86,7 @@ export default {
 ```
 
 ```javascript
-// Options API - 正确：适当清理
+// Options API - CORRECT: Proper cleanup
 export default {
   data() {
     return {
@@ -110,10 +110,10 @@ export default {
 }
 ```
 
-## 使用可组合模式进行自动清理
+## Using Composable Pattern for Auto-Cleanup
 
 ```javascript
-// 可复用的可组合函数，带自动清理
+// Reusable composable with automatic cleanup
 import { onMounted, onUnmounted } from 'vue'
 
 export function useEventListener(target, event, handler) {
@@ -138,35 +138,35 @@ export function useInterval(callback, delay) {
   })
 }
 
-// 使用 - 清理是自动的
+// Usage - cleanup is automatic
 import { useEventListener, useInterval } from './composables'
 
 export default {
   setup() {
     useEventListener(window, 'resize', handleResize)
     useInterval(pollServer, 5000)
-    // 不需要手动清理！
+    // No manual cleanup needed!
   }
 }
 ```
 
-## VueUse 替代方案
+## VueUse Alternative
 
 ```javascript
-// VueUse 提供感知清理的可组合函数
+// VueUse provides cleanup-aware composables
 import { useEventListener, useIntervalFn } from '@vueuse/core'
 
 export default {
   setup() {
-    // 卸载时自动清理
+    // Automatically cleaned up on unmount
     useEventListener(window, 'resize', handleResize)
 
     const { pause, resume } = useIntervalFn(pollServer, 5000)
-    // 还提供 pause/resume 控制
+    // Also provides pause/resume controls
   }
 }
 ```
 
-## 参考
-- [Vue.js 生命周期钩子](https://vuejs.org/guide/essentials/lifecycle.html)
+## Reference
+- [Vue.js Lifecycle Hooks](https://vuejs.org/guide/essentials/lifecycle.html)
 - [VueUse - useEventListener](https://vueuse.org/core/useEventListener/)

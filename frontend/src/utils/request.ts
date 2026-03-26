@@ -70,13 +70,13 @@ export const request = <T = any>(options: RequestOptions): Promise<T> => {
   // 处理 GET 请求参数
   if (method === 'GET' && params) {
     const queryString = Object.keys(params)
+      .filter(key => params[key] !== undefined && params[key] !== null)
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
       .join('&')
-    fullUrl += `?${queryString}`
+    if (queryString) {
+      fullUrl += `?${queryString}`
+    }
   }
-
-  // 获取 token
-  const token = getToken()
 
   // 构建请求头
   const requestHeader = {
@@ -84,8 +84,9 @@ export const request = <T = any>(options: RequestOptions): Promise<T> => {
     ...header
   }
 
-  // 如果有 token，添加到请求头
-  if (token) {
+  // 获取 token（登录请求不添加 token）
+  const token = getToken()
+  if (token && !url.includes('/auth/login')) {
     requestHeader['Authorization'] = `Bearer ${token}`
   }
 
@@ -117,26 +118,48 @@ export const request = <T = any>(options: RequestOptions): Promise<T> => {
           }
           
           // 如果后端返回了 data 字段，使用 data；否则直接使用返回的数据
+          if (showLoadingFlag) {
+            hideLoading()
+          }
           resolve((result.data !== undefined ? result.data : result) as T)
         } else if (statusCode === 401) {
           // Token 过期或无效
-          uni.removeStorageSync('token')
-          uni.removeStorageSync('userInfo')
-          showError('登录已过期，请重新登录')
-          
-          // 跳转到登录页
-          setTimeout(() => {
-            uni.navigateTo({
-              url: '/pages/login/login'
-            })
-          }, 1500)
+          if (!url.includes('/auth/login')) {
+            uni.removeStorageSync('token')
+            uni.removeStorageSync('userInfo')
+            showError('登录已过期，请重新登录')
+            
+            // 跳转到登录页
+            setTimeout(() => {
+              uni.navigateTo({
+                url: '/pages/login/login'
+              })
+            }, 1500)
+          } else {
+            showError('账号或密码错误')
+          }
           
           if (showLoadingFlag) {
             hideLoading()
           }
           reject(new Error('Unauthorized'))
         } else if (statusCode === 403) {
-          showError('没有权限执行此操作')
+          // Token 无效或过期
+          if (!url.includes('/auth/login')) {
+            uni.removeStorageSync('token')
+            uni.removeStorageSync('userInfo')
+            showError('登录已过期，请重新登录')
+            
+            // 跳转到登录页
+            setTimeout(() => {
+              uni.navigateTo({
+                url: '/pages/login/login'
+              })
+            }, 1500)
+          } else {
+            showError('账号已被禁用')
+          }
+          
           if (showLoadingFlag) {
             hideLoading()
           }

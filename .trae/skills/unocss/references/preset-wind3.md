@@ -1,13 +1,13 @@
 ---
 name: preset-wind3
-description: 用于 UnoCSS 的兼容 Tailwind CSS / Windi CSS 的预设
+description: Tailwind CSS / Windi CSS compatible preset for UnoCSS
 ---
 
 # Preset Wind3
 
-兼容 Tailwind CSS / Windi CSS 的预设。UnoCSS 中最常用的预设。
+The Tailwind CSS / Windi CSS compatible preset. Most commonly used preset for UnoCSS.
 
-## 安装
+## Installation
 
 ```ts
 import { defineConfig, presetWind3 } from 'unocss'
@@ -19,27 +19,27 @@ export default defineConfig({
 })
 ```
 
-**注意：** `@unocss/preset-uno` 和 `@unocss/preset-wind` 已弃用，已重命名为 `@unocss/preset-wind3`。
+**Note:** `@unocss/preset-uno` and `@unocss/preset-wind` are deprecated and renamed to `@unocss/preset-wind3`.
 
-## 特性
+## Features
 
-- 完全兼容 Tailwind CSS v3
-- 深色模式（`dark:`、`@dark:`）
-- 所有响应式变体（`sm:`、`md:`、`lg:`、`xl:`、`2xl:`）
-- 所有标准工具类（flex、grid、spacing、colors、typography 等）
-- 动画支持（包含 Animate.css 动画）
+- Full Tailwind CSS v3 compatibility
+- Dark mode (`dark:`, `@dark:`)
+- All responsive variants (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`)
+- All standard utilities (flex, grid, spacing, colors, typography, etc.)
+- Animation support (includes Animate.css animations)
 
-## 深色模式
+## Dark Mode
 
-### 基于类（默认）
+### Class-based (default)
 
 ```html
 <div class="dark:bg-gray-800">
 ```
 
-生成：`.dark .dark\:bg-gray-800 { ... }`
+Generates: `.dark .dark\:bg-gray-800 { ... }`
 
-### 基于媒体查询
+### Media Query Based
 
 ```ts
 presetWind3({
@@ -47,43 +47,43 @@ presetWind3({
 })
 ```
 
-生成：`@media (prefers-color-scheme: dark) { ... }`
+Generates: `@media (prefers-color-scheme: dark) { ... }`
 
-### 选择性媒体查询
+### Opt-in Media Query
 
-无论配置如何都使用 `@dark:`：
+Use `@dark:` regardless of config:
 
 ```html
 <div class="@dark:bg-gray-800">
 ```
 
-## 选项
+## Options
 
 ```ts
 presetWind3({
-  // 深色模式策略
+  // Dark mode strategy
   dark: 'class', // 'class' | 'media' | { light: '.light', dark: '.dark' }
   
-  // 将伪选择器生成为 [group=""] 而不是 .group
+  // Generate pseudo selector as [group=""] instead of .group
   attributifyPseudo: false,
   
-  // CSS 自定义属性前缀
+  // CSS custom properties prefix
   variablePrefix: 'un-',
   
-  // 工具类前缀
+  // Utils prefix
   prefix: '',
   
-  // 生成预检 CSS
+  // Generate preflight CSS
   preflight: true, // true | false | 'on-demand'
   
-  // 将所有工具类标记为 !important
-  important: false, // boolean | string (选择器)
+  // Mark all utilities as !important
+  important: false, // boolean | string (selector)
 })
 ```
 
-### Important 选项
+### Important Option
 
-使所有工具类为 `!important`：
+Make all utilities `!important`:
 
 ```ts
 presetWind3({
@@ -91,7 +91,7 @@ presetWind3({
 })
 ```
 
-或使用选择器限定范围以增加特异性而不使用 `!important`：
+Or scope with selector to increase specificity without `!important`:
 
 ```ts
 presetWind3({
@@ -99,25 +99,25 @@ presetWind3({
 })
 ```
 
-输出：`#app :is(.dark .dark\:bg-blue) { ... }`
+Output: `#app :is(.dark .dark\:bg-blue) { ... }`
 
-## 与 Tailwind CSS 的差异
+## Differences from Tailwind CSS
 
-### 不支持引号
+### Quotes Not Supported
 
-由于提取器的原因，模板引号不起作用：
+Template quotes don't work due to extractor:
 
 ```html
-<!-- 不会生效 -->
+<!-- Won't work -->
 <div class="before:content-['']">
 
-<!-- 请改用快捷方式 -->
+<!-- Use shortcut instead -->
 <div class="before:content-empty">
 ```
 
-### 背景位置
+### Background Position
 
-对自定义值使用 `position:` 前缀：
+Use `position:` prefix for custom values:
 
 ```html
 <!-- Tailwind -->
@@ -127,14 +127,14 @@ presetWind3({
 <div class="bg-[position:center_top_1rem]">
 ```
 
-### 动画
+### Animations
 
-UnoCSS 集成了 Animate.css。当名称冲突时，使用 `-alt` 后缀表示 Animate.css 版本：
+UnoCSS integrates Animate.css. Use `-alt` suffix for Animate.css versions when names conflict:
 
-- `animate-bounce` - Tailwind 版本
-- `animate-bounce-alt` - Animate.css 版本
+- `animate-bounce` - Tailwind version
+- `animate-bounce-alt` - Animate.css version
 
-自定义动画：
+Custom animations:
 
 ```ts
 theme: {
@@ -155,7 +155,7 @@ theme: {
 }
 ```
 
-## 与 Windi CSS 的差异
+## Differences from Windi CSS
 
 | Windi CSS | UnoCSS |
 |-----------|--------|
@@ -163,7 +163,7 @@ theme: {
 | `@lg:p-1` | `at-lg:p-1` |
 | `>xl:p-1` | `xl:p-1` |
 
-括号语法使用 `_` 而不是 `,`：
+Bracket syntax uses `_` instead of `,`:
 
 ```html
 <!-- Windi CSS -->
@@ -173,15 +173,15 @@ theme: {
 <div class="grid-cols-[1fr_10px_max-content]">
 ```
 
-## 实验性：媒体悬停
+## Experimental: Media Hover
 
-解决触摸设备上的粘性悬停问题：
+Addresses sticky hover on touch devices:
 
 ```html
 <div class="@hover-text-red">
 ```
 
-生成：
+Generates:
 ```css
 @media (hover: hover) and (pointer: fine) {
   .\@hover-text-red:hover { ... }

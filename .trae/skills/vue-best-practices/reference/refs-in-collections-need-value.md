@@ -1,81 +1,81 @@
 ---
-title: 数组和集合中的 Refs 需要使用 .value
+title: Refs in Arrays and Collections Require .value
 impact: MEDIUM
-impactDescription: 响应式数组、Map 或 Set 中的 Refs 不会像在响应式对象中那样自动解包
+impactDescription: Refs inside reactive arrays, Maps, or Sets are NOT auto-unwrapped like in reactive objects
 type: capability
 tags: [vue3, reactivity, ref, arrays, collections, unwrapping]
 ---
 
-# 数组和集合中的 Refs 需要使用 .value
+# Refs in Arrays and Collections Require .value
 
-**影响：中** - 与 ref 是响应式对象的属性时不同，响应式数组、Map 和 Set 中的 refs 不会自动解包。你必须使用 `.value` 访问它们，忘记这一点会导致静默错误。
+**Impact: MEDIUM** - Unlike when a ref is a property of a reactive object, refs inside reactive arrays, Maps, and Sets are NOT automatically unwrapped. You must access them with `.value`, and forgetting this leads to silent bugs.
 
-Vue 只在 refs 是响应式对象的属性时才自动解包。当 refs 是数组中的元素或 Map/Set 中的值时，它们保持为 ref 对象，需要显式的 `.value` 访问。
+Vue only auto-unwraps refs when they are properties of reactive objects. When refs are elements in arrays or values in Maps/Sets, they remain as ref objects and require explicit `.value` access.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 访问存储在响应式数组中的 refs 时始终使用 `.value`
-- [ ] 访问存储在响应式 Map 或 Set 中的 refs 时始终使用 `.value`
-- [ ] 考虑在集合中存储普通值而不是 refs 以避免混淆
-- [ ] 迭代包含 refs 的数组时注意这一点
+- [ ] Always use `.value` when accessing refs stored in reactive arrays
+- [ ] Always use `.value` when accessing refs stored in reactive Maps or Sets
+- [ ] Consider storing plain values instead of refs in collections to avoid confusion
+- [ ] Be aware of this when iterating over arrays containing refs
 
-**错误示例：**
+**Incorrect:**
 ```javascript
 import { ref, reactive } from 'vue'
 
 const books = reactive([ref('Vue 3 Guide')])
 const counts = reactive(new Map([['clicks', ref(0)]]))
 
-// 错误：数组中的 refs 不会自动解包
-console.log(books[0])        // Ref 对象，不是 'Vue 3 Guide'
-books[0] = 'New Title'       // 替换了 ref，而不是更新它！
+// WRONG: Refs in arrays are NOT unwrapped
+console.log(books[0])        // Ref object, not 'Vue 3 Guide'
+books[0] = 'New Title'       // Replaces the ref, doesn't update it!
 
-// 错误：Map 中的 refs 不会自动解包
-console.log(counts.get('clicks'))     // Ref 对象，不是 0
-counts.get('clicks')++                // 没有实际作用
+// WRONG: Refs in Maps are NOT unwrapped
+console.log(counts.get('clicks'))     // Ref object, not 0
+counts.get('clicks')++                // Does nothing useful
 ```
 
-**正确示例：**
+**Correct:**
 ```javascript
 import { ref, reactive } from 'vue'
 
 const books = reactive([ref('Vue 3 Guide')])
 const counts = reactive(new Map([['clicks', ref(0)]]))
 
-// 正确：对数组中的 refs 使用 .value
+// CORRECT: Use .value for refs in arrays
 console.log(books[0].value)    // 'Vue 3 Guide'
-books[0].value = 'New Title'   // 更新 ref 的值
+books[0].value = 'New Title'   // Updates the ref's value
 
-// 正确：对 Map 中的 refs 使用 .value
+// CORRECT: Use .value for refs in Maps
 console.log(counts.get('clicks').value)  // 0
-counts.get('clicks').value++             // 递增到 1
+counts.get('clicks').value++             // Increments to 1
 ```
 
 ```javascript
-// 替代方案：在集合中只存储普通值（更简单）
+// ALTERNATIVE: Just store plain values in collections (simpler)
 const books = reactive(['Vue 3 Guide', 'Vuex Handbook'])
 const counts = reactive(new Map([['clicks', 0]]))
 
-// 不需要 .value - 但单个项目的更改不是独立响应式的
+// No .value needed - but changes to individual items aren't independently reactive
 console.log(books[0])            // 'Vue 3 Guide'
 console.log(counts.get('clicks')) // 0
 
-// 通过响应式包装器的变更仍然触发响应式
-books[0] = 'New Title'           // 有效
-counts.set('clicks', counts.get('clicks') + 1)  // 有效
+// Mutations still trigger reactivity through the reactive wrapper
+books[0] = 'New Title'           // Works
+counts.set('clicks', counts.get('clicks') + 1)  // Works
 ```
 
 ```vue
 <template>
-  <!-- 在模板中，数组中的 refs 也需要特殊处理 -->
+  <!-- In templates, refs in arrays also need special handling -->
   <div v-for="(book, index) in books" :key="index">
-    <!-- 如果 book 是 ref，你需要： -->
+    <!-- If book is a ref, you'd need: -->
     {{ book.value }}
 
-    <!-- 或使用计算属性先解包它们 -->
+    <!-- Or use computed to unwrap them first -->
   </div>
 </template>
 ```
 
-## 参考
-- [Vue.js 响应式基础 - 数组和集合中的注意事项](https://vuejs.org/guide/essentials/reactivity-fundamentals.html#caveat-in-arrays-and-collections)
+## Reference
+- [Vue.js Reactivity Fundamentals - Caveat in Arrays and Collections](https://vuejs.org/guide/essentials/reactivity-fundamentals.html#caveat-in-arrays-and-collections)

@@ -7,9 +7,26 @@
         <view class="user-detail">
           <text class="nickname">{{ authStore.userInfo.username || '未登录' }}</text>
           <text class="student-id">学号: {{ authStore.userInfo.studentId || '--' }}</text>
-          <view class="credit-tag">
-            <text class="credit-label">信用分</text>
-            <text class="credit-score">{{ authStore.userInfo.creditScore || 100 }}</text>
+          <view class="info-tags">
+            <view class="credit-tag">
+              <text class="credit-label">信用分</text>
+              <text class="credit-score">{{ authStore.userInfo.creditScore || 100 }}</text>
+            </view>
+            <view 
+              class="verify-tag" 
+              :class="authStore.userInfo.isVerified ? 'verified' : 'unverified'"
+              @click="handleVerifyClick"
+            >
+              <text class="verify-text">{{ authStore.userInfo.isVerified ? '已认证' : '未认证' }}</text>
+            </view>
+          </view>
+          <view class="school-info" v-if="authStore.userInfo.school || authStore.userInfo.major">
+            <text class="school-text" v-if="authStore.userInfo.school">
+              🏫 {{ authStore.userInfo.school }}
+            </text>
+            <text class="major-text" v-if="authStore.userInfo.major">
+              📚 {{ authStore.userInfo.major }}
+            </text>
           </view>
         </view>
       </view>
@@ -36,6 +53,10 @@
         <text class="stat-num">{{ stats.messages }}</text>
         <text class="stat-label">未读消息</text>
       </view>
+      <view class="stat-item" @click="goToMyItems">
+        <text class="stat-num">{{ stats.published }}</text>
+        <text class="stat-label">我发布的</text>
+      </view>
     </view>
 
     <!-- 功能菜单 -->
@@ -61,6 +82,12 @@
         <text class="menu-text">我的评价</text>
         <text class="menu-arrow">></text>
       </view>
+      <view class="menu-item" @click="goToFavorites">
+        <text class="menu-icon">❤️</text>
+        <text class="menu-text">我的收藏</text>
+        <view class="badge" v-if="stats.favorites > 0">{{ stats.favorites }}</view>
+        <text class="menu-arrow" v-else>></text>
+      </view>
       <view class="menu-item" @click="goToSettings">
         <text class="menu-icon">⚙️</text>
         <text class="menu-text">设置</text>
@@ -84,6 +111,8 @@ import { onShow } from '@dcloudio/uni-app'
 import { getCurrentUser, type UserInfo } from '@/api/auth'
 import { getOrderStats } from '@/api/orders'
 import { getUnreadCount } from '@/api/messages'
+import { getMyItemsCount } from '@/api/items'
+import { getFavoriteCount } from '@/api/favorites'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
@@ -92,7 +121,9 @@ const stats = ref({
   items: 0,
   orders: 0,
   pending: 0,
-  messages: 0
+  messages: 0,
+  published: 0,
+  favorites: 0
 })
 
 onMounted(() => {
@@ -109,12 +140,16 @@ const checkLoginStatus = () => {
     loadUserInfo()
     loadStats()
     loadUnreadCount()
+    loadPublishedCount()
+    loadFavoriteCount()
   } else {
     stats.value = {
       items: 0,
       orders: 0,
       pending: 0,
-      messages: 0
+      messages: 0,
+      published: 0,
+      favorites: 0
     }
   }
 }
@@ -151,6 +186,26 @@ const loadUnreadCount = async () => {
   }
 }
 
+// 加载用户发布物品数量
+const loadPublishedCount = async () => {
+  try {
+    const { total } = await getMyItemsCount()
+    stats.value.published = total
+  } catch (error) {
+    console.error('获取发布物品数失败:', error)
+  }
+}
+
+// 加载收藏数量
+const loadFavoriteCount = async () => {
+  try {
+    const { count } = await getFavoriteCount()
+    stats.value.favorites = count
+  } catch (error) {
+    console.error('获取收藏数量失败:', error)
+  }
+}
+
 const editProfile = () => {
   if (!authStore.isLoggedIn) {
     goToLogin()
@@ -181,7 +236,7 @@ const goToMessages = () => {
     goToLogin()
     return
   }
-  uni.navigateTo({ url: '/pages/messages/messages' })
+  uni.switchTab({ url: '/pages/messages/messages' })
 }
 
 const goToReviews = () => {
@@ -190,6 +245,14 @@ const goToReviews = () => {
     return
   }
   uni.navigateTo({ url: '/pages/reviews/reviews' })
+}
+
+const goToFavorites = () => {
+  if (!authStore.isLoggedIn) {
+    goToLogin()
+    return
+  }
+  uni.navigateTo({ url: '/pages/favorites/favorites' })
 }
 
 const goToSettings = () => {
@@ -204,6 +267,18 @@ const goToLogin = () => {
   uni.navigateTo({ url: '/pages/login/login' })
 }
 
+const handleVerifyClick = () => {
+  if (!authStore.isLoggedIn) {
+    goToLogin()
+    return
+  }
+  if (authStore.userInfo.isVerified) {
+    uni.showToast({ title: '您已通过认证', icon: 'success' })
+    return
+  }
+  uni.showToast({ title: '认证功能即将上线，敬请期待', icon: 'none' })
+}
+
 const handleLogout = () => {
   uni.showModal({
     title: '提示',
@@ -215,7 +290,8 @@ const handleLogout = () => {
           items: 0,
           orders: 0,
           pending: 0,
-          messages: 0
+          messages: 0,
+          published: 0
         }
         uni.showToast({ title: '已退出登录', icon: 'success' })
       }
@@ -269,6 +345,12 @@ const handleLogout = () => {
   margin-bottom: 16rpx;
 }
 
+.info-tags {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
 .credit-tag {
   display: inline-flex;
   align-items: center;
@@ -287,6 +369,47 @@ const handleLogout = () => {
   font-size: 26rpx;
   font-weight: bold;
   color: #52c41a;
+}
+
+.verify-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 20rpx;
+  border-radius: 24rpx;
+}
+
+.verify-tag.verified {
+  background-color: rgba(82, 196, 26, 0.2);
+}
+
+.verify-tag.unverified {
+  background-color: rgba(150, 150, 150, 0.2);
+}
+
+.verify-text {
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.verify-tag.verified .verify-text {
+  color: #52c41a;
+}
+
+.verify-tag.unverified .verify-text {
+  color: #bfbfbf;
+}
+
+.school-info {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.school-text,
+.major-text {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.9);
 }
 
 .edit-btn {
@@ -328,14 +451,14 @@ const handleLogout = () => {
 }
 
 .stat-num {
-  font-size: 40rpx;
+  font-size: 36rpx;
   font-weight: bold;
   color: #333;
   margin-bottom: 8rpx;
 }
 
 .stat-label {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #999;
 }
 

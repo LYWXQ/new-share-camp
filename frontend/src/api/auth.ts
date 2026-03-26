@@ -15,6 +15,8 @@ export interface UserInfo {
   role: 'user' | 'admin' | 'root'
   phone?: string
   email?: string
+  school?: string
+  major?: string
   createdAt: string
   updatedAt: string
 }
@@ -32,6 +34,8 @@ export interface RegisterParams {
   password: string
   phone?: string
   email?: string
+  school?: string
+  major?: string
 }
 
 // 登录响应
@@ -44,7 +48,7 @@ export interface LoginResponse {
  * 用户登录
  */
 export const login = (data: LoginParams): Promise<LoginResponse> => {
-  return post<LoginResponse>('/auth/login', data)
+  return post<LoginResponse>('/auth/login', data, { showLoading: true })
 }
 
 /**

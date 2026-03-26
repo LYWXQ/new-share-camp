@@ -1,24 +1,24 @@
 ---
 name: custom-directives
-description: 创建可复用的指令进行底层 DOM 操作
+description: Create reusable directives for low-level DOM manipulation
 ---
 
-# 自定义指令
+# Custom Directives
 
-自定义指令提供对 DOM 的底层访问，用于实现可复用的行为。
+Custom directives provide low-level DOM access for reusable behavior.
 
-## 何时使用
+## When to Use
 
-在以下情况使用自定义指令：
-- 需要直接操作 DOM
-- 行为无法通过组件或 composables 实现
-- 需要将行为应用到原生元素
+Use custom directives when:
+- You need direct DOM manipulation
+- The behavior can't be achieved with components or composables
+- You need to apply behavior to native elements
 
-## 基本示例
+## Basic Example
 
 ```vue
 <script setup lang="ts">
-// v-focus 指令
+// v-focus directive
 const vFocus = {
   mounted: (el: HTMLElement) => el.focus()
 }
@@ -29,68 +29,68 @@ const vFocus = {
 </template>
 ```
 
-## 指令钩子
+## Directive Hooks
 
 ```ts
 const myDirective = {
-  // 元素属性/监听器应用前
+  // Before element attributes/listeners are applied
   created(el, binding, vnode) {},
   
-  // 元素插入 DOM 前
+  // Before element is inserted into DOM
   beforeMount(el, binding, vnode) {},
   
-  // 元素和子元素挂载后
+  // After element and children are mounted
   mounted(el, binding, vnode) {},
   
-  // 父组件更新前
+  // Before parent component updates
   beforeUpdate(el, binding, vnode, prevVnode) {},
   
-  // 父组件更新后
+  // After parent component updates
   updated(el, binding, vnode, prevVnode) {},
   
-  // 父组件卸载前
+  // Before parent component unmounts
   beforeUnmount(el, binding, vnode) {},
   
-  // 父组件卸载后
+  // After parent component unmounts
   unmounted(el, binding, vnode) {}
 }
 ```
 
-## 钩子参数
+## Hook Arguments
 
 ```ts
 interface DirectiveBinding<T = any> {
   value: T           // v-my-dir="value"
-  oldValue: T        // 之前的值（仅 beforeUpdate/updated）
+  oldValue: T        // Previous value (beforeUpdate/updated only)
   arg?: string       // v-my-dir:arg
   modifiers: Record<string, boolean>  // v-my-dir.foo.bar → { foo: true, bar: true }
-  instance: ComponentPublicInstance   // 使用指令的组件
-  dir: ObjectDirective               // 指令定义对象
+  instance: ComponentPublicInstance   // Component using the directive
+  dir: ObjectDirective               // Directive definition object
 }
 ```
 
-使用示例：
+Example usage:
 
 ```vue-html
 <div v-example:foo.bar="baz">
 ```
 
 ```ts
-// binding 对象：
+// binding object:
 {
   arg: 'foo',
   modifiers: { bar: true },
-  value: /* baz 的值 */,
-  oldValue: /* 之前的值 */
+  value: /* value of baz */,
+  oldValue: /* previous value */
 }
 ```
 
-## 函数简写
+## Function Shorthand
 
-当只需要 `mounted` 和 `updated` 且行为相同时：
+When you only need `mounted` and `updated` with same behavior:
 
 ```ts
-// 完整形式
+// Full form
 const vColor = {
   mounted(el, binding) {
     el.style.color = binding.value
@@ -100,13 +100,13 @@ const vColor = {
   }
 }
 
-// 简写（相同行为）
+// Shorthand (same behavior)
 const vColor = (el: HTMLElement, binding: DirectiveBinding<string>) => {
   el.style.color = binding.value
 }
 ```
 
-## 全局注册
+## Global Registration
 
 ```ts
 // main.ts
@@ -116,15 +116,15 @@ app.directive('focus', {
   mounted: (el) => el.focus()
 })
 
-// 简写
+// Shorthand
 app.directive('color', (el, binding) => {
   el.style.color = binding.value
 })
 ```
 
-## 对象字面量
+## Object Literals
 
-传递多个值：
+Pass multiple values:
 
 ```vue-html
 <div v-demo="{ color: 'white', text: 'hello' }">
@@ -137,13 +137,13 @@ const vDemo = (el: HTMLElement, binding: DirectiveBinding<{ color: string; text:
 }
 ```
 
-## 动态参数
+## Dynamic Arguments
 
 ```vue-html
 <div v-my-directive:[dynamicArg]="value">
 ```
 
-## 实际示例
+## Practical Examples
 
 ### v-click-outside
 
@@ -188,7 +188,7 @@ const vPermission = {
 }
 ```
 
-## TypeScript：全局指令
+## TypeScript: Global Directives
 
 ```ts
 // directives/highlight.ts
@@ -209,12 +209,12 @@ export default {
 } satisfies HighlightDirective
 ```
 
-## 在组件上使用
+## Usage on Components
 
-⚠️ **不推荐** - 指令应用到根元素，对于多根组件可能不可预测。
+⚠️ **Not recommended** - directives apply to root element, which can be unpredictable with multi-root components.
 
 ```vue-html
-<!-- 应用到 MyComponent 的根元素 -->
+<!-- Applies to MyComponent's root element -->
 <MyComponent v-my-directive />
 ```
 

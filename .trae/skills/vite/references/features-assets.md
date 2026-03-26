@@ -1,52 +1,52 @@
 ---
 name: features-assets
-description: Vite 中的静态资源处理，包括导入、public 目录和 URL 处理
+description: Static asset handling in Vite including imports, public directory, and URL handling
 ---
 
-# 静态资源处理
+# Static Asset Handling
 
-## 将资源导入为 URL
+## Importing Assets as URL
 
 ```ts
 import imgUrl from './img.png'
 document.getElementById('hero-img').src = imgUrl
-// 开发: /src/img.png
-// 构建: /assets/img.2d8efhg.png
+// Dev: /src/img.png
+// Build: /assets/img.2d8efhg.png
 ```
 
-常见的图像、媒体和字体类型会自动检测。
+Common image, media, and font types are detected automatically.
 
-## 导入查询
+## Import Queries
 
-### 显式 URL 导入
+### Explicit URL Import
 
 ```ts
 import workletURL from './worklet.js?url'
 CSS.paintWorklet.addModule(workletURL)
 ```
 
-### 作为字符串导入（原始）
+### Import as String (Raw)
 
 ```ts
 import shaderString from './shader.glsl?raw'
 ```
 
-### 控制内联
+### Control Inlining
 
 ```ts
-import imgUrl1 from './img.svg?no-inline'  // 从不内联
-import imgUrl2 from './img.png?inline'      // 始终作为 base64 内联
+import imgUrl1 from './img.svg?no-inline'  // Never inline
+import imgUrl2 from './img.png?inline'      // Always inline as base64
 ```
 
-## 资源内联
+## Asset Inlining
 
-小于 `assetsInlineLimit`（默认 4KB）的资源作为 base64 内联：
+Assets smaller than `assetsInlineLimit` (default 4KB) are inlined as base64:
 
 ```ts
 export default defineConfig({
   build: {
     assetsInlineLimit: 4096,  // 4KB
-    // 或使用回调进行精细控制
+    // Or use callback for fine control
     assetsInlineLimit: (filePath) => {
       return !filePath.endsWith('.svg')
     }
@@ -54,12 +54,12 @@ export default defineConfig({
 })
 ```
 
-## `public` 目录
+## The `public` Directory
 
-`public/` 中的文件：
-- 开发期间在根路径 `/` 提供服务
-- 构建期间原样复制到 `dist/` 根目录
-- 不进行处理或哈希
+Files in `public/` are:
+- Served at root path `/` during dev
+- Copied as-is to `dist/` root during build
+- Not processed or hashed
 
 ```
 public/
@@ -67,21 +67,21 @@ public/
   robots.txt   → /robots.txt
 ```
 
-在源代码中使用绝对路径引用：
+Reference with absolute paths in source:
 
 ```html
 <img src="/icon.png" />
 ```
 
-配置目录：
+Configure directory:
 
 ```ts
 export default defineConfig({
-  publicDir: 'static'  // 或 false 禁用
+  publicDir: 'static'  // or false to disable
 })
 ```
 
-## 扩展资源类型
+## Extending Asset Types
 
 ```ts
 export default defineConfig({
@@ -89,25 +89,25 @@ export default defineConfig({
 })
 ```
 
-## 使用 import.meta.url 的动态 URL
+## Dynamic URLs with import.meta.url
 
 ```ts
-// 在现代浏览器中原生工作
+// Works natively in modern browsers
 const imgUrl = new URL('./img.png', import.meta.url).href
 
-// 动态模式（有限）
+// Dynamic pattern (limited)
 function getImageUrl(name) {
   return new URL(`./dir/${name}.png`, import.meta.url).href
 }
 ```
 
-**限制：**
-- URL 字符串必须是静态的以便构建分析
-- 不适用于 SSR（Node.js 与浏览器中的语义不同）
+**Limitations:**
+- URL string must be static for build analysis
+- Does not work with SSR (different semantics in Node.js vs browser)
 
-## TypeScript 支持
+## TypeScript Support
 
-添加 `vite/client` 到类型以识别资源导入：
+Add `vite/client` to types for asset import recognition:
 
 ```json
 {
@@ -117,19 +117,19 @@ function getImageUrl(name) {
 }
 ```
 
-## CSS 中的 URL 处理
+## URL Handling in CSS
 
 ```css
 .hero {
-  background: url('./img.png');  /* 已处理并重新定位 */
+  background: url('./img.png');  /* Processed and rebased */
 }
 ```
 
-对于动态构造的 SVG URL：
+For dynamically constructed SVG URLs:
 
 ```ts
 import imgUrl from './img.svg'
-element.style.background = `url("${imgUrl}")`  // 注意双引号
+element.style.background = `url("${imgUrl}")`  // Note double quotes
 ```
 
 <!-- 

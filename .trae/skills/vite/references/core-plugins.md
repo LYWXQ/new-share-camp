@@ -1,15 +1,15 @@
 ---
 name: core-plugins
-description: 添加、配置和排序 Vite 插件
+description: Adding, configuring, and ordering Vite plugins
 ---
 
-# 使用插件
+# Using Plugins
 
-Vite 使用额外的 Vite 特定选项扩展了 Rolldown 的插件接口。
+Vite extends Rolldown's plugin interface with extra Vite-specific options.
 
-## 添加插件
+## Adding Plugins
 
-安装并添加到配置：
+Install and add to config:
 
 ```bash
 npm add -D @vitejs/plugin-vue
@@ -25,12 +25,12 @@ export default defineConfig({
 })
 ```
 
-## 插件数组
+## Plugin Arrays
 
-插件可以返回数组（用于复杂功能）：
+Plugins can return arrays (for complex features):
 
 ```ts
-// 返回多个插件的框架插件
+// Framework plugin returning multiple plugins
 export default function framework(config) {
   return [
     frameworkRefresh(config),
@@ -39,104 +39,104 @@ export default function framework(config) {
 }
 ```
 
-## 条件插件
+## Conditional Plugins
 
-假值被忽略：
+Falsy values are ignored:
 
 ```ts
 export default defineConfig({
   plugins: [
     vue(),
-    process.env.ANALYZE && visualizer()  // 仅在设置 ANALYZE 时
+    process.env.ANALYZE && visualizer()  // Only if ANALYZE is set
   ]
 })
 ```
 
-## 强制插件顺序
+## Enforcing Plugin Order
 
-控制插件相对于 Vite 核心的运行时机：
+Control when plugin runs relative to Vite core:
 
 ```ts
 export default defineConfig({
   plugins: [
     {
       ...somePlugin(),
-      enforce: 'pre'  // 在 Vite 核心插件之前
+      enforce: 'pre'  // Before Vite core plugins
     },
     {
       ...anotherPlugin(),
-      enforce: 'post'  // 在 Vite 构建插件之后
+      enforce: 'post'  // After Vite build plugins
     }
   ]
 })
 ```
 
-**顺序：**
-1. 别名
-2. 带有 `enforce: 'pre'` 的插件
-3. Vite 核心插件
-4. 没有 enforce 的插件
-5. Vite 构建插件
-6. 带有 `enforce: 'post'` 的插件
-7. Vite 构建后插件（压缩、manifest）
+**Order:**
+1. Alias
+2. Plugins with `enforce: 'pre'`
+3. Vite core plugins
+4. Plugins without enforce
+5. Vite build plugins
+6. Plugins with `enforce: 'post'`
+7. Vite post-build plugins (minify, manifest)
 
-## 条件应用
+## Conditional Application
 
-仅在 serve 或 build 期间应用：
+Apply only during serve or build:
 
 ```ts
 export default defineConfig({
   plugins: [
     {
       ...typescript2(),
-      apply: 'build'  // 仅在构建期间
+      apply: 'build'  // Only during build
     },
     {
       ...devOnlyPlugin(),
-      apply: 'serve'  // 仅在开发期间
+      apply: 'serve'  // Only during dev
     }
   ]
 })
 ```
 
-函数形式以获得更多控制：
+Function form for more control:
 
 ```ts
 {
   ...myPlugin(),
   apply(config, { command }) {
-    // 仅在构建期间应用，但不用于 SSR
+    // Apply only on build but not for SSR
     return command === 'build' && !config.build.ssr
   }
 }
 ```
 
-## 查找插件
+## Finding Plugins
 
-1. 查看 [Vite 功能指南](https://vite.dev/guide/features.html) - 许多用例是内置的
-2. [Vite 插件](https://vite.dev/plugins/) 中的官方插件
-3. [awesome-vite](https://github.com/vitejs/awesome-vite#plugins) 中的社区插件
-4. 搜索 npm 中的 `vite-plugin-*` 或 `rollup-plugin-*`
+1. Check [Vite Features Guide](https://vite.dev/guide/features.html) - many use cases are built-in
+2. Official plugins in [Vite Plugins](https://vite.dev/plugins/)
+3. Community plugins in [awesome-vite](https://github.com/vitejs/awesome-vite#plugins)
+4. Search npm for `vite-plugin-*` or `rollup-plugin-*`
 
-## 官方插件
+## Official Plugins
 
-| 插件 | 用途 |
-|------|------|
-| `@vitejs/plugin-vue` | Vue 3 SFC 支持 |
-| `@vitejs/plugin-vue-jsx` | Vue 3 JSX 支持 |
-| `@vitejs/plugin-react` | 使用 Babel/Oxc 的 React |
-| `@vitejs/plugin-react-swc` | 使用 SWC 的 React |
+| Plugin | Purpose |
+|--------|---------|
+| `@vitejs/plugin-vue` | Vue 3 SFC support |
+| `@vitejs/plugin-vue-jsx` | Vue 3 JSX support |
+| `@vitejs/plugin-react` | React with Babel/Oxc |
+| `@vitejs/plugin-react-swc` | React with SWC |
 | `@vitejs/plugin-rsc` | React Server Components |
-| `@vitejs/plugin-legacy` | 旧版浏览器支持 |
+| `@vitejs/plugin-legacy` | Legacy browser support |
 
-## Rollup/Rolldown 插件兼容性
+## Rollup/Rolldown Plugin Compatibility
 
-许多 Rollup 插件可以直接与 Vite 一起使用，如果它们：
-- 不使用 `moduleParsed` 钩子
-- 不依赖 Rolldown 特定选项
-- 在 bundle 和 output 阶段之间没有强耦合
+Many Rollup plugins work directly with Vite if they:
+- Don't use `moduleParsed` hook
+- Don't rely on Rolldown-specific options
+- Don't have strong coupling between bundle and output phases
 
-对于仅用于构建的 Rollup 插件：
+For build-only Rollup plugins:
 
 ```ts
 export default defineConfig({

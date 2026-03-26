@@ -90,10 +90,14 @@ const handleLogin = async () => {
   loading.value = true
   
   try {
+    console.log('登录请求参数:', { account: account.value, password: password.value })
+    
     const res = await login({
       account: account.value,
       password: password.value
     })
+    
+    console.log('登录响应:', res)
     
     const user = res.user as UserInfo
     
@@ -259,7 +263,7 @@ const showPrivacy = () => {
   font-size: 32rpx;
   font-weight: 500;
   border-radius: 12rpx;
-  margin-top: 20rpx;
+  margin-top: 20rpx auto;
   display: flex;
   align-items: center;
   justify-content: center;

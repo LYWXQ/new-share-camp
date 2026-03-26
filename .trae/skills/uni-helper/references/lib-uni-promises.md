@@ -1,24 +1,24 @@
 ---
 name: uni-promises
-description: uni-app API 的 Promise 封装 - 将基于回调的 API 转换为基于 Promise 的 API，做什么：为 uni-app 的回调式 API 提供 Promise 封装，支持 async/await；何时调用：当用户需要将 uni-app 的回调式 API（如 uni.request、uni.showModal、uni.getStorage 等）转换为 Promise 形式以更好地使用 async/await 时调用
+description: Promise wrappers for uni-app APIs - convert callback-based APIs to Promise-based
 ---
 
 # uni-promises
 
-uni-app 基于回调的 API 的 Promise 封装。将 uni-app API 转换为返回 Promise，以提供更好的 async/await 支持。
+Promise wrappers for uni-app's callback-based APIs. Convert uni-app APIs to return Promises for better async/await support.
 
-## 安装
+## Installation
 
 ```bash
 npm i @uni-helper/uni-promises
 ```
 
-## 用法
+## Usage
 
-不再使用回调：
+Instead of using callbacks:
 
 ```ts
-// 原始回调风格
+// Original callback style
 uni.request({
   url: 'https://api.example.com',
   success: (res) => {
@@ -30,91 +30,91 @@ uni.request({
 })
 ```
 
-使用 Promise：
+Use Promises:
 
 ```ts
 import { request } from '@uni-helper/uni-promises'
 
-// Promise 风格
+// Promise style
 const res = await request({
   url: 'https://api.example.com',
 })
 console.log(res.data)
 ```
 
-## 可用 API
+## Available APIs
 
-大多数 uni-app API 都被封装了：
+Most uni-app APIs are wrapped:
 
-### 网络
-- `request` - HTTP 请求
-- `uploadFile` - 文件上传
-- `downloadFile` - 文件下载
+### Network
+- `request` - HTTP request
+- `uploadFile` - File upload
+- `downloadFile` - File download
 - `connectSocket` - WebSocket
 
-### 存储
-- `setStorage` - 设置存储
-- `getStorage` - 获取存储
-- `removeStorage` - 移除存储
-- `clearStorage` - 清除所有存储
-- `getStorageInfo` - 存储信息
+### Storage
+- `setStorage` - Set storage
+- `getStorage` - Get storage
+- `removeStorage` - Remove storage
+- `clearStorage` - Clear all storage
+- `getStorageInfo` - Storage info
 
-### 媒体
-- `chooseImage` - 选择图片
-- `chooseVideo` - 选择视频
-- `chooseMedia` - 选择媒体
-- `previewImage` - 预览图片
-- `saveImageToPhotosAlbum` - 保存图片
-- `compressImage` - 压缩图片
+### Media
+- `chooseImage` - Select images
+- `chooseVideo` - Select video
+- `chooseMedia` - Select media
+- `previewImage` - Preview images
+- `saveImageToPhotosAlbum` - Save image
+- `compressImage` - Compress image
 
-### 文件
-- `saveFile` - 保存文件
-- `getFileInfo` - 文件信息
-- `getSavedFileList` - 已保存文件列表
-- `removeSavedFile` - 移除已保存文件
-- `openDocument` - 打开文档
+### File
+- `saveFile` - Save file
+- `getFileInfo` - File info
+- `getSavedFileList` - Saved files list
+- `removeSavedFile` - Remove saved file
+- `openDocument` - Open document
 
-### 位置
-- `getLocation` - 获取位置
-- `chooseLocation` - 选择位置
-- `openLocation` - 打开位置
+### Location
+- `getLocation` - Get location
+- `chooseLocation` - Choose location
+- `openLocation` - Open location
 
-### 设备
-- `getSystemInfo` - 系统信息
-- `getNetworkType` - 网络类型
-- `scanCode` - 扫码
-- `setClipboardData` - 复制到剪贴板
-- `getClipboardData` - 获取剪贴板
+### Device
+- `getSystemInfo` - System info
+- `getNetworkType` - Network type
+- `scanCode` - QR/barcode scan
+- `setClipboardData` - Copy to clipboard
+- `getClipboardData` - Get clipboard
 
 ### UI
-- `showToast` - 显示提示
-- `showModal` - 显示模态框
-- `showActionSheet` - 显示操作菜单
-- `showLoading` - 显示加载
-- `hideLoading` - 隐藏加载
-- `showNavigationBarLoading` - 导航栏加载
-- `hideNavigationBarLoading` - 隐藏导航栏加载
-- `setNavigationBarTitle` - 设置导航栏标题
-- `setNavigationBarColor` - 设置导航栏颜色
-- `pageScrollTo` - 滚动到位置
+- `showToast` - Show toast
+- `showModal` - Show modal
+- `showActionSheet` - Show action sheet
+- `showLoading` - Show loading
+- `hideLoading` - Hide loading
+- `showNavigationBarLoading` - Nav loading
+- `hideNavigationBarLoading` - Hide nav loading
+- `setNavigationBarTitle` - Set nav title
+- `setNavigationBarColor` - Set nav color
+- `pageScrollTo` - Scroll to position
 
-### 导航
-- `navigateTo` - 导航到页面
-- `redirectTo` - 重定向到页面
-- `reLaunch` - 重启应用
-- `switchTab` - 切换标签页
-- `navigateBack` - 返回
+### Navigation
+- `navigateTo` - Navigate to page
+- `redirectTo` - Redirect to page
+- `reLaunch` - Re-launch app
+- `switchTab` - Switch tab
+- `navigateBack` - Go back
 
-### 登录
-- `login` - 用户登录
-- `checkSession` - 检查会话
-- `getUserProfile` - 获取用户资料
-- `getUserInfo` - 获取用户信息
+### Login
+- `login` - User login
+- `checkSession` - Check session
+- `getUserProfile` - Get user profile
+- `getUserInfo` - Get user info
 
-### 支付
-- `requestPayment` - 发起支付
+### Payment
+- `requestPayment` - Request payment
 
-## 示例用法
+## Example Usage
 
 ```ts
 import {
@@ -128,29 +128,29 @@ import {
 } from '@uni-helper/uni-promises'
 
 async function handleUserAction() {
-  // 显示确认
+  // Show confirmation
   const { confirm } = await showModal({
-    title: '确认',
-    content: '你确定吗？',
+    title: 'Confirm',
+    content: 'Are you sure?',
   })
 
   if (!confirm) return
 
   try {
-    // 获取缓存数据
+    // Get cached data
     const { data: token } = await getStorage({ key: 'token' })
 
-    // 获取系统信息
+    // Get system info
     const systemInfo = await getSystemInfo()
-    console.log('平台:', systemInfo.platform)
+    console.log('Platform:', systemInfo.platform)
 
-    // 选择图片
+    // Select image
     const { tempFilePaths } = await chooseImage({
       count: 1,
       sizeType: ['compressed'],
     })
 
-    // 上传文件
+    // Upload file
     const uploadRes = await uploadFile({
       url: 'https://api.example.com/upload',
       filePath: tempFilePaths[0],
@@ -158,26 +158,26 @@ async function handleUserAction() {
     })
 
     await showToast({
-      title: '成功!',
+      title: 'Success!',
       icon: 'success',
     })
 
-    // 导航
+    // Navigate
     await navigateTo({
       url: '/pages/success/index',
     })
   } catch (error) {
     await showToast({
-      title: error.message || '失败',
+      title: error.message || 'Failed',
       icon: 'error',
     })
   }
 }
 ```
 
-## 错误处理
+## Error Handling
 
-所有封装的 API 都使用标准 Error 对象 reject：
+All wrapped APIs reject with standard Error objects:
 
 ```ts
 import { request } from '@uni-helper/uni-promises'
@@ -185,8 +185,8 @@ import { request } from '@uni-helper/uni-promises'
 try {
   const res = await request({ url: 'https://api.example.com' })
 } catch (error) {
-  // error.message 包含 fail 回调的消息
-  console.error('请求失败:', error.message)
+  // error.message contains the fail callback message
+  console.error('Request failed:', error.message)
 }
 ```
 

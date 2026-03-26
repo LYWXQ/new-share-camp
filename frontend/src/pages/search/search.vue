@@ -14,6 +14,29 @@
       </view>
       <button class="cancel-button" @click="cancelSearch">取消</button>
     </view>
+    
+    <!-- 分类标签筛选 -->
+    <view class="category-filter">
+      <scroll-view scroll-x class="category-scroll">
+        <view
+          class="category-tag"
+          :class="{ active: currentCategory === '' }"
+          @click="selectCategory('')"
+        >
+          全部
+        </view>
+        <view
+          class="category-tag"
+          v-for="cat in categories"
+          :key="cat"
+          :class="{ active: currentCategory === cat }"
+          @click="selectCategory(cat)"
+        >
+          {{ cat }}
+        </view>
+      </scroll-view>
+    </view>
+    
     <view class="search-content">
       <!-- 搜索历史 -->
       <view class="search-history" v-if="searchHistory.length > 0 && !showResults && !searchQuery">
@@ -94,13 +117,17 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getItemList, type Item } from '@/api/items';
+import { getItemList, getCategories, type Item } from '@/api/items';
 
 const searchQuery = ref('');
 const showResults = ref(false);
 const searchResults = ref<Item[]>([]);
 const searchHistory = ref<string[]>([]);
 const hotTags = ref(['数码产品', '体育用品', '考研资料', '生活用品', '乐器']);
+
+// 分类相关
+const categories = ref<string[]>([]);
+const currentCategory = ref('');
 
 // 分页相关
 const currentPage = ref(1);
@@ -112,10 +139,41 @@ const isRefreshing = ref(false);
 // 本地存储键名
 const HISTORY_KEY = 'search_history';
 
-// 页面加载时获取搜索历史
+// 页面加载时获取搜索历史和分类
 onMounted(() => {
   loadSearchHistory();
+  loadCategories();
+  // 检查是否有分类参数
+  const pages = getCurrentPages();
+  const currentPage = pages[pages.length - 1];
+  const category = currentPage.$page?.options?.category;
+  if (category && category !== '全部') {
+    currentCategory.value = category;
+    showResults.value = true;
+    fetchSearchResults();
+  }
 });
+
+// 加载分类
+const loadCategories = async () => {
+  try {
+    const cats = await getCategories();
+    categories.value = cats.filter(cat => cat !== '全部');
+  } catch (error) {
+    console.error('加载分类失败', error);
+  }
+};
+
+// 选择分类
+const selectCategory = (category: string) => {
+  currentCategory.value = category;
+  // 重置分页并搜索
+  currentPage.value = 1;
+  hasMore.value = true;
+  searchResults.value = [];
+  showResults.value = true;
+  fetchSearchResults();
+};
 
 // 加载搜索历史
 const loadSearchHistory = () => {
@@ -212,11 +270,22 @@ const fetchSearchResults = async () => {
 
   loading.value = true;
   try {
-    const res = await getItemList({
+    const params: any = {
       page: currentPage.value,
-      limit: pageSize.value,
-      keyword: searchQuery.value.trim()
-    });
+      limit: pageSize.value
+    };
+    
+    // 添加关键词搜索
+    if (searchQuery.value.trim()) {
+      params.keyword = searchQuery.value.trim();
+    }
+    
+    // 添加分类筛选
+    if (currentCategory.value) {
+      params.category = currentCategory.value;
+    }
+    
+    const res = await getItemList(params);
     
     const resItems = res.items || [];
 
@@ -327,6 +396,35 @@ const goToDetail = (id: number) => {
 
 .search-content {
   padding: 16rpx;
+}
+
+/* 分类筛选 */
+.category-filter {
+  background-color: #ffffff;
+  padding: 16rpx 0;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.category-scroll {
+  white-space: nowrap;
+  padding: 0 16rpx;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 12rpx 24rpx;
+  margin-right: 16rpx;
+  background-color: #f5f5f5;
+  border-radius: 28rpx;
+  font-size: 26rpx;
+  color: #666666;
+  border: 2rpx solid transparent;
+}
+
+.category-tag.active {
+  background-color: #667eea;
+  color: #ffffff;
+  border-color: #667eea;
 }
 
 /* 搜索历史 */

@@ -1,60 +1,60 @@
 ---
-name: 核心框架
-description: UniApp 核心框架概念、项目结构和平台概览。在了解 uni-app 项目结构、平台支持、条件编译和跨平台开发最佳实践时调用此技能。
+name: Core Framework
+description: UniApp core framework concepts, project structure, and platform overview
 ---
 
-# UniApp 核心框架
+# UniApp Core Framework
 
-UniApp 是一个基于 Vue.js 的跨平台框架，用于开发运行在 iOS、Android、HarmonyOS、Web 和各种小程序平台（微信、支付宝、百度、抖音等）上的应用程序。
+UniApp is a Vue.js-based cross-platform framework for developing applications that run on iOS, Android, HarmonyOS, Web, and various mini-program platforms (WeChat, Alipay, Baidu, Douyin, etc.).
 
-## 项目结构
+## Project Structure
 
 ```
 project-root/
-├── pages/                  # 页面文件
+├── pages/                  # Page files
 │   └── index/
-│       └── index.vue       # 页面组件
-├── components/             # 可复用组件
-├── static/                 # 静态资源（图片、字体）
-├── App.vue                 # 应用根组件
-├── main.js                 # 应用入口
-├── manifest.json           # 应用配置
-├── pages.json              # 页面路由配置
-└── uni.scss                # 全局 SCSS 变量
+│       └── index.vue       # Page component
+├── components/             # Reusable components
+├── static/                 # Static assets (images, fonts)
+├── App.vue                 # Application root component
+├── main.js                 # Application entry
+├── manifest.json           # App configuration
+├── pages.json              # Page routing config
+└── uni.scss                # Global SCSS variables
 ```
 
-## 平台支持
+## Platform Support
 
-| 平台 | 值 | 描述 |
-|------|-----|------|
-| App | APP-PLUS | iOS/Android 原生应用 |
-| App nvue | APP-PLUS-NVUE | 原生渲染页面 |
-| H5 | H5 / WEB | Web 应用 |
-| 微信小程序 | MP-WEIXIN | 微信小程序 |
-| 支付宝 | MP-ALIPAY | 支付宝小程序 |
-| 百度 | MP-BAIDU | 百度智能小程序 |
-| 抖音 | MP-TOUTIAO | 字节跳动小程序 |
-| QQ | MP-QQ | QQ 小程序 |
-| 快手 | MP-KUAISHOU | 快手小程序 |
+| Platform | Value | Description |
+|----------|-------|-------------|
+| App | APP-PLUS | iOS/Android native apps |
+| App nvue | APP-PLUS-NVUE | Native rendering pages |
+| H5 | H5 / WEB | Web applications |
+| WeChat Mini Program | MP-WEIXIN | WeChat MP |
+| Alipay | MP-ALIPAY | Alipay MP |
+| Baidu | MP-BAIDU | Baidu Smart Program |
+| Douyin | MP-TOUTIAO | ByteDance MP |
+| QQ | MP-QQ | QQ Mini Program |
+| Kuaishou | MP-KUAISHOU | Kuaishou MP |
 | HarmonyOS | APP-HARMONY | HarmonyOS Next |
 
-## 条件编译
+## Condition Compilation
 
-使用特殊注释语法处理平台差异：
+Handle platform differences using special comment syntax:
 
 ```vue
 <template>
   <view>
     <!-- #ifdef APP-PLUS -->
-    <text>仅 App 内容</text>
+    <text>App only content</text>
     <!-- #endif -->
 
     <!-- #ifdef MP-WEIXIN -->
-    <text>仅微信小程序</text>
+    <text>WeChat MP only</text>
     <!-- #endif -->
 
     <!-- #ifndef H5 -->
-    <text>除 H5 外的所有平台</text>
+    <text>All platforms except H5</text>
     <!-- #endif -->
   </view>
 </template>
@@ -81,33 +81,33 @@ export default {
 </style>
 ```
 
-## 平台值参考
+## Platform Values Reference
 
-| 值 | 描述 |
-|-----|------|
-| VUE3 / VUE2 | Vue 版本 |
-| UNI-APP-X | UniApp X 项目 |
-| APP-PLUS | App（JS 引擎） |
-| APP-PLUS-NVUE / APP-NVUE | App nvue 页面 |
-| APP-ANDROID | Android 平台 |
-| APP-IOS | iOS 平台 |
+| Value | Description |
+|-------|-------------|
+| VUE3 / VUE2 | Vue version |
+| UNI-APP-X | UniApp X project |
+| APP-PLUS | App (JS engine) |
+| APP-PLUS-NVUE / APP-NVUE | App nvue pages |
+| APP-ANDROID | Android platform |
+| APP-IOS | iOS platform |
 | APP-HARMONY | HarmonyOS Next |
-| H5 / WEB | Web 平台 |
-| MP-WEIXIN | 微信小程序 |
-| MP-ALIPAY | 支付宝小程序 |
-| MP-BAIDU | 百度智能小程序 |
-| MP-TOUTIAO | 抖音小程序 |
-| MP-LARK | 飞书小程序 |
-| MP-QQ | QQ 小程序 |
-| MP-KUAISHOU | 快手小程序 |
-| MP-HARMONY | HarmonyOS 元服务 |
+| H5 / WEB | Web platform |
+| MP-WEIXIN | WeChat Mini Program |
+| MP-ALIPAY | Alipay Mini Program |
+| MP-BAIDU | Baidu Smart Program |
+| MP-TOUTIAO | Douyin Mini Program |
+| MP-LARK | Feishu Mini Program |
+| MP-QQ | QQ Mini Program |
+| MP-KUAISHOU | Kuaishou Mini Program |
+| MP-HARMONY | HarmonyOS Meta Service |
 
-## API Promise 支持
+## API Promise Support
 
-UniApp API 在不提供回调时支持 Promise：
+UniApp APIs support Promise when no callback is provided:
 
 ```javascript
-// Promise 风格
+// Promise style
 uni.request({ url: 'https://api.example.com' })
   .then(res => console.log(res))
   .catch(err => console.error(err))
@@ -123,7 +123,7 @@ async function fetchData() {
 }
 ```
 
-**注意：** 同步 API（以 `Sync` 结尾）、`create*` 方法和 `*Manager` 方法不支持 Promise。
+**Note:** Synchronous APIs (ending in `Sync`), `create*` methods, and `*Manager` methods do not support Promise.
 
 <!--
 Source references:

@@ -1,36 +1,36 @@
 ---
-title: 根据依赖控制需求选择 watch vs watchEffect
+title: Choose watch vs watchEffect Based on Dependency Control Needs
 impact: MEDIUM
-impactDescription: 错误的选择会导致不必要的重新运行或遗漏依赖项追踪
+impactDescription: Wrong choice leads to unnecessary re-runs or missed dependency tracking
 type: efficiency
 tags: [vue3, watch, watchEffect, watchers, reactivity, best-practices]
 ---
 
-# 根据依赖控制需求选择 watch vs watchEffect
+# Choose watch vs watchEffect Based on Dependency Control Needs
 
-**影响：中** - 在 `watchEffect` 更简洁时使用 `watch` 会导致重复代码。在需要 `watch` 时使用 `watchEffect` 可能导致意外的重新运行或遗漏依赖项（尤其是异步情况）。
+**Impact: MEDIUM** - Using `watch` when `watchEffect` would be cleaner leads to repetitive code. Using `watchEffect` when `watch` is needed can cause unexpected re-runs or missed dependencies (especially with async).
 
-在回调使用与应该触发它的相同状态的简单情况下使用 `watchEffect`。当你需要精确控制什么触发回调、访问旧值或延迟执行时，使用 `watch`。
+Use `watchEffect` for simple cases where the callback uses the same state as what should trigger it. Use `watch` when you need precise control over what triggers the callback, access to old values, or lazy execution.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 当回调逻辑使用与应该响应它的相同状态时使用 `watchEffect`
-- [ ] 当你需要旧值比较时使用 `watch`
-- [ ] 当你需要延迟执行（非立即）时使用 `watch`
-- [ ] 对带有 await 后依赖的异步回调使用 `watch`
-- [ ] 当回调不应在初始挂载时运行时使用 `watch`
+- [ ] Use `watchEffect` when callback logic uses the same state it should react to
+- [ ] Use `watch` when you need old value comparison
+- [ ] Use `watch` when you need lazy execution (not immediate)
+- [ ] Use `watch` for async callbacks with dependencies after await
+- [ ] Use `watch` when callback should not run on initial mount
 
-## 对比表
+## Comparison Table
 
-| 特性 | `watch` | `watchEffect` |
-|------|---------|---------------|
-| 依赖追踪 | 显式（你指定） | 自动（使用访问的属性） |
-| 默认延迟 | 是（只在变化时运行） | 否（立即运行） |
-| 访问旧值 | 是 | 否 |
-| 异步依赖追踪 | 完全控制 | 只在第一次 await 之前 |
-| 多个源 | 数组语法 | 自动 |
+| Feature | `watch` | `watchEffect` |
+|---------|---------|---------------|
+| Dependency tracking | Explicit (you specify) | Automatic (uses accessed properties) |
+| Lazy by default | Yes (runs only on change) | No (runs immediately) |
+| Access old value | Yes | No |
+| Async dependency tracking | Full control | Only before first await |
+| Multiple sources | Array syntax | Automatic |
 
-**优先使用 `watchEffect` 的情况：**
+**When to prefer `watchEffect`:**
 ```vue
 <script setup>
 import { ref, watchEffect } from 'vue'
@@ -38,7 +38,7 @@ import { ref, watchEffect } from 'vue'
 const todoId = ref(1)
 const data = ref(null)
 
-// 正确：当回调使用相同状态时 watchEffect 更简洁
+// GOOD: watchEffect is cleaner when callback uses same state
 watchEffect(async () => {
   const response = await fetch(
     `https://api.example.com/todos/${todoId.value}`
@@ -48,7 +48,7 @@ watchEffect(async () => {
 </script>
 ```
 
-**优先使用 `watch` 的情况：**
+**When to prefer `watch`:**
 ```vue
 <script setup>
 import { ref, watch } from 'vue'
@@ -56,29 +56,29 @@ import { ref, watch } from 'vue'
 const todoId = ref(1)
 const data = ref(null)
 
-// 使用 watch 更好的情况：
+// BETTER with watch when:
 
-// 1. 你需要旧值
+// 1. You need old value
 watch(todoId, (newId, oldId) => {
-  console.log(`从 ${oldId} 变更为 ${newId}`)
+  console.log(`Changed from ${oldId} to ${newId}`)
 })
 
-// 2. 你不想要立即执行
+// 2. You don't want immediate execution
 watch(todoId, () => {
-  // 只在 todoId 变化时运行，不在挂载时运行
+  // Only runs when todoId changes, not on mount
   fetchData()
 })
 
-// 3. 你在 await 后有依赖
+// 3. You have dependencies after await
 watch(todoId, async (id) => {
   const response = await fetch(`/api/todos/${id}`)
-  // 这里更多的响应式访问仍然正确触发
-  // 因为我们显式指定了 todoId 作为源
+  // More reactive access here still triggers correctly
+  // because we explicitly specified todoId as the source
 })
 </script>
 ```
 
-## 使用 watchEffect 避免冗余代码
+## Avoid Redundant Code with watchEffect
 
 ```vue
 <script setup>
@@ -88,22 +88,22 @@ const searchQuery = ref('')
 const category = ref('all')
 const results = ref([])
 
-// 错误：重复 - 在源和使用中列出相同的依赖
+// BAD: Repetitive - listing same deps in source and using in callback
 watch(
   [searchQuery, category],
   ([query, cat]) => {
-    fetchResults(query, cat)  // 相同的变量重复
+    fetchResults(query, cat)  // Same variables repeated
   }
 )
 
-// 正确：watchEffect 消除重复
+// GOOD: watchEffect removes repetition
 watchEffect(() => {
   fetchResults(searchQuery.value, category.value)
 })
 </script>
 ```
 
-## 使用 watch 实现延迟行为
+## Use watch for Lazy Behavior
 
 ```vue
 <script setup>
@@ -111,32 +111,32 @@ import { ref, watch, watchEffect } from 'vue'
 
 const userId = ref(null)
 
-// 错误：即使 userId 为 null 也立即运行
+// BAD: Runs immediately even when userId is null
 watchEffect(() => {
   if (userId.value) {
     loadUserProfile(userId.value)
   }
 })
 
-// 正确：只在 userId 实际变化时运行
+// GOOD: Only runs when userId actually changes
 watch(userId, (id) => {
   if (id) {
     loadUserProfile(id)
   }
 })
 
-// 也可以：使用 immediate 的 watch 当你需要两种行为
+// ALSO GOOD: watch with immediate when you need both behaviors
 watch(
   userId,
   (id) => {
     if (id) loadUserProfile(id)
   },
-  { immediate: true }  // 显式立即运行
+  { immediate: true }  // Explicit about running immediately
 )
 </script>
 ```
 
-## 使用 watch 进行旧值比较
+## Use watch for Old Value Comparison
 
 ```vue
 <script setup>
@@ -144,7 +144,7 @@ import { ref, watch } from 'vue'
 
 const status = ref('pending')
 
-// 只有 watch() 提供旧值
+// Only watch() provides old value
 watch(status, (newStatus, oldStatus) => {
   if (oldStatus === 'pending' && newStatus === 'approved') {
     showApprovalNotification()
@@ -157,7 +157,7 @@ watch(status, (newStatus, oldStatus) => {
 </script>
 ```
 
-## 使用 watch 处理复杂的异步依赖
+## Use watch for Complex Async Dependencies
 
 ```vue
 <script setup>
@@ -167,14 +167,14 @@ const filters = ref({ status: 'active', sort: 'date' })
 const page = ref(1)
 const results = ref([])
 
-// 更好：对异步使用显式源的 watch
-// 无论 await 放在哪里，所有依赖都被正确追踪
+// BETTER: watch with explicit sources for async
+// All dependencies tracked regardless of await placement
 watch(
   [filters, page],
   async ([currentFilters, currentPage]) => {
     const data = await fetchWithFilters(currentFilters)
 
-    // 这些仍然被正确追踪：
+    // These are still correctly tracked:
     results.value = paginateResults(data, currentPage)
   },
   { deep: true }
@@ -182,5 +182,5 @@ watch(
 </script>
 ```
 
-## 参考
-- [Vue.js 监听器 - watch vs. watchEffect](https://vuejs.org/guide/essentials/watchers.html#watch-vs-watcheffect)
+## Reference
+- [Vue.js Watchers - watch vs. watchEffect](https://vuejs.org/guide/essentials/watchers.html#watch-vs-watcheffect)

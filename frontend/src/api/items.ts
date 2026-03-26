@@ -13,6 +13,9 @@ export interface Item {
   images: string[]
   price: number
   deposit: number
+  transactionType: 'free' | 'rent' | 'sell'
+  salePrice: number | null
+  isLongTermRent: boolean
   availableTime: {
     start?: string
     end?: string
@@ -42,6 +45,7 @@ export interface ItemListParams {
   category?: string
   keyword?: string
   sort?: 'newest' | 'price_asc' | 'price_desc'
+  transactionType?: 'free' | 'rent' | 'sell'
 }
 
 // 发布物品参数
@@ -52,6 +56,9 @@ export interface CreateItemParams {
   images: string[]
   price: number
   deposit: number
+  transactionType: 'free' | 'rent' | 'sell'
+  salePrice: number | null
+  isLongTermRent: boolean
   availableTime?: {
     start?: string
     end?: string
@@ -99,6 +106,13 @@ export const deleteItem = (id: number): Promise<{ message: string }> => {
  */
 export const getMyItems = (params?: { page?: number; limit?: number; status?: string }, options?: any): Promise<PaginationData<Item>> => {
   return get<PaginationData<Item>>('/items/mine', params, options)
+}
+
+/**
+ * 获取我的物品总数
+ */
+export const getMyItemsCount = (params?: { status?: string }): Promise<{ total: number }> => {
+  return getMyItems({ page: 1, limit: 1, ...params }).then(res => ({ total: res.pagination.total }))
 }
 
 /**

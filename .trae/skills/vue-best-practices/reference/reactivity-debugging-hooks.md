@@ -1,66 +1,66 @@
 ---
-title: 使用调试钩子追踪响应式问题
+title: Use Debug Hooks to Trace Reactivity Issues
 impact: MEDIUM
-impactDescription: 调试钩子帮助识别哪些依赖项触发重新渲染和监听器执行
+impactDescription: Debug hooks help identify which dependencies trigger re-renders and watcher executions
 type: efficiency
 tags: [vue3, reactivity, debugging, computed, watch, development]
 ---
 
-# 使用调试钩子追踪响应式问题
+# Use Debug Hooks to Trace Reactivity Issues
 
-**影响：中** - Vue 提供了调试钩子（`onTrack`、`onTrigger`、`renderTracked`、`renderTriggered`）来帮助准确识别哪些响应式依赖项正在被追踪以及哪些变更触发重新执行。这些对于调试性能问题和意外重新渲染非常宝贵。
+**Impact: MEDIUM** - Vue provides debug hooks (`onTrack`, `onTrigger`, `renderTracked`, `renderTriggered`) that help identify exactly which reactive dependencies are being tracked and which mutations trigger re-execution. These are invaluable for debugging performance issues and unexpected re-renders.
 
-调试钩子只在开发模式下工作，并在生产构建中被移除。使用它们来理解为什么计算属性、监听器或组件正在重新执行。
+Debug hooks only work in development mode and are stripped in production builds. Use them to understand why a computed property, watcher, or component is re-executing.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 在 computed/watch 上使用 `onTrack` 和 `onTrigger` 选项进行细粒度调试
-- [ ] 使用 `onRenderTracked` 和 `onRenderTriggered` 生命周期钩子进行组件渲染调试
-- [ ] 在钩子内部添加 `debugger` 语句以暂停执行并检查状态
-- [ ] 在生产前移除或注释掉调试钩子（它们是无操作但会增加混乱）
+- [ ] Use `onTrack` and `onTrigger` options on computed/watch for granular debugging
+- [ ] Use `onRenderTracked` and `onRenderTriggered` lifecycle hooks for component render debugging
+- [ ] Add `debugger` statements inside hooks to pause execution and inspect state
+- [ ] Remove or comment out debug hooks before production (they're no-ops but add clutter)
 
-> **注意：** `onTrack` 和 `onTrigger` 是仅用于开发的钩子。它们从生产构建中移除，并且可能不会在测试环境（例如 Vitest、Jest）中触发，具体取决于 Vue 的打包方式。如果你需要在测试中验证响应式行为，使用对响应式状态更改的直接断言，而不是依赖这些调试回调。
+> **Note:** `onTrack` and `onTrigger` are development-only hooks. They are stripped from production builds and may not fire in test environments (e.g., Vitest, Jest) depending on how Vue is bundled. If you need to verify reactivity behavior in tests, use direct assertions on reactive state changes rather than relying on these debug callbacks.
 
-**调试计算属性：**
+**Debugging computed properties:**
 ```javascript
 import { ref, computed } from 'vue'
 
 const count = ref(0)
 const doubled = computed(() => count.value * 2, {
   onTrack(event) {
-    // 当依赖项被追踪时调用
-    // event.target = 响应式对象
-    // event.key = 正在访问的属性
+    // Called when a dependency is tracked
+    // event.target = the reactive object
+    // event.key = the property being accessed
     debugger
     console.log('Tracking:', event)
   },
   onTrigger(event) {
-    // 当依赖项变更触发重新计算时调用
+    // Called when a dependency mutation triggers re-computation
     debugger
     console.log('Triggered by:', event)
   }
 })
 ```
 
-**调试监听器：**
+**Debugging watchers:**
 ```javascript
 import { ref, watch, watchEffect } from 'vue'
 
 const source = ref(0)
 
-// 使用 watch()
+// With watch()
 watch(source, (newVal, oldVal) => {
   console.log('Changed:', oldVal, '->', newVal)
 }, {
   onTrack(e) {
-    debugger // 暂停以查看正在追踪的内容
+    debugger // Pause to see what's being tracked
   },
   onTrigger(e) {
-    debugger // 暂停以查看什么触发了监听器
+    debugger // Pause to see what triggered the watcher
   }
 })
 
-// 使用 watchEffect()
+// With watchEffect()
 watchEffect(() => {
   console.log('Source is:', source.value)
 }, {
@@ -73,30 +73,30 @@ watchEffect(() => {
 })
 ```
 
-**调试组件渲染：**
+**Debugging component renders:**
 ```vue
 <script setup>
 import { onRenderTracked, onRenderTriggered, ref } from 'vue'
 
 const count = ref(0)
 
-// 在渲染期间为每个响应式依赖项访问调用
+// Called for every reactive dependency accessed during render
 onRenderTracked((event) => {
   console.log('Render tracked:', event.key, 'from', event.target)
-  debugger // 暂停以检查哪些依赖项被追踪
+  debugger // Pause to inspect which dependencies are tracked
 })
 
-// 当响应式依赖项触发重新渲染时调用
+// Called when a reactive dependency triggers re-render
 onRenderTriggered((event) => {
   console.log('Render triggered by:', event.key)
   console.log('Old value:', event.oldValue)
   console.log('New value:', event.newValue)
-  debugger // 暂停以查看究竟是什么导致了重新渲染
+  debugger // Pause to see exactly what caused the re-render
 })
 </script>
 ```
 
-**Options API 等效：**
+**Options API equivalent:**
 ```javascript
 export default {
   data() {
@@ -113,20 +113,20 @@ export default {
 }
 ```
 
-**调试事件属性：**
+**Debug event properties:**
 ```javascript
-// 事件对象包含：
+// The event object contains:
 {
-  effect: ReactiveEffect,  // 被调试的 effect
-  target: object,          // 响应式对象
+  effect: ReactiveEffect,  // The effect being debugged
+  target: object,          // The reactive object
   type: 'get' | 'set' | 'add' | 'delete' | 'clear',
-  key: string | symbol,    // 正在访问/变更的属性
-  oldValue: any,           // 之前的值（用于 onTrigger）
-  newValue: any            // 新值（用于 onTrigger）
+  key: string | symbol,    // The property being accessed/mutated
+  oldValue: any,           // Previous value (for onTrigger)
+  newValue: any            // New value (for onTrigger)
 }
 ```
 
-## 参考
-- [Vue.js 深入响应式 - 调试](https://vuejs.org/guide/extras/reactivity-in-depth.html#reactivity-debugging)
+## Reference
+- [Vue.js Reactivity in Depth - Debugging](https://vuejs.org/guide/extras/reactivity-in-depth.html#reactivity-debugging)
 - [Vue.js computed() API](https://vuejs.org/api/reactivity-core.html#computed)
 - [Vue.js onRenderTracked()](https://vuejs.org/api/composition-api-lifecycle.html#onrendertracked)

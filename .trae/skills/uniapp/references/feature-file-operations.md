@@ -1,30 +1,30 @@
 ---
-name: 文件操作
-description: 文件系统操作、图片/视频选择和文件管理。在使用 uni-app 选择图片视频、操作文件系统或管理文件时调用此技能。
+name: File Operations
+description: File system operations, image/video selection, and file management
 ---
 
-# 文件操作
+# File Operations
 
-## 图片选择
+## Image Selection
 
 ### uni.chooseImage
 
-从相册或相机选择图片。
+Select images from album or camera.
 
 ```javascript
-// 从相册选择
+// Select from album
 uni.chooseImage({
-  count: 9, // 最多 9 张
+  count: 9, // Max 9
   sizeType: ['original', 'compressed'],
   sourceType: ['album'],
   success: (res) => {
-    console.log('已选择：', res.tempFilePaths)
+    console.log('Selected:', res.tempFilePaths)
     // tempFilePaths: ['blob:xxx', 'blob:xxx']
     // tempFiles: [{ path, size }]
   }
 })
 
-// 拍照
+// Take photo
 uni.chooseImage({
   count: 1,
   sourceType: ['camera'],
@@ -34,10 +34,10 @@ uni.chooseImage({
   }
 })
 
-// 相册和相机
+// Both album and camera
 uni.chooseImage({
   count: 5,
-  sizeType: ['compressed'], // 仅压缩
+  sizeType: ['compressed'], // Compressed only
   sourceType: ['album', 'camera'],
   success: (res) => {
     res.tempFilePaths.forEach(path => {
@@ -47,19 +47,19 @@ uni.chooseImage({
 })
 ```
 
-**参数：**
+**Parameters:**
 
-| 参数 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| count | Number | 9 | 最大图片数量 |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| count | Number | 9 | Max number of images |
 | sizeType | Array | ['original', 'compressed'] | original/compressed |
 | sourceType | Array | ['album', 'camera'] | album/camera |
 
-## 视频选择
+## Video Selection
 
 ### uni.chooseVideo
 
-选择或录制视频。
+Select or record video.
 
 ```javascript
 uni.chooseVideo({
@@ -68,18 +68,18 @@ uni.chooseVideo({
   maxDuration: 60,
   camera: 'back', // front/back
   success: (res) => {
-    console.log('路径：', res.tempFilePath)
-    console.log('时长：', res.duration) // 秒
-    console.log('大小：', res.size) // 字节
-    console.log('高度：', res.height)
-    console.log('宽度：', res.width)
+    console.log('Path:', res.tempFilePath)
+    console.log('Duration:', res.duration) // seconds
+    console.log('Size:', res.size) // bytes
+    console.log('Height:', res.height)
+    console.log('Width:', res.width)
   }
 })
 ```
 
-### uni.chooseMedia（微信/QQ）
+### uni.chooseMedia (WeChat/QQ)
 
-选择混合媒体类型。
+Choose mixed media types.
 
 ```javascript
 uni.chooseMedia({
@@ -94,17 +94,17 @@ uni.chooseMedia({
 })
 ```
 
-## 文件选择
+## File Selection
 
 ### uni.chooseFile
 
-选择任意文件类型。
+Select any file type.
 
 ```javascript
 uni.chooseFile({
   count: 1,
   type: 'all', // all/video/image/file
-  extension: ['.pdf', '.doc', '.docx'], // 按扩展名过滤
+  extension: ['.pdf', '.doc', '.docx'], // Filter by extension
   success: (res) => {
     console.log(res.tempFilePaths)
     console.log(res.tempFiles)
@@ -112,18 +112,18 @@ uni.chooseFile({
 })
 ```
 
-## 文件系统操作（App）
+## File System Operations (App)
 
-### 获取文件系统管理器
+### Get File System Manager
 
 ```javascript
 const fs = uni.getFileSystemManager()
 ```
 
-### 读取文件
+### Read File
 
 ```javascript
-// 作为文本读取
+// Read as text
 fs.readFile({
   filePath: `${uni.env.USER_DATA_PATH}/data.txt`,
   encoding: 'utf8',
@@ -132,7 +132,7 @@ fs.readFile({
   }
 })
 
-// 作为二进制读取
+// Read as binary
 fs.readFile({
   filePath: tempFilePath,
   encoding: 'binary',
@@ -142,7 +142,7 @@ fs.readFile({
 })
 ```
 
-### 写入文件
+### Write File
 
 ```javascript
 fs.writeFile({
@@ -150,237 +150,237 @@ fs.writeFile({
   data: JSON.stringify({ theme: 'dark' }),
   encoding: 'utf8',
   success: () => {
-    console.log('文件已写入')
+    console.log('File written')
   }
 })
 ```
 
-### 追加到文件
+### Append to File
 
 ```javascript
 fs.appendFile({
   filePath: `${uni.env.USER_DATA_PATH}/log.txt`,
-  data: '\n新日志条目',
+  data: '\nNew log entry',
   encoding: 'utf8',
   success: () => {
-    console.log('已追加')
+    console.log('Appended')
   }
 })
 ```
 
-### 删除文件
+### Delete File
 
 ```javascript
 fs.unlink({
   filePath: `${uni.env.USER_DATA_PATH}/temp.txt`,
   success: () => {
-    console.log('文件已删除')
+    console.log('File deleted')
   }
 })
 ```
 
-### 检查文件是否存在
+### Check File Exists
 
 ```javascript
 fs.access({
   path: `${uni.env.USER_DATA_PATH}/data.json`,
   success: () => {
-    console.log('文件存在')
+    console.log('File exists')
   },
   fail: () => {
-    console.log('文件不存在')
+    console.log('File not found')
   }
 })
 ```
 
-### 创建目录
+### Create Directory
 
 ```javascript
 fs.mkdir({
   dirPath: `${uni.env.USER_DATA_PATH}/downloads`,
-  recursive: true, // 创建父目录
+  recursive: true, // Create parent directories
   success: () => {
-    console.log('目录已创建')
+    console.log('Directory created')
   }
 })
 ```
 
-### 读取目录
+### Read Directory
 
 ```javascript
 fs.readdir({
   dirPath: `${uni.env.USER_DATA_PATH}/downloads`,
   success: (res) => {
-    console.log('文件：', res.files)
+    console.log('Files:', res.files)
   }
 })
 ```
 
-### 获取文件信息
+### Get File Info
 
 ```javascript
 fs.getFileInfo({
   filePath: tempFilePath,
   success: (res) => {
-    console.log('大小：', res.size)
-    console.log('创建时间：', res.createTime)
-    console.log('最后访问：', res.lastAccessedTime)
+    console.log('Size:', res.size)
+    console.log('Create time:', res.createTime)
+    console.log('Last access:', res.lastAccessedTime)
   }
 })
 ```
 
-## 保存和打开文件
+## Save and Open Files
 
-### 保存文件
+### Save File
 
 ```javascript
 uni.saveFile({
   tempFilePath: res.tempFilePath,
   success: (res) => {
     const savedPath = res.savedFilePath
-    console.log('保存到：', savedPath)
+    console.log('Saved to:', savedPath)
   }
 })
 ```
 
-### 获取已保存文件列表
+### Get Saved File List
 
 ```javascript
 uni.getSavedFileList({
   success: (res) => {
-    console.log('文件：', res.fileList)
+    console.log('Files:', res.fileList)
     // [{ filePath, createTime, size }, ...]
   }
 })
 ```
 
-### 获取已保存文件信息
+### Get Saved File Info
 
 ```javascript
 uni.getSavedFileInfo({
   filePath: savedFilePath,
   success: (res) => {
-    console.log('大小：', res.size)
-    console.log('创建时间：', res.createTime)
+    console.log('Size:', res.size)
+    console.log('Create time:', res.createTime)
   }
 })
 ```
 
-### 移除已保存文件
+### Remove Saved File
 
 ```javascript
 uni.removeSavedFile({
   filePath: savedFilePath,
   success: () => {
-    console.log('文件已移除')
+    console.log('File removed')
   }
 })
 ```
 
-### 打开文档
+### Open Document
 
 ```javascript
 uni.openDocument({
   filePath: filePath,
-  fileType: 'pdf', // 可选提示
-  showMenu: true, // 显示分享菜单（微信）
+  fileType: 'pdf', // Optional hint
+  showMenu: true, // Show share menu (WeChat)
   success: () => {
-    console.log('文档已打开')
+    console.log('Document opened')
   }
 })
 ```
 
-## 图片操作
+## Image Operations
 
-### 预览图片
+### Preview Image
 
 ```javascript
 uni.previewImage({
-  current: currentImage, // 当前图片 URL
-  urls: imageList, // 所有图片 URL
+  current: currentImage, // Current image URL
+  urls: imageList, // All image URLs
   indicator: 'default',
   loop: false,
   longPressActions: {
-    itemList: ['保存图片', '分享'],
+    itemList: ['Save Image', 'Share'],
     success: (data) => {
-      console.log('选择：', data.tapIndex)
+      console.log('Selected:', data.tapIndex)
     }
   }
 })
 ```
 
-### 获取图片信息
+### Get Image Info
 
 ```javascript
 uni.getImageInfo({
   src: imagePath,
   success: (res) => {
-    console.log('宽度：', res.width)
-    console.log('高度：', res.height)
-    console.log('路径：', res.path)
-    console.log('方向：', res.orientation)
-    console.log('类型：', res.type)
+    console.log('Width:', res.width)
+    console.log('Height:', res.height)
+    console.log('Path:', res.path)
+    console.log('Orientation:', res.orientation)
+    console.log('Type:', res.type)
   }
 })
 ```
 
-### 压缩图片
+### Compress Image
 
 ```javascript
 uni.compressImage({
   src: originalPath,
   quality: 80, // 0-100
   success: (res) => {
-    console.log('已压缩：', res.tempFilePath)
+    console.log('Compressed:', res.tempFilePath)
   }
 })
 ```
 
-### 保存图片到相册
+### Save Image to Album
 
 ```javascript
 uni.saveImageToPhotosAlbum({
   filePath: tempFilePath,
   success: () => {
-    uni.showToast({ title: '已保存到相册' })
+    uni.showToast({ title: 'Saved to album' })
   }
 })
 ```
 
-## 视频操作
+## Video Operations
 
-### 保存视频到相册
+### Save Video to Album
 
 ```javascript
 uni.saveVideoToPhotosAlbum({
   filePath: videoPath,
   success: () => {
-    uni.showToast({ title: '视频已保存' })
+    uni.showToast({ title: 'Video saved' })
   }
 })
 ```
 
-### 获取视频信息
+### Get Video Info
 
 ```javascript
 uni.getVideoInfo({
   src: videoPath,
   success: (res) => {
-    console.log('时长：', res.duration)
-    console.log('大小：', res.size)
-    console.log('比特率：', res.bitrate)
-    console.log('帧率：', res.fps)
+    console.log('Duration:', res.duration)
+    console.log('Size:', res.size)
+    console.log('Bitrate:', res.bitrate)
+    console.log('FPS:', res.fps)
   }
 })
 ```
 
-## 文件路径参考
+## File Paths Reference
 
-| 路径类型 | 示例 | 描述 |
-|----------|------|------|
-| tempFilePath | `blob:xxx` 或 `_doc/uniapp_temp/xxx` | 临时文件 |
-| savedFilePath | `_doc/uniapp_save/xxx` | 已保存文件 |
-| USER_DATA_PATH | `_doc/` | 应用数据目录 |
+| Path Type | Example | Description |
+|-----------|---------|-------------|
+| tempFilePath | `blob:xxx` or `_doc/uniapp_temp/xxx` | Temporary file |
+| savedFilePath | `_doc/uniapp_save/xxx` | Saved file |
+| USER_DATA_PATH | `_doc/` | App data directory |
 
 <!--
 Source references:

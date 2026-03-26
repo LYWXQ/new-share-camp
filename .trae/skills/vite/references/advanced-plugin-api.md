@@ -1,50 +1,50 @@
 ---
 name: advanced-plugin-api
-description: 创建 Vite 插件、钩子、虚拟模块和客户端-服务器通信
+description: Creating Vite plugins, hooks, virtual modules, and client-server communication
 ---
 
-# 插件 API
+# Plugin API
 
-Vite 插件扩展了 Rolldown 的插件接口，添加了 Vite 特定的钩子。
+Vite plugins extend Rolldown's plugin interface with Vite-specific hooks.
 
-## 基本插件结构
+## Basic Plugin Structure
 
 ```ts
 export default function myPlugin(options = {}) {
   return {
     name: 'vite-plugin-my-plugin',
     
-    // 钩子...
+    // Hooks...
   }
 }
 ```
 
-## 命名约定
+## Naming Conventions
 
-- Vite 专用插件：`vite-plugin-*`
-- Rollup 兼容：`rollup-plugin-*`
-- 框架特定：`vite-plugin-vue-*`、`vite-plugin-react-*`
+- Vite-only plugins: `vite-plugin-*`
+- Rollup-compatible: `rollup-plugin-*`
+- Framework-specific: `vite-plugin-vue-*`, `vite-plugin-react-*`
 
-## 通用钩子（来自 Rolldown）
+## Universal Hooks (from Rolldown)
 
-在服务器启动时调用：
-- `options` - 修改 Rolldown 选项
-- `buildStart` - 构建开始
+Called on server start:
+- `options` - Modify Rolldown options
+- `buildStart` - Build starting
 
-每个模块请求时调用：
-- `resolveId` - 解析导入路径
-- `load` - 加载模块内容
-- `transform` - 转换模块代码
+Called per module request:
+- `resolveId` - Resolve import paths
+- `load` - Load module content
+- `transform` - Transform module code
 
-在服务器关闭时调用：
+Called on server close:
 - `buildEnd`
 - `closeBundle`
 
-## Vite 特定钩子
+## Vite-Specific Hooks
 
 ### `config`
 
-在解析前修改配置：
+Modify config before resolution:
 
 ```ts
 {
@@ -63,7 +63,7 @@ export default function myPlugin(options = {}) {
 
 ### `configResolved`
 
-访问最终解析的配置：
+Access final resolved config:
 
 ```ts
 {
@@ -76,22 +76,22 @@ export default function myPlugin(options = {}) {
 
 ### `configureServer`
 
-添加开发服务器中间件：
+Add dev server middleware:
 
 ```ts
 {
   name: 'configure-server',
   configureServer(server) {
-    // 在 Vite 中间件之前
+    // Before Vite's middlewares
     server.middlewares.use((req, res, next) => {
-      // 处理请求
+      // Handle request
       next()
     })
     
-    // 返回函数在 Vite 中间件之后运行
+    // Return function to run after Vite's middlewares
     return () => {
       server.middlewares.use((req, res, next) => {
-        // 后置中间件
+        // Post middleware
       })
     }
   }
@@ -100,18 +100,18 @@ export default function myPlugin(options = {}) {
 
 ### `transformIndexHtml`
 
-转换 HTML 文件：
+Transform HTML files:
 
 ```ts
 {
   name: 'html-transform',
   transformIndexHtml(html) {
-    return html.replace(/<title>(.*?)<\/title>/, '<title>新标题</title>')
+    return html.replace(/<title>(.*?)<\/title>/, '<title>New Title</title>')
   }
 }
 ```
 
-注入标签：
+Inject tags:
 
 ```ts
 {
@@ -132,7 +132,7 @@ export default function myPlugin(options = {}) {
 
 ### `handleHotUpdate`
 
-自定义 HMR 处理：
+Custom HMR handling:
 
 ```ts
 {
@@ -144,15 +144,15 @@ export default function myPlugin(options = {}) {
         event: 'custom-update',
         data: { file }
       })
-      return []  // 阻止默认 HMR
+      return []  // Prevent default HMR
     }
   }
 }
 ```
 
-## 虚拟模块
+## Virtual Modules
 
-向源代码提供构建时信息：
+Provide build-time information to source code:
 
 ```ts
 export default function myPlugin() {
@@ -170,22 +170,22 @@ export default function myPlugin() {
     
     load(id) {
       if (id === resolvedId) {
-        return `export const msg = "来自虚拟模块"`
+        return `export const msg = "from virtual module"`
       }
     }
   }
 }
 ```
 
-使用：
+Usage:
 
 ```ts
 import { msg } from 'virtual:my-module'
 ```
 
-## 客户端-服务器通信
+## Client-Server Communication
 
-### 服务器到客户端
+### Server to Client
 
 ```ts
 {
@@ -197,7 +197,7 @@ import { msg } from 'virtual:my-module'
 }
 ```
 
-客户端接收：
+Client receives:
 
 ```ts
 if (import.meta.hot) {
@@ -207,33 +207,33 @@ if (import.meta.hot) {
 }
 ```
 
-### 客户端到服务器
+### Client to Server
 
 ```ts
-// 客户端
+// Client
 if (import.meta.hot) {
-  import.meta.hot.send('my:from-client', { msg: '嗨！' })
+  import.meta.hot.send('my:from-client', { msg: 'Hey!' })
 }
 
-// 服务器（在插件中）
+// Server (in plugin)
 {
   configureServer(server) {
     server.ws.on('my:from-client', (data, client) => {
       console.log(data.msg)
-      client.send('my:reply', { msg: '收到！' })
+      client.send('my:reply', { msg: 'Got it!' })
     })
   }
 }
 ```
 
-## 带过滤的转换
+## Transform with Filtering
 
 ```ts
 {
   name: 'transform-js',
   transform: {
     filter: {
-      id: /\.js$/  // 仅 .js 文件
+      id: /\.js$/  // Only .js files
     },
     handler(code, id) {
       return transformCode(code)
@@ -242,9 +242,9 @@ if (import.meta.hot) {
 }
 ```
 
-## 路径规范化
+## Path Normalization
 
-为跨平台兼容性使用 POSIX 分隔符：
+Use POSIX separators for cross-platform compatibility:
 
 ```ts
 import { normalizePath } from 'vite'

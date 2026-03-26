@@ -1,82 +1,82 @@
 ---
-name: 导航
-description: 导航、路由和页面导航组件。在使用 uni-app 的 navigator 组件或 uni.navigateTo、uni.redirectTo 等导航 API 时调用此技能。
+name: Navigation
+description: Navigation, routing, and page navigation components
 ---
 
-# 导航
+# Navigation
 
 ## navigator
 
-页面导航组件。
+Page navigation component.
 
 ```vue
 <template>
-  <!-- 基础导航 -->
+  <!-- Basic navigation -->
   <navigator url="/pages/detail/detail" hover-class="navigator-hover">
-    前往详情
+    Go to Detail
   </navigator>
 
-  <!-- 在新页面打开 -->
+  <!-- Open in new page -->
   <navigator url="/pages/detail/detail" open-type="navigate">
-    导航（默认）
+    Navigate (default)
   </navigator>
 
-  <!-- 重定向（无返回按钮） -->
+  <!-- Redirect (no back button) -->
   <navigator url="/pages/login/login" open-type="redirect">
-    登录（重定向）
+    Login (redirect)
   </navigator>
 
-  <!-- 切换到 tab 页面 -->
+  <!-- Switch to tab page -->
   <navigator url="/pages/index/index" open-type="switchTab">
-    前往首页
+    Go to Home
   </navigator>
 
-  <!-- 重启应用 -->
+  <!-- Re-launch app -->
   <navigator url="/pages/start/start" open-type="reLaunch">
-    重新启动
+    Restart
   </navigator>
 
-  <!-- 返回 -->
+  <!-- Navigate back -->
   <navigator open-type="navigateBack" :delta="1">
-    返回
+    Go Back
   </navigator>
 
-  <!-- 退出应用（小程序） -->
+  <!-- Exit app (mini-program) -->
   <navigator open-type="exit" target="miniProgram">
-    退出
+    Exit
   </navigator>
 </template>
 ```
 
-**属性：**
+**Properties:**
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| url | String | | 目标页面路径 |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| url | String | | Target page path |
 | open-type | String | navigate | navigate/redirect/switchTab/reLaunch/navigateBack/exit |
-| delta | Number | 1 | open-type 为 navigateBack 时的返回层级 |
-| hover-class | String | navigator-hover | 悬停状态类 |
-| hover-stop-propagation | Boolean | false | 阻止悬停冒泡 |
-| target | String | self | self/miniProgram（仅小程序） |
+| delta | Number | 1 | Back level when open-type is navigateBack |
+| hover-class | String | navigator-hover | Hover state class |
+| hover-stop-propagation | Boolean | false | Stop hover propagation |
+| target | String | self | self/miniProgram (mini-program only) |
 
-## 编程式导航
+## Programmatic Navigation
 
 ### uni.navigateTo
 
-导航到新页面。
+Navigate to new page.
 
 ```javascript
-// 基础导航
+// Basic navigation
 uni.navigateTo({
   url: '/pages/detail/detail'
 })
 
-// 带查询参数
+// With query parameters
 uni.navigateTo({
   url: '/pages/detail/detail?id=123&name=test'
 })
 
-// 带事件（仅 Vue 2）
+// With events (Vue 2 only)
 uni.navigateTo({
   url: '/pages/detail/detail',
   events: {
@@ -92,7 +92,7 @@ uni.navigateTo({
 
 ### uni.redirectTo
 
-重定向到新页面（关闭当前页面）。
+Redirect to new page (closes current page).
 
 ```javascript
 uni.redirectTo({
@@ -102,7 +102,7 @@ uni.redirectTo({
 
 ### uni.reLaunch
 
-重启应用到指定页面。
+Re-launch application to specified page.
 
 ```javascript
 uni.reLaunch({
@@ -112,7 +112,7 @@ uni.reLaunch({
 
 ### uni.switchTab
 
-切换到 tabBar 页面。
+Switch to tab bar page.
 
 ```javascript
 uni.switchTab({
@@ -122,18 +122,18 @@ uni.switchTab({
 
 ### uni.navigateBack
 
-返回上一页。
+Navigate back to previous page.
 
 ```javascript
-// 返回一页
+// Go back one page
 uni.navigateBack()
 
-// 返回多页
+// Go back multiple pages
 uni.navigateBack({
   delta: 2
 })
 
-// 带动画（仅 App）
+// With animation (App only)
 uni.navigateBack({
   delta: 1,
   animationType: 'pop-out',
@@ -143,7 +143,7 @@ uni.navigateBack({
 
 ### uni.preloadPage
 
-预加载页面以加快导航（仅 App）。
+Preload page for faster navigation (App only).
 
 ```javascript
 uni.preloadPage({
@@ -151,64 +151,64 @@ uni.preloadPage({
 })
 ```
 
-## 获取页面信息
+## Getting Page Information
 
 ### getCurrentPages
 
-获取当前页面栈。
+Get current page stack.
 
 ```javascript
 const pages = getCurrentPages()
 const currentPage = pages[pages.length - 1]
-console.log(currentPage.route) // 当前页面路径
+console.log(currentPage.route) // Current page path
 ```
 
 ### getApp
 
-获取应用实例。
+Get app instance.
 
 ```javascript
 const app = getApp()
 console.log(app.globalData)
 ```
 
-## 页面事件通道（Vue 2）
+## Page Event Channel (Vue 2)
 
-使用事件通道在页面间通信。
+Communicate between pages using event channel.
 
 ```javascript
-// 页面 A：打开页面 B
+// Page A: Open page B
 uni.navigateTo({
   url: '/pages/pageB/pageB',
   success(res) {
-    // 监听页面 B 的事件
+    // Listen for events from page B
     res.eventChannel.on('acceptDataFromPageB', (data) => {
       console.log(data)
     })
-    // 发送数据到页面 B
+    // Send data to page B
     res.eventChannel.emit('acceptDataFromPageA', { data: 'hello' })
   }
 })
 
-// 页面 B：接收和发送数据
+// Page B: Receive and send data
 export default {
   onLoad() {
     const eventChannel = this.getOpenerEventChannel()
-    // 监听页面 A 的事件
+    // Listen for events from page A
     eventChannel.on('acceptDataFromPageA', (data) => {
       console.log(data)
     })
-    // 发送数据回页面 A
+    // Send data back to page A
     eventChannel.emit('acceptDataFromPageB', { data: 'world' })
   }
 }
 ```
 
-## 导航栏
+## Navigation Bar
 
-### 自定义导航栏
+### Custom Navigation Bar
 
-在 `pages.json` 中配置：
+Configure in `pages.json`:
 
 ```json
 {
@@ -225,7 +225,7 @@ export default {
 
 ```javascript
 uni.setNavigationBarTitle({
-  title: '新标题'
+  title: 'New Title'
 })
 ```
 
@@ -246,7 +246,7 @@ uni.setNavigationBarColor({
 
 ```javascript
 uni.showNavigationBarLoading()
-// ...加载操作
+// ...loading operation
 uni.hideNavigationBarLoading()
 ```
 

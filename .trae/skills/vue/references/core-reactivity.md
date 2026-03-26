@@ -1,15 +1,15 @@
 ---
 name: vue-reactivity-system
-description: 核心响应式原语 - ref、reactive、computed 和侦听器
+description: Core reactivity primitives - ref, reactive, computed, and watchers
 ---
 
-# Vue 响应式系统
+# Vue Reactivity System
 
-Vue 的响应式系统支持自动追踪状态变更和 DOM 更新。
+Vue's reactivity system enables automatic tracking of state changes and DOM updates.
 
 ## ref()
 
-使用 `ref()` 创建响应式原始值。在 JavaScript 中通过 `.value` 访问/修改，在模板中自动解包。
+Create reactive primitive values with `ref()`. Access/modify via `.value` in JavaScript, auto-unwrapped in templates.
 
 ```ts
 import { ref } from 'vue'
@@ -35,25 +35,25 @@ function increment() {
 </template>
 ```
 
-### 为 ref 添加类型
+### Typing refs
 
 ```ts
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 
-// 类型推断
+// Type inference
 const year = ref(2020) // Ref<number>
 
-// 显式泛型
+// Explicit generic
 const name = ref<string | null>(null)
 
-// Ref 类型注解
+// Ref type annotation
 const id: Ref<string | number> = ref('abc')
 ```
 
 ## reactive()
 
-创建响应式对象。不需要 `.value`，但不能重新赋值整个对象。
+Create reactive objects. No `.value` needed, but cannot reassign the entire object.
 
 ```ts
 import { reactive } from 'vue'
@@ -68,33 +68,33 @@ const state: State = reactive({
   name: 'Vue'
 })
 
-state.count++ // 响应式
+state.count++ // reactive
 ```
 
-### reactive() 的局限性
+### Limitations of reactive()
 
-1. **仅适用于对象** - 不适用于原始值
-2. **不能替换整个对象** - 会失去响应式
-3. **解构会失去响应式** - 使用 `toRefs()` 替代
+1. **Only works with objects** - not primitives
+2. **Cannot replace entire object** - loses reactivity
+3. **Destructuring loses reactivity** - use `toRefs()` instead
 
 ```ts
 const state = reactive({ count: 0 })
 
-// ❌ 失去响应式
+// ❌ Loses reactivity
 let { count } = state
 
-// ✅ 使用 toRefs
+// ✅ Use toRefs
 import { toRefs } from 'vue'
 const { count } = toRefs(state)
 ```
 
-## 推荐做法
+## Recommendation
 
-使用 `ref()` 作为声明响应式状态的主要 API - 它适用于任何值类型且行为一致。
+Use `ref()` as the primary API for declaring reactive state - it works with any value type and has consistent behavior.
 
-## 深层响应式
+## Deep Reactivity
 
-`ref()` 和 `reactive()` 默认都是深层响应式的：
+Both `ref()` and `reactive()` are deeply reactive by default:
 
 ```ts
 const obj = ref({
@@ -102,16 +102,16 @@ const obj = ref({
   arr: ['foo', 'bar']
 })
 
-// 这些会触发更新
+// These trigger updates
 obj.value.nested.count++
 obj.value.arr.push('baz')
 ```
 
-使用 `shallowRef()` 或 `shallowReactive()` 选择退出深层响应式以提升性能。
+Use `shallowRef()` or `shallowReactive()` to opt out of deep reactivity for performance.
 
-## DOM 更新时机
+## DOM Update Timing
 
-DOM 更新是批量和异步的。使用 `nextTick()` 等待更新完成：
+DOM updates are batched and asynchronous. Use `nextTick()` to wait for updates:
 
 ```ts
 import { ref, nextTick } from 'vue'
@@ -121,29 +121,29 @@ const count = ref(0)
 async function increment() {
   count.value++
   await nextTick()
-  // DOM 现在已更新
+  // DOM is now updated
 }
 ```
 
-## Ref 解包规则
+## Ref Unwrapping Rules
 
-- **在模板中**：顶层 ref 自动解包
-- **在响应式对象中**：作为属性访问时 ref 自动解包
-- **在数组/集合中**：ref 不会自动解包
+- **In templates**: Top-level refs auto-unwrap
+- **In reactive objects**: Refs auto-unwrap when accessed as properties
+- **In arrays/collections**: Refs do NOT auto-unwrap
 
 ```ts
 const count = ref(0)
 const state = reactive({ count })
 
-console.log(state.count) // 0（已解包）
+console.log(state.count) // 0 (unwrapped)
 
 const books = reactive([ref('Vue Guide')])
-console.log(books[0].value) // 需要 .value
+console.log(books[0].value) // Need .value
 ```
 
 ## computed()
 
-从响应式状态派生值并自动缓存。仅在依赖变更时重新计算。
+Derive values from reactive state with automatic caching. Only re-evaluates when dependencies change.
 
 ```ts
 import { ref, computed } from 'vue'
@@ -151,10 +151,10 @@ import { ref, computed } from 'vue'
 const firstName = ref('John')
 const lastName = ref('Doe')
 
-// 只读计算属性
+// Readonly computed
 const fullName = computed(() => `${firstName.value} ${lastName.value}`)
 
-// 可写计算属性
+// Writable computed
 const fullNameWritable = computed({
   get() {
     return `${firstName.value} ${lastName.value}`
@@ -165,17 +165,17 @@ const fullNameWritable = computed({
 })
 ```
 
-### 计算属性最佳实践
+### Computed Best Practices
 
-- **getter 应该是纯函数** - 无副作用，不修改其他状态
-- **不要修改计算属性值** - 修改源数据
-- **对派生数据使用计算属性而非方法**（缓存优势）
+- **Getters should be pure** - no side effects, no mutating other state
+- **Don't mutate computed values** - mutate the source instead
+- **Use computed over methods** for derived data (caching benefit)
 
 ```ts
-// ✅ 缓存 - 仅在 items 变更时重新计算
+// ✅ Cached - only recalculates when items changes
 const activeItems = computed(() => items.value.filter(x => x.active))
 
-// ❌ 不缓存 - 每次渲染都运行
+// ❌ Not cached - runs on every render
 function getActiveItems() {
   return items.value.filter(x => x.active)
 }
@@ -183,7 +183,7 @@ function getActiveItems() {
 
 ## watch()
 
-显式侦听响应式源，在它们变更时运行副作用。默认惰性执行。
+Explicitly watch reactive sources and run side effects when they change. Lazy by default.
 
 ```ts
 import { ref, watch } from 'vue'
@@ -192,42 +192,42 @@ const id = ref(1)
 
 watch(id, async (newId, oldId) => {
   const data = await fetchData(newId)
-  // 处理数据...
+  // handle data...
 })
 ```
 
-### 侦听源类型
+### Watch Source Types
 
 ```ts
 const x = ref(0)
 const obj = reactive({ count: 0 })
 
-// 单个 ref
+// Single ref
 watch(x, (newX) => console.log(newX))
 
-// getter 函数
+// Getter function
 watch(() => obj.count, (count) => console.log(count))
 
-// 多个源
+// Multiple sources
 watch([x, () => obj.count], ([newX, newCount]) => {
   console.log(newX, newCount)
 })
 ```
 
-### 侦听选项
+### Watch Options
 
 ```ts
 watch(source, callback, {
-  immediate: true,  // 创建时立即运行
-  deep: true,       // 侦听嵌套属性
-  once: true,       // 仅触发一次（3.4+）
-  flush: 'post'     // DOM 更新后运行
+  immediate: true,  // Run immediately on creation
+  deep: true,       // Watch nested properties
+  once: true,       // Trigger only once (3.4+)
+  flush: 'post'     // Run after DOM update
 })
 ```
 
 ## watchEffect()
 
-自动追踪依赖并立即运行。当任何追踪的依赖变更时重新运行。
+Automatically tracks dependencies and runs immediately. Re-runs when any tracked dependency changes.
 
 ```ts
 import { ref, watchEffect } from 'vue'
@@ -243,16 +243,16 @@ watchEffect(async () => {
 
 ### watch vs watchEffect
 
-| 特性 | watch | watchEffect |
-|------|-------|-------------|
-| 依赖追踪 | 显式 | 自动 |
-| 惰性 | 是 | 否（立即） |
-| 访问旧值 | 是 | 否 |
-| 最适合 | 特定源 | 多个依赖 |
+| Feature | watch | watchEffect |
+|---------|-------|-------------|
+| Dependency tracking | Explicit | Automatic |
+| Lazy | Yes | No (immediate) |
+| Access old value | Yes | No |
+| Best for | Specific sources | Multiple dependencies |
 
-## 侦听器清理（3.5+）
+## Watcher Cleanup (3.5+)
 
-取消过期的异步操作：
+Cancel stale async operations:
 
 ```ts
 import { watch, onWatcherCleanup } from 'vue'
@@ -266,17 +266,17 @@ watch(id, async (newId) => {
 })
 ```
 
-## 停止侦听器
+## Stopping Watchers
 
 ```ts
 const stop = watch(source, callback)
 const stop2 = watchEffect(() => { /* ... */ })
 
-// 手动停止
+// Stop manually
 stop()
 stop2()
 
-// 暂停/恢复（3.5+）
+// Pause/Resume (3.5+)
 const { stop, pause, resume } = watchEffect(() => { /* ... */ })
 ```
 

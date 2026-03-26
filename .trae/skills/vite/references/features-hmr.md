@@ -1,25 +1,25 @@
 ---
 name: features-hmr
-description: Vite 的热模块替换 (HMR) 客户端 API
+description: Vite's Hot Module Replacement (HMR) client API
 ---
 
 # HMR API
 
-HMR API 通过 `import.meta.hot` 暴露。主要用于框架和工具作者。
+The HMR API is exposed via `import.meta.hot`. Primarily for framework and tooling authors.
 
-## 条件守卫
+## Conditional Guard
 
-始终为生产中的 tree-shaking 守卫 HMR 代码：
+Always guard HMR code for tree-shaking in production:
 
 ```ts
 if (import.meta.hot) {
-  // HMR 代码
+  // HMR code
 }
 ```
 
-## TypeScript 支持
+## TypeScript Support
 
-添加到 `tsconfig.json`：
+Add to `tsconfig.json`:
 
 ```json
 {
@@ -29,9 +29,9 @@ if (import.meta.hot) {
 }
 ```
 
-## 自接受模块
+## Self-Accepting Module
 
-模块处理自己的更新：
+Module handles its own updates:
 
 ```ts
 export const count = 1
@@ -39,15 +39,15 @@ export const count = 1
 if (import.meta.hot) {
   import.meta.hot.accept((newModule) => {
     if (newModule) {
-      console.log('已更新: count 现在是', newModule.count)
+      console.log('updated: count is now', newModule.count)
     }
   })
 }
 ```
 
-## 接受依赖更新
+## Accept Dependency Updates
 
-响应依赖项的更改而不重新加载自身：
+React to changes in dependencies without self-reload:
 
 ```ts
 import { foo } from './foo.js'
@@ -55,24 +55,24 @@ import { foo } from './foo.js'
 foo()
 
 if (import.meta.hot) {
-  // 单个依赖
+  // Single dependency
   import.meta.hot.accept('./foo.js', (newFoo) => {
     newFoo?.foo()
   })
   
-  // 多个依赖
+  // Multiple dependencies
   import.meta.hot.accept(
     ['./foo.js', './bar.js'],
     ([newFooModule, newBarModule]) => {
-      // 处理更新
+      // Handle updates
     }
   )
 }
 ```
 
-## 更新时清理
+## Cleanup on Update
 
-在模块被替换前清理副作用：
+Clean up side effects before module is replaced:
 
 ```ts
 function setupSideEffect() {
@@ -89,90 +89,90 @@ if (import.meta.hot) {
 }
 ```
 
-## 清理回调
+## Prune Callback
 
-模块不再被导入时调用：
+Called when module is no longer imported:
 
 ```ts
 if (import.meta.hot) {
   import.meta.hot.prune((data) => {
-    // 模块从页面中移除时清理
+    // Cleanup when module is removed from page
   })
 }
 ```
 
-## 持久数据
+## Persistent Data
 
-在模块实例之间传递数据：
+Pass data between module instances:
 
 ```ts
 if (import.meta.hot) {
-  // 修改属性，不要重新赋值 data 本身
+  // Mutate properties, don't reassign data itself
   import.meta.hot.data.count = (import.meta.hot.data.count || 0) + 1
 }
 ```
 
-## 失效
+## Invalidate
 
-强制传播到导入者：
+Force propagation to importers:
 
 ```ts
 if (import.meta.hot) {
   import.meta.hot.accept((module) => {
     if (cannotHandleUpdate(module)) {
-      import.meta.hot.invalidate()  // 传播到导入者
+      import.meta.hot.invalidate()  // Propagate to importers
     }
   })
 }
 ```
 
-## HMR 事件
+## HMR Events
 
-监听内置事件：
+Listen to built-in events:
 
 ```ts
 if (import.meta.hot) {
   import.meta.hot.on('vite:beforeUpdate', (payload) => {
-    console.log('更新即将到来')
+    console.log('Update incoming')
   })
   
   import.meta.hot.on('vite:afterUpdate', (payload) => {
-    console.log('更新已应用')
+    console.log('Update applied')
   })
   
   import.meta.hot.on('vite:beforeFullReload', () => {
-    console.log('完全重新加载')
+    console.log('Full reload')
   })
   
   import.meta.hot.on('vite:error', (error) => {
-    console.error('HMR 错误', error)
+    console.error('HMR error', error)
   })
   
   import.meta.hot.on('vite:ws:connect', () => {
-    console.log('WebSocket 已连接')
+    console.log('WebSocket connected')
   })
   
   import.meta.hot.on('vite:ws:disconnect', () => {
-    console.log('WebSocket 已断开')
+    console.log('WebSocket disconnected')
   })
 }
 ```
 
-## 自定义事件
+## Custom Events
 
-向服务器发送事件：
+Send events to server:
 
 ```ts
-// 客户端
+// Client
 if (import.meta.hot) {
-  import.meta.hot.send('my:event', { msg: '来自客户端的问候' })
+  import.meta.hot.send('my:event', { msg: 'Hello from client' })
 }
 ```
 
-从服务器接收：
+Receive from server:
 
 ```ts
-// 客户端
+// Client
 if (import.meta.hot) {
   import.meta.hot.on('my:response', (data) => {
     console.log(data.msg)
@@ -180,7 +180,7 @@ if (import.meta.hot) {
 }
 ```
 
-## 自定义事件的 TypeScript
+## TypeScript for Custom Events
 
 ```ts
 // events.d.ts

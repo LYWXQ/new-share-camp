@@ -1,53 +1,53 @@
 ---
-name: 位置服务
-description: 地理定位、地图操作和基于位置的服务。在使用 uni-app 获取位置信息、使用地图组件或进行位置相关操作时调用此技能。
+name: Location Services
+description: Geolocation, map operations, and location-based services
 ---
 
-# 位置服务
+# Location Services
 
-## 获取当前位置
+## Get Current Location
 
 ### uni.getLocation
 
-获取当前地理位置。
+Get current geographic location.
 
 ```javascript
 uni.getLocation({
-  type: 'wgs84', // wgs84/gcj02（地图显示用 gcj02）
-  altitude: false, // 包含海拔
-  geocode: false, // 包含地址信息（App）
-  highAccuracyExpireTime: 3000, // 高精度超时
+  type: 'wgs84', // wgs84/gcj02 (gcj02 for map display)
+  altitude: false, // Include altitude
+  geocode: false, // Include address info (App)
+  highAccuracyExpireTime: 3000, // High accuracy timeout
   success: (res) => {
-    console.log('纬度：', res.latitude)
-    console.log('经度：', res.longitude)
-    console.log('速度：', res.speed)
-    console.log('精度：', res.accuracy)
-    // 仅 App：
-    console.log('海拔：', res.altitude)
-    console.log('地址：', res.address)
+    console.log('Latitude:', res.latitude)
+    console.log('Longitude:', res.longitude)
+    console.log('Speed:', res.speed)
+    console.log('Accuracy:', res.accuracy)
+    // App only:
+    console.log('Altitude:', res.altitude)
+    console.log('Address:', res.address)
   },
   fail: (err) => {
-    console.error('定位失败：', err)
+    console.error('Location failed:', err)
   }
 })
 ```
 
-**响应属性：**
+**Response Properties:**
 
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| latitude | Number | 纬度 |
-| longitude | Number | 经度 |
-| speed | Number | 速度（m/s） |
-| accuracy | Number | 精度（米） |
-| altitude | Number | 海拔（米） |
-| verticalAccuracy | Number | 垂直精度 |
-| horizontalAccuracy | Number | 水平精度 |
-| address | Object | 地址信息（App） |
+| Property | Type | Description |
+|----------|------|-------------|
+| latitude | Number | Latitude |
+| longitude | Number | Longitude |
+| speed | Number | Speed (m/s) |
+| accuracy | Number | Accuracy (meters) |
+| altitude | Number | Altitude (meters) |
+| verticalAccuracy | Number | Vertical accuracy |
+| horizontalAccuracy | Number | Horizontal accuracy |
+| address | Object | Address info (App) |
 
-### uni.getFuzzyLocation（微信）
+### uni.getFuzzyLocation (WeChat)
 
-获取模糊位置（更好的隐私保护，更快）。
+Get approximate location (better privacy, faster).
 
 ```javascript
 uni.getFuzzyLocation({
@@ -58,94 +58,94 @@ uni.getFuzzyLocation({
 })
 ```
 
-## 选择位置
+## Choose Location
 
 ### uni.chooseLocation
 
-打开地图选择位置。
+Open map to select location.
 
 ```javascript
 uni.chooseLocation({
   latitude: 39.9,
   longitude: 116.4,
-  keyword: '餐厅',
+  keyword: 'restaurant',
   success: (res) => {
-    console.log('名称：', res.name)
-    console.log('地址：', res.address)
-    console.log('纬度：', res.latitude)
-    console.log('经度：', res.longitude)
+    console.log('Name:', res.name)
+    console.log('Address:', res.address)
+    console.log('Latitude:', res.latitude)
+    console.log('Longitude:', res.longitude)
   }
 })
 ```
 
-## 打开位置
+## Open Location
 
 ### uni.openLocation
 
-打开外部地图应用。
+Open external map app.
 
 ```javascript
 uni.openLocation({
   latitude: 39.9,
   longitude: 116.4,
-  name: '目的地名称',
-  address: '完整地址',
+  name: 'Destination Name',
+  address: 'Full address here',
   scale: 18
 })
 ```
 
-## 位置变化监听
+## Location Change Monitoring
 
 ### uni.startLocationUpdate
 
-开始后台位置更新。
+Start background location updates.
 
 ```javascript
 uni.startLocationUpdate({
   type: 'gcj02',
   success: () => {
-    console.log('位置更新已开始')
+    console.log('Location updates started')
   }
 })
 ```
 
 ### uni.startLocationUpdateBackground
 
-开始后台定位（需要权限）。
+Start background location (requires permission).
 
 ```javascript
 uni.startLocationUpdateBackground({
   type: 'gcj02',
   success: () => {
-    console.log('后台定位已开始')
+    console.log('Background location started')
   }
 })
 ```
 
-### 监听位置变化
+### Listen for Location Changes
 
 ```javascript
 uni.onLocationChange((res) => {
-  console.log('位置更新：', res.latitude, res.longitude)
+  console.log('Location updated:', res.latitude, res.longitude)
 })
 
-// 停止监听
+// Stop listening
 uni.offLocationChange(callback)
 ```
 
-### 停止位置更新
+### Stop Location Updates
 
 ```javascript
 uni.stopLocationUpdate({
   success: () => {
-    console.log('位置更新已停止')
+    console.log('Location updates stopped')
   }
 })
 ```
 
-## 地图组件
+## Map Component
 
-### 基础地图
+### Basic Map
 
 ```vue
 <template>
@@ -174,7 +174,7 @@ export default {
         id: 1,
         latitude: 39.909,
         longitude: 116.39742,
-        title: '标记 1',
+        title: 'Marker 1',
         iconPath: '/static/marker.png',
         width: 30,
         height: 30,
@@ -209,7 +209,7 @@ export default {
 </script>
 ```
 
-### 地图上下文操作
+### Map Context Operations
 
 ```javascript
 export default {
@@ -218,16 +218,16 @@ export default {
   },
 
   methods: {
-    // 获取中心位置
+    // Get center location
     getCenter() {
       this.mapContext.getCenterLocation({
         success: (res) => {
-          console.log('中心：', res.latitude, res.longitude)
+          console.log('Center:', res.latitude, res.longitude)
         }
       })
     },
 
-    // 移动到位置
+    // Move to location
     moveToLocation() {
       this.mapContext.moveToLocation({
         latitude: 39.9,
@@ -235,7 +235,7 @@ export default {
       })
     },
 
-    // 平移标记
+    // Translate marker
     translateMarker() {
       this.mapContext.translateMarker({
         markerId: 1,
@@ -249,7 +249,7 @@ export default {
       })
     },
 
-    // 在视图中包含点
+    // Include points in view
     includePoints() {
       this.mapContext.includePoints({
         points: [
@@ -260,30 +260,30 @@ export default {
       })
     },
 
-    // 获取区域
+    // Get region
     getRegion() {
       this.mapContext.getRegion({
         success: (res) => {
-          console.log('西南：', res.southwest)
-          console.log('东北：', res.northeast)
+          console.log('Southwest:', res.southwest)
+          console.log('Northeast:', res.northeast)
         }
       })
     },
 
-    // 添加标记
+    // Add markers
     addMarkers() {
       this.mapContext.addMarkers({
         markers: [{
           id: 2,
           latitude: 39.91,
           longitude: 116.41,
-          title: '新标记'
+          title: 'New Marker'
         }],
-        clear: false // 不清除现有标记
+        clear: false // Don't clear existing
       })
     },
 
-    // 移除标记
+    // Remove markers
     removeMarkers() {
       this.mapContext.removeMarkers({
         markerIds: [1, 2]
@@ -293,28 +293,28 @@ export default {
 }
 ```
 
-## 坐标系
+## Coordinate Systems
 
-| 坐标系 | 描述 | 用途 |
-|--------|------|------|
-| WGS84 | GPS 坐标 | 国际标准 |
-| GCJ02 | 火星坐标 | 中国国家标准 |
-| BD09 | 百度坐标 | 仅百度地图 |
+| System | Description | Usage |
+|--------|-------------|-------|
+| WGS84 | GPS coordinates | International standard |
+| GCJ02 | Mars coordinates | China national standard |
+| BD09 | Baidu coordinates | Baidu Map only |
 
-**注意：** 在中国显示地图时，请使用 `gcj02`。
+**Note:** For map display in China, use `gcj02`.
 
-## 权限配置
+## Permission Configuration
 
-### 小程序
+### Mini-Program
 
-添加到 `manifest.json`：
+Add to `manifest.json`:
 
 ```json
 {
   "mp-weixin": {
     "permission": {
       "scope.userLocation": {
-        "desc": "需要您的位置信息来查找附近门店"
+        "desc": "Your location is needed to find nearby stores"
       }
     },
     "requiredPrivateInfos": [
@@ -325,7 +325,7 @@ export default {
 }
 ```
 
-### App（Android）
+### App (Android)
 
 ```json
 {
@@ -342,7 +342,7 @@ export default {
 }
 ```
 
-### App（iOS）
+### App (iOS)
 
 ```json
 {
@@ -350,8 +350,8 @@ export default {
     "distribute": {
       "ios": {
         "privacyDescription": {
-          "NSLocationWhenInUseUsageDescription": "需要位置权限来查找附近门店",
-          "NSLocationAlwaysUsageDescription": "需要后台定位权限用于导航"
+          "NSLocationWhenInUseUsageDescription": "Location is needed to find nearby stores",
+          "NSLocationAlwaysUsageDescription": "Background location is needed for navigation"
         }
       }
     }
@@ -359,28 +359,28 @@ export default {
 }
 ```
 
-## 最佳实践
+## Best Practices
 
-### 权限处理
+### Permission Handling
 
 ```javascript
 async function getLocationWithPermission() {
   try {
-    // 检查权限
+    // Check permission
     const setting = await uni.getSetting()
     if (!setting.authSetting['scope.userLocation']) {
-      // 请求权限
+      // Request permission
       await uni.authorize({ scope: 'scope.userLocation' })
     }
 
-    // 获取位置
+    // Get location
     const res = await uni.getLocation({ type: 'gcj02' })
     return res
   } catch (err) {
     if (err.errMsg.includes('auth deny')) {
       uni.showModal({
-        title: '需要权限',
-        content: '请在设置中开启位置权限',
+        title: 'Permission Required',
+        content: 'Please enable location permission in settings',
         success: (res) => {
           if (res.confirm) {
             uni.openSetting()
@@ -393,18 +393,18 @@ async function getLocationWithPermission() {
 }
 ```
 
-### 距离计算
+### Distance Calculation
 
 ```javascript
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371 // 地球半径（公里）
+  const R = 6371 // Earth's radius in km
   const dLat = (lat2 - lat1) * Math.PI / 180
   const dLon = (lon2 - lon1) * Math.PI / 180
   const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
             Math.sin(dLon/2) * Math.sin(dLon/2)
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-  return R * c // 距离（公里）
+  return R * c // Distance in km
 }
 ```
 

@@ -1,46 +1,46 @@
 ---
-title: 使用 computed() 而不是 watchEffect() 获取派生状态
+title: Use computed() Instead of watchEffect() for Derived State
 impact: MEDIUM
-impactDescription: 使用 watchEffect 来变更 refs 会创建不必要的间接层 - computed() 是声明式的且有缓存
+impactDescription: Using watchEffect to mutate refs creates unnecessary indirection - computed() is declarative and cached
 type: efficiency
 tags: [vue3, reactivity, computed, watchEffect, best-practice, performance]
 ---
 
-# 使用 computed() 而不是 watchEffect() 获取派生状态
+# Use computed() Instead of watchEffect() for Derived State
 
-**影响：中** - 当你需要派生自其他响应式状态的状态时，始终优先选择 `computed()` 而不是使用 `watchEffect()` 来变更 ref。计算属性是声明式的、自动缓存的，并清晰地表达依赖关系。
+**Impact: MEDIUM** - When you need state that derives from other reactive state, always prefer `computed()` over using `watchEffect()` to mutate a ref. Computed properties are declarative, automatically cached, and clearly express the dependency relationship.
 
-使用 `watchEffect()` 来变更 ref 虽然有效，但会创建不必要的间接层：你是在基于依赖项命令式地更新状态，而不是声明关系。这使得代码更难理解并阻止 Vue 进行优化。
+Using `watchEffect()` to mutate a ref works but creates unnecessary indirection: you're imperatively updating state based on dependencies rather than declaring the relationship. This makes the code harder to understand and prevents Vue from optimizing.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 当结果是响应式状态的纯转换时使用 `computed()`
-- [ ] 只在副作用（DOM 操作、日志记录、API 调用）时使用 `watchEffect()`
-- [ ] 永远不要使用 watchEffect 只是为了变更 ref 来获取派生值
-- [ ] 记住计算值是缓存的，只在依赖项变化时重新计算
+- [ ] Use `computed()` when the result is a pure transformation of reactive state
+- [ ] Use `watchEffect()` only for side effects (DOM manipulation, logging, API calls)
+- [ ] Never use watchEffect to mutate a ref just to derive a value
+- [ ] Remember computed values are cached and only re-compute when dependencies change
 
-**错误示例：**
+**Incorrect:**
 ```javascript
 import { ref, watchEffect } from 'vue'
 
 const A0 = ref(1)
 const A1 = ref(2)
-const A2 = ref()  // 不必要的 ref
+const A2 = ref()  // Unnecessary ref
 
-// 错误：使用 watchEffect 派生状态
+// WRONG: Using watchEffect to derive state
 watchEffect(() => {
   A2.value = A0.value + A1.value
 })
 
-// 问题：
-// 1. A2 是可写的，当它不应该是
-// 2. 命令式而不是声明式
-// 3. 没有缓存优化
-// 4. 更难追踪依赖项
+// Problems:
+// 1. A2 is writable when it shouldn't be
+// 2. Imperative instead of declarative
+// 3. No caching optimization
+// 4. Harder to trace dependencies
 ```
 
 ```javascript
-// 错误：使用 watchEffect 进行复杂的派生状态
+// WRONG: Complex derived state with watchEffect
 const items = ref([{ price: 10 }, { price: 20 }])
 const total = ref(0)
 
@@ -49,80 +49,80 @@ watchEffect(() => {
 })
 ```
 
-**正确示例：**
+**Correct:**
 ```javascript
 import { ref, computed } from 'vue'
 
 const A0 = ref(1)
 const A1 = ref(2)
 
-// 正确：声明式派生状态
+// CORRECT: Declarative derived state
 const A2 = computed(() => A0.value + A1.value)
 
-// 好处：
-// 1. A2 默认是只读的
-// 2. 清晰地声明依赖关系
-// 3. 缓存 - 只在 A0 或 A1 变化时重新计算
-// 4. 易于理解数据流
+// Benefits:
+// 1. A2 is read-only by default
+// 2. Clearly declares the dependency relationship
+// 3. Cached - only recalculates when A0 or A1 changes
+// 4. Easy to understand data flow
 ```
 
 ```javascript
-// 正确：使用 computed 进行复杂的派生状态
+// CORRECT: Complex derived state with computed
 const items = ref([{ price: 10 }, { price: 20 }])
 
 const total = computed(() => {
   return items.value.reduce((sum, item) => sum + item.price, 0)
 })
 
-// 多个派生值
+// Multiple derived values
 const itemCount = computed(() => items.value.length)
 const averagePrice = computed(() =>
   items.value.length ? total.value / itemCount.value : 0
 )
 ```
 
-**何时使用 watchEffect 是合适的：**
+**When watchEffect IS appropriate:**
 ```javascript
 import { ref, watchEffect } from 'vue'
 
 const searchQuery = ref('')
 
-// 正确：watchEffect 用于副作用
+// CORRECT: watchEffect for side effects
 watchEffect(() => {
-  // 日志记录
+  // Logging
   console.log(`Search query changed: ${searchQuery.value}`)
 
-  // DOM 操作
+  // DOM manipulation
   document.title = `Search: ${searchQuery.value}`
 })
 
-// 正确：watchEffect 用于异步副作用
+// CORRECT: watchEffect for async side effects
 watchEffect(async () => {
   if (searchQuery.value) {
-    // API 调用（副作用，不是派生状态）
+    // API call (side effect, not derived state)
     await api.logSearch(searchQuery.value)
   }
 })
 ```
 
-**每个使用场景的总结：**
+**Summary of when to use each:**
 ```javascript
-// 使用 computed() 当：
-// - 你从响应式状态派生一个值
-// - 结果是纯的（没有副作用）
-// - 你想要缓存
+// Use computed() when:
+// - You're deriving a value from reactive state
+// - The result is pure (no side effects)
+// - You want caching
 const fullName = computed(() => `${firstName.value} ${lastName.value}`)
 
-// 使用 watchEffect() 当：
-// - 你需要执行副作用
-// - 你与外部系统交互
-// - 你需要运行异步操作
+// Use watchEffect() when:
+// - You need to perform side effects
+// - You're interacting with external systems
+// - You need to run async operations
 watchEffect(() => {
-  document.title = fullName.value  // 副作用
+  document.title = fullName.value  // Side effect
 })
 ```
 
-## 参考
-- [Vue.js 深入响应式](https://vuejs.org/guide/extras/reactivity-in-depth.html)
-- [Vue.js 计算属性](https://vuejs.org/guide/essentials/computed.html)
-- [Vue.js 监听器](https://vuejs.org/guide/essentials/watchers.html)
+## Reference
+- [Vue.js Reactivity in Depth](https://vuejs.org/guide/extras/reactivity-in-depth.html)
+- [Vue.js Computed Properties](https://vuejs.org/guide/essentials/computed.html)
+- [Vue.js Watchers](https://vuejs.org/guide/essentials/watchers.html)

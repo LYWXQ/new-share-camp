@@ -1,15 +1,15 @@
 ---
-category: 状态
+category: State
 related: createSharedComposable
 ---
 
 # createGlobalState
 
-将状态保持在全局范围内，以便在多个 Vue 实例之间复用。
+Keep states in the global scope to be reusable across Vue instances.
 
-## 用法
+## Usage
 
-### 无持久化（存储在内存中）
+### Without Persistence (Store in Memory)
 
 ```ts
 // store.ts
@@ -24,7 +24,7 @@ export const useGlobalState = createGlobalState(
 )
 ```
 
-更大的示例：
+A bigger example:
 
 ```ts
 // store.ts
@@ -33,13 +33,13 @@ import { computed, shallowRef } from 'vue'
 
 export const useGlobalState = createGlobalState(
   () => {
-    // 状态
+    // state
     const count = shallowRef(0)
 
-    // 获取器
+    // getters
     const doubleCount = computed(() => count.value * 2)
 
-    // 动作
+    // actions
     function increment() {
       count.value++
     }
@@ -49,9 +49,9 @@ export const useGlobalState = createGlobalState(
 )
 ```
 
-### 带持久化
+### With Persistence
 
-使用 `useStorage` 存储在 `localStorage` 中：
+Store in `localStorage` with `useStorage`:
 
 ```ts twoslash include store
 // store.ts
@@ -77,15 +77,15 @@ export default defineComponent({
 })
 ```
 
-## 类型声明
+## Type Declarations
 
 ```ts
 export type CreateGlobalStateReturn<Fn extends AnyFn = AnyFn> = Fn
 /**
- * 将状态保持在全局范围内，以便在多个 Vue 实例之间复用。
+ * Keep states in the global scope to be reusable across Vue instances.
  *
  * @see https://vueuse.org/createGlobalState
- * @param stateFactory 创建状态的工厂函数
+ * @param stateFactory A factory function to create the state
  *
  * @__NO_SIDE_EFFECTS__
  */

@@ -1,21 +1,21 @@
 ---
 name: features-css
-description: Vite 中的 CSS 处理，包括模块、预处理器、PostCSS 和 Lightning CSS
+description: CSS handling in Vite including modules, pre-processors, PostCSS, and Lightning CSS
 ---
 
-# CSS 处理
+# CSS Handling
 
-Vite 提供丰富的 CSS 支持，包括 HMR、`@import` 内联和自动 URL 重新定位。
+Vite provides rich CSS support with HMR, `@import` inlining, and automatic URL rebasing.
 
-## 基本 CSS 导入
+## Basic CSS Import
 
 ```ts
-import './styles.css'  // 注入页面并支持 HMR
+import './styles.css'  // Injected into page with HMR support
 ```
 
-## CSS 模块
+## CSS Modules
 
-以 `.module.css` 结尾的文件被视为 CSS 模块：
+Files ending with `.module.css` are treated as CSS modules:
 
 ```css
 /* example.module.css */
@@ -29,7 +29,7 @@ import classes from './example.module.css'
 element.className = classes.red
 ```
 
-### 使用 camelCase 的命名导入
+### Named Imports with camelCase
 
 ```ts
 // vite.config.ts
@@ -47,12 +47,12 @@ export default defineConfig({
 import { applyColor } from './example.module.css'
 ```
 
-## CSS 预处理器
+## CSS Pre-processors
 
-安装预处理器，无需 Vite 插件：
+Install the pre-processor, no Vite plugin needed:
 
 ```bash
-# Sass（推荐 sass-embedded 以获得性能）
+# Sass (sass-embedded recommended for performance)
 npm add -D sass-embedded
 
 # Less
@@ -62,7 +62,7 @@ npm add -D less
 npm add -D stylus
 ```
 
-通过文件扩展名使用：
+Use by file extension:
 
 ```ts
 import './styles.scss'
@@ -70,7 +70,7 @@ import './styles.less'
 import './styles.styl'
 ```
 
-### 预处理器选项
+### Pre-processor Options
 
 ```ts
 export default defineConfig({
@@ -84,12 +84,12 @@ export default defineConfig({
         math: 'parens-division'
       }
     },
-    preprocessorMaxWorkers: true  // 使用多线程
+    preprocessorMaxWorkers: true  // Use multiple threads
   }
 })
 ```
 
-### 与 CSS 模块结合
+### Combined with CSS Modules
 
 ```ts
 import styles from './component.module.scss'
@@ -97,7 +97,7 @@ import styles from './component.module.scss'
 
 ## PostCSS
 
-如果存在 `postcss.config.js` 则自动应用：
+Automatically applied if `postcss.config.js` exists:
 
 ```js
 // postcss.config.js
@@ -109,7 +109,7 @@ export default {
 }
 ```
 
-或内联配置：
+Or configure inline:
 
 ```ts
 export default defineConfig({
@@ -126,7 +126,7 @@ export default defineConfig({
 
 ## Lightning CSS
 
-实验性更快的 CSS 处理：
+Experimental faster CSS processing:
 
 ```bash
 npm add -D lightningcss
@@ -141,14 +141,14 @@ export default defineConfig({
         chrome: 111
       },
       cssModules: {
-        // Lightning CSS 模块配置
+        // Lightning CSS modules config
       }
     }
   }
 })
 ```
 
-仅使用 Lightning CSS 进行压缩：
+Use Lightning CSS for minification only:
 
 ```ts
 export default defineConfig({
@@ -158,17 +158,17 @@ export default defineConfig({
 })
 ```
 
-## 禁用 CSS 注入
+## Disable CSS Injection
 
-导入 CSS 作为字符串而不注入：
+Import CSS as string without injecting:
 
 ```ts
-import styles from './styles.css?inline'  // 返回 CSS 字符串，不注入
+import styles from './styles.css?inline'  // Returns CSS string, not injected
 ```
 
 ## Source Maps
 
-在开发中启用 CSS source maps：
+Enable CSS source maps in development:
 
 ```ts
 export default defineConfig({
@@ -178,36 +178,36 @@ export default defineConfig({
 })
 ```
 
-## CSS 代码分割
+## CSS Code Splitting
 
-默认情况下，CSS 为每个异步块提取。禁用以获得单个 CSS 文件：
-
-```ts
-export default defineConfig({
-  build: {
-    cssCodeSplit: false  // 整个应用的单个 CSS 文件
-  }
-})
-```
-
-## CSS 目标
-
-为 CSS 设置不同的浏览器目标：
+By default, CSS is extracted per async chunk. Disable to get single CSS file:
 
 ```ts
 export default defineConfig({
   build: {
-    cssTarget: 'chrome61'  // 用于 Android 微信 WebView
+    cssCodeSplit: false  // Single CSS file for entire app
   }
 })
 ```
 
-## @import 和 URL 处理
+## CSS Target
 
-- `@import` 语句自动内联
-- Vite 别名在 `@import` 中有效
-- `url()` 引用被重新定位以确保正确性
-- 适用于不同目录中的 Sass/Less 文件
+Set different browser target for CSS:
+
+```ts
+export default defineConfig({
+  build: {
+    cssTarget: 'chrome61'  // For Android WeChat WebView
+  }
+})
+```
+
+## @import and URL Handling
+
+- `@import` statements are inlined automatically
+- Vite aliases work in `@import`
+- `url()` references are rebased for correctness
+- Works across Sass/Less files in different directories
 
 <!-- 
 Source references:

@@ -39,13 +39,28 @@ router.get('/:id', authenticateToken, async (req, res) => {
 // 更新用户信息 (支持POST和PUT)
 const updateProfile = async (req, res) => {
   try {
-    const { avatar, phone, email } = req.body;
+    const { avatar, phone, email, school, major } = req.body;
     const user = req.user;
     
+    // 验证手机号格式
+    if (phone && !/^1[3-9]\d{9}$/.test(phone)) {
+      return res.status(400).json({ message: '请输入正确的手机号' });
+    }
+    
+    // 检查手机号是否被其他用户使用
+    if (phone && phone !== user.phone) {
+      const existingPhone = await User.findOne({ where: { phone } });
+      if (existingPhone) {
+        return res.status(400).json({ message: '该手机号已被其他用户使用' });
+      }
+    }
+    
     await user.update({
-      avatar: avatar || user.avatar,
-      phone: phone || user.phone,
-      email: email || user.email
+      avatar: avatar !== undefined ? avatar : user.avatar,
+      phone: phone !== undefined ? phone : user.phone,
+      email: email !== undefined ? email : user.email,
+      school: school !== undefined ? school : user.school,
+      major: major !== undefined ? major : user.major
     });
     
     res.json({
@@ -57,6 +72,8 @@ const updateProfile = async (req, res) => {
         avatar: user.avatar,
         phone: user.phone,
         email: user.email,
+        school: user.school,
+        major: user.major,
         creditScore: user.creditScore,
         isVerified: user.isVerified,
         role: user.role,

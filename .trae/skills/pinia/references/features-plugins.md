@@ -1,67 +1,67 @@
 ---
 name: plugins
-description: 使用自定义属性、方法和行为扩展 store
+description: Extend stores with custom properties, methods, and behavior
 ---
 
-# 插件
+# Plugins
 
-插件使用自定义属性、方法或行为扩展所有 store。
+Plugins extend all stores with custom properties, methods, or behavior.
 
-## 基本插件
+## Basic Plugin
 
 ```ts
 import { createPinia } from 'pinia'
 
 function SecretPiniaPlugin() {
-  return { secret: '蛋糕是个谎言' }
+  return { secret: 'the cake is a lie' }
 }
 
 const pinia = createPinia()
 pinia.use(SecretPiniaPlugin)
 
-// 在任何 store 中
+// In any store
 const store = useStore()
-store.secret // '蛋糕是个谎言'
+store.secret // 'the cake is a lie'
 ```
 
-## 插件上下文
+## Plugin Context
 
-插件接收一个上下文对象：
+Plugins receive a context object:
 
 ```ts
 import { PiniaPluginContext } from 'pinia'
 
 export function myPiniaPlugin(context: PiniaPluginContext) {
-  context.pinia   // pinia 实例
-  context.app     // Vue 应用实例
-  context.store   // 正在扩展的 store
-  context.options // store 定义选项
+  context.pinia   // pinia instance
+  context.app     // Vue app instance
+  context.store   // store being augmented
+  context.options // store definition options
 }
 ```
 
-## 添加属性
+## Adding Properties
 
-返回一个对象来添加属性（在开发工具中可追踪）：
+Return an object to add properties (tracked in devtools):
 
 ```ts
 pinia.use(() => ({ hello: 'world' }))
 ```
 
-或直接设置在 store 上：
+Or set directly on store:
 
 ```ts
 pinia.use(({ store }) => {
   store.hello = 'world'
-  // 在开发模式下使开发工具可见
+  // For devtools visibility in dev mode
   if (process.env.NODE_ENV === 'development') {
     store._customProperties.add('hello')
   }
 })
 ```
 
-## 添加 State
+## Adding State
 
-同时添加到 `store` 和 `store.$state` 以支持 SSR/开发工具：
+Add to both `store` and `store.$state` for SSR/devtools:
 
 ```ts
 import { toRef, ref } from 'vue'
@@ -75,9 +75,9 @@ pinia.use(({ store }) => {
 })
 ```
 
-## 添加外部属性
+## Adding External Properties
 
-使用 `markRaw()` 包装非响应式对象：
+Wrap non-reactive objects with `markRaw()`:
 
 ```ts
 import { markRaw } from 'vue'
@@ -88,12 +88,12 @@ pinia.use(({ store }) => {
 })
 ```
 
-## 自定义 Store 选项
+## Custom Store Options
 
-定义被插件消费的自定义选项：
+Define custom options consumed by plugins:
 
 ```ts
-// Store 定义
+// Store definition
 defineStore('search', {
   actions: {
     searchContacts() { /* ... */ },
@@ -103,7 +103,7 @@ defineStore('search', {
   },
 })
 
-// 插件读取自定义选项
+// Plugin reads custom option
 import debounce from 'lodash/debounce'
 
 pinia.use(({ options, store }) => {
@@ -116,7 +116,7 @@ pinia.use(({ options, store }) => {
 })
 ```
 
-对于 Setup Stores，将选项作为第三个参数传递：
+For Setup Stores, pass options as third argument:
 
 ```ts
 defineStore(
@@ -128,9 +128,9 @@ defineStore(
 )
 ```
 
-## TypeScript 扩展
+## TypeScript Augmentation
 
-### 自定义属性
+### Custom Properties
 
 ```ts
 import 'pinia'
@@ -144,7 +144,7 @@ declare module 'pinia' {
 }
 ```
 
-### 自定义 State
+### Custom State
 
 ```ts
 declare module 'pinia' {
@@ -154,7 +154,7 @@ declare module 'pinia' {
 }
 ```
 
-### 自定义选项
+### Custom Options
 
 ```ts
 declare module 'pinia' {
@@ -164,22 +164,22 @@ declare module 'pinia' {
 }
 ```
 
-## 在插件中订阅
+## Subscribe in Plugins
 
 ```ts
 pinia.use(({ store }) => {
   store.$subscribe(() => {
-    // 响应 state 变更
+    // React to state changes
   })
   store.$onAction(() => {
-    // 响应 actions
+    // React to actions
   })
 })
 ```
 
-## Nuxt 插件
+## Nuxt Plugin
 
-创建一个 Nuxt 插件来添加 Pinia 插件：
+Create a Nuxt plugin to add Pinia plugins:
 
 ```ts
 // plugins/myPiniaPlugin.ts

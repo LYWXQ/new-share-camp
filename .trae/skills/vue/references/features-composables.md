@@ -1,21 +1,21 @@
 ---
 name: composables
-description: 使用 Composition API 封装和复用有状态的逻辑
+description: Encapsulate and reuse stateful logic with the Composition API
 ---
 
 # Composables
 
-Composables 是使用 Composition API 封装和复用有状态逻辑的函数。
+Composables are functions that encapsulate and reuse stateful logic using Composition API.
 
-## 什么是 Composable？
+## What is a Composable?
 
-一个 composable 是满足以下条件的函数：
-- 使用 Composition API 函数（ref、computed、onMounted 等）
-- 管理响应式状态
-- 返回响应式状态和/或函数
-- 按约定以 "use" 开头命名
+A composable is a function that:
+- Uses Composition API functions (ref, computed, onMounted, etc.)
+- Manages reactive state
+- Returns reactive state and/or functions
+- Name starts with "use" by convention
 
-## 基本示例
+## Basic Example
 
 ```ts
 // composables/useMouse.ts
@@ -37,7 +37,7 @@ export function useMouse() {
 }
 ```
 
-使用：
+Usage:
 
 ```vue
 <script setup lang="ts">
@@ -47,13 +47,13 @@ const { x, y } = useMouse()
 </script>
 
 <template>
-  鼠标：{{ x }}, {{ y }}
+  Mouse: {{ x }}, {{ y }}
 </template>
 ```
 
-## 异步 Composable
+## Async Composable
 
-处理异步数据获取：
+Handle async data fetching:
 
 ```ts
 // composables/useFetch.ts
@@ -83,7 +83,7 @@ export function useFetch<T>(url: MaybeRefOrGetter<string>) {
 }
 ```
 
-使用响应式 URL：
+Usage with reactive URL:
 
 ```vue
 <script setup lang="ts">
@@ -93,44 +93,44 @@ import { useFetch } from '@/composables/useFetch'
 const userId = ref(1)
 const { data, error, isLoading } = useFetch(() => `/api/users/${userId.value}`)
 
-// 更改 userId 会触发重新获取
+// Changing userId triggers refetch
 function nextUser() {
   userId.value++
 }
 </script>
 ```
 
-## Composable 约定
+## Composable Conventions
 
-### 命名
+### Naming
 
-- 始终以 `use` 开头（useMouse、useFetch、useCounter）
-- 使用 camelCase
+- Always start with `use` (useMouse, useFetch, useCounter)
+- Use camelCase
 
-### 输入参数
+### Input Arguments
 
-接受 ref 或 getter 以实现响应式：
+Accept refs or getters for reactivity:
 
 ```ts
 import { toValue, type MaybeRefOrGetter } from 'vue'
 
 function useFeature(input: MaybeRefOrGetter<string>) {
-  // toValue 处理 ref、getter 或普通值
+  // toValue handles ref, getter, or plain value
   const value = toValue(input)
   
-  // 为了响应式追踪，在 watchEffect/computed 中调用 toValue
+  // For reactive tracking, call toValue inside watchEffect/computed
   watchEffect(() => {
     console.log(toValue(input))
   })
 }
 ```
 
-### 返回值
+### Return Values
 
-返回包含 ref 的普通对象（非 reactive）：
+Return a plain object with refs (not reactive):
 
 ```ts
-// ✅ 良好 - ref 可以被解构
+// ✅ Good - refs can be destructured
 export function useCounter() {
   const count = ref(0)
   const increment = () => count.value++
@@ -138,24 +138,24 @@ export function useCounter() {
   return { count, increment }
 }
 
-// 使用 - 保持响应式
+// Usage - maintains reactivity
 const { count, increment } = useCounter()
 ```
 
 ```ts
-// ❌ 避免 - reactive 解构后会失去连接
+// ❌ Avoid - reactive loses connection on destructure
 export function useCounter() {
   const state = reactive({ count: 0 })
   return state
 }
 
-// 失去响应式
+// Loses reactivity
 const { count } = useCounter()
 ```
 
-## 组合 Composables
+## Composing Composables
 
-Composables 可以使用其他 composables：
+Composables can use other composables:
 
 ```ts
 // composables/useEventListener.ts
@@ -172,7 +172,7 @@ export function useEventListener(
 ```
 
 ```ts
-// composables/useMouse.ts - 使用 useEventListener
+// composables/useMouse.ts - using useEventListener
 import { ref } from 'vue'
 import { useEventListener } from './useEventListener'
 
@@ -189,11 +189,11 @@ export function useMouse() {
 }
 ```
 
-## 副作用
+## Side Effects
 
-### SSR 注意事项
+### SSR Considerations
 
-仅在浏览器中运行 DOM 特定代码：
+Run DOM-specific code only in browser:
 
 ```ts
 export function useWindowSize() {
@@ -201,7 +201,7 @@ export function useWindowSize() {
   const height = ref(0)
 
   onMounted(() => {
-    // 仅在浏览器中运行
+    // Only runs in browser
     width.value = window.innerWidth
     height.value = window.innerHeight
   })
@@ -210,9 +210,9 @@ export function useWindowSize() {
 }
 ```
 
-### 清理
+### Cleanup
 
-始终清理副作用：
+Always clean up side effects:
 
 ```ts
 export function useInterval(callback: () => void, delay: number) {
@@ -228,33 +228,33 @@ export function useInterval(callback: () => void, delay: number) {
 }
 ```
 
-## 使用限制
+## Usage Restrictions
 
-Composables 必须在以下位置调用：
-- 在 `<script setup>` 或 `setup()` 中同步调用
-- 可以在生命周期钩子如 `onMounted()` 中调用
+Composables must be called:
+- Synchronously in `<script setup>` or `setup()`
+- Can be called in lifecycle hooks like `onMounted()`
 
 ```ts
-// ✅ 可以工作
+// ✅ Works
 <script setup>
 const { x, y } = useMouse()
 </script>
 
-// ❌ 无法工作
+// ❌ Won't work
 setTimeout(() => {
-  const { x, y } = useMouse() // 没有活动的组件
+  const { x, y } = useMouse() // No active component
 }, 100)
 ```
 
-例外：`<script setup>` 允许在 `await` 之后调用 composables。
+Exception: `<script setup>` allows composables after `await`.
 
-## 与其他模式对比
+## vs Other Patterns
 
-**vs Mixins**：Composables 是显式的（无命名冲突，来源清晰）
+**vs Mixins**: Composables are explicit (no naming collisions, clear source)
 
-**vs 无渲染组件**：Composables 没有组件开销
+**vs Renderless Components**: Composables have no component overhead
 
-**vs React Hooks**：概念类似，但 Vue 的响应式不同 - 没有关于 hook 顺序或依赖数组的规则
+**vs React Hooks**: Similar concept, but Vue's reactivity is different - no rules about hook order or dependency arrays
 
 <!-- 
 Source references:

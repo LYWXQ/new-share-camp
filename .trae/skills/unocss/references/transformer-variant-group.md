@@ -1,13 +1,13 @@
 ---
 name: transformer-variant-group
-description: 使用公共前缀分组工具类的简写
+description: Shorthand for grouping utilities with common prefixes
 ---
 
 # Transformer Variant Group
 
-启用使用公共前缀分组工具类的简写语法。
+Enables shorthand syntax for grouping utilities with common prefixes.
 
-## 安装
+## Installation
 
 ```ts
 import { defineConfig, transformerVariantGroup } from 'unocss'
@@ -19,77 +19,77 @@ export default defineConfig({
 })
 ```
 
-## 用法
+## Usage
 
-使用括号将多个工具类分组在一个变体前缀下：
+Group multiple utilities under one variant prefix using parentheses:
 
 ```html
-<!-- 转换前 -->
+<!-- Before transformation -->
 <div class="hover:(bg-gray-400 font-medium) font-(light mono)" />
 
-<!-- 转换后 -->
+<!-- After transformation -->
 <div class="hover:bg-gray-400 hover:font-medium font-light font-mono" />
 ```
 
-## 示例
+## Examples
 
-### 悬停状态
+### Hover States
 
 ```html
 <button class="hover:(bg-blue-600 text-white scale-105)">
-  悬停我
+  Hover me
 </button>
 ```
 
-展开为：`hover:bg-blue-600 hover:text-white hover:scale-105`
+Expands to: `hover:bg-blue-600 hover:text-white hover:scale-105`
 
-### 深色模式
+### Dark Mode
 
 ```html
 <div class="dark:(bg-gray-800 text-white)">
-  深色内容
+  Dark content
 </div>
 ```
 
-展开为：`dark:bg-gray-800 dark:text-white`
+Expands to: `dark:bg-gray-800 dark:text-white`
 
-### 响应式
+### Responsive
 
 ```html
 <div class="md:(flex items-center gap-4)">
-  响应式弹性布局
+  Responsive flex
 </div>
 ```
 
-展开为：`md:flex md:items-center md:gap-4`
+Expands to: `md:flex md:items-center md:gap-4`
 
-### 嵌套分组
+### Nested Groups
 
 ```html
 <div class="lg:hover:(bg-blue-500 text-white)">
-  大屏幕悬停
+  Large screen hover
 </div>
 ```
 
-展开为：`lg:hover:bg-blue-500 lg:hover:text-white`
+Expands to: `lg:hover:bg-blue-500 lg:hover:text-white`
 
-### 多个前缀
+### Multiple Prefixes
 
 ```html
 <div class="text-(sm gray-600) font-(medium mono)">
-  样式化文字
+  Styled text
 </div>
 ```
 
-展开为：`text-sm text-gray-600 font-medium font-mono`
+Expands to: `text-sm text-gray-600 font-medium font-mono`
 
-## 要点
+## Key Points
 
-- 使用括号 `()` 对工具类分组
-- 前缀应用于组内的所有工具类
-- 可与任何变体组合（hover、dark、响应式等）
-- 支持嵌套
-- 在 class 属性和其他提取源中工作
+- Use parentheses `()` to group utilities
+- The prefix applies to all utilities inside the group
+- Can be combined with any variant (hover, dark, responsive, etc.)
+- Nesting is supported
+- Works in class attributes and other extraction sources
 
 <!-- 
 Source references:

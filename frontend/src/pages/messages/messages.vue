@@ -25,42 +25,88 @@
     <scroll-view 
       class="message-list" 
       scroll-y 
-      refresher-enabled
+      :refresher-enabled="false"
       :refresher-triggered="isRefreshing"
       @refresherrefresh="onRefresh"
       @scrolltolower="onLoadMore"
     >
-      <view v-if="messageList.length === 0 && !isLoading" class="empty-state">
+      <view v-if="displayList.length === 0 && !isLoading" class="empty-state">
         <text class="empty-text">暂无消息</text>
       </view>
       
-      <view 
-        v-for="message in messageList" 
-        :key="message.id"
-        class="message-item"
-        :class="{ unread: message.status === 'unread' }"
-        @click="handleMessageClick(message)"
-        @longpress="handleLongPress(message)"
-      >
-        <view class="message-icon" :class="message.type">
-          <text class="icon">{{ message.type === 'system' ? '📢' : '💬' }}</text>
+      <!-- 系统消息列表 -->
+      <template v-if="currentType === 'system'">
+        <view 
+          v-for="message in systemMessageList" 
+          :key="message.id"
+          class="message-item"
+          :class="{ unread: !message.isRead }"
+          @click="handleSystemMessageClick(message)"
+          @longpress="handleLongPress(message)"
+        >
+          <view class="message-icon system">
+            <text class="icon">📢</text>
+          </view>
+          <view class="message-content">
+            <text class="message-title">系统通知</text>
+            <text class="message-text">{{ message.content }}</text>
+            <text class="message-time">{{ formatTime(message.createdAt) }}</text>
+          </view>
+          <view v-if="!message.isRead" class="message-badge"></view>
+          <view class="delete-btn" @click.stop="handleDelete(message)">
+            <text class="delete-icon">🗑️</text>
+          </view>
         </view>
-        <view class="message-content">
-          <text class="message-title">{{ getMessageTitle(message) }}</text>
-          <text class="message-text">{{ message.content }}</text>
-          <text class="message-time">{{ formatTime(message.createdAt) }}</text>
-        </view>
-        <view v-if="message.status === 'unread'" class="message-badge"></view>
-        <view class="delete-btn" @click.stop="handleDelete(message)">
-          <text class="delete-icon">🗑️</text>
-        </view>
-      </view>
+      </template>
       
-      <view v-if="isLoading && messageList.length > 0" class="loading-more">
+      <!-- 聊天会话列表 -->
+      <template v-if="currentType === 'chat'">
+        <view 
+          v-for="conversation in chatConversationList" 
+          :key="conversation.id"
+          class="chat-item"
+          :class="{ unread: conversation.unreadCount > 0 }"
+          @click="handleChatClick(conversation)"
+        >
+          <!-- 物品封面图 -->
+          <view class="item-cover">
+            <image 
+              v-if="conversation.item?.images" 
+              :src="getImageUrl(conversation.item.images)" 
+              mode="aspectFill"
+              class="cover-image"
+            />
+            <view v-else class="cover-placeholder">
+              <text class="placeholder-icon">📦</text>
+            </view>
+          </view>
+          
+          <view class="chat-content">
+            <!-- 物品名称和发布者 -->
+            <view class="chat-header">
+              <text class="item-title">{{ conversation.item?.title || '未知物品' }}</text>
+              <text class="chat-time">{{ formatTime(conversation.lastMessageTime) }}</text>
+            </view>
+            
+            <!-- 发布者用户名 -->
+            <text class="publisher-name">{{ conversation.otherUser?.username || '未知用户' }}</text>
+            
+            <!-- 最新消息 -->
+            <view class="chat-footer">
+              <text class="last-message">{{ conversation.lastMessage }}</text>
+              <view v-if="conversation.unreadCount > 0" class="unread-count">
+                <text class="unread-text">{{ conversation.unreadCount > 99 ? '99+' : conversation.unreadCount }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </template>
+      
+      <view v-if="isLoading && displayList.length > 0" class="loading-more">
         <text>加载中...</text>
       </view>
       
-      <view v-if="!hasMore && messageList.length > 0" class="no-more">
+      <view v-if="!hasMore && displayList.length > 0" class="no-more">
         <text>没有更多了</text>
       </view>
     </scroll-view>
@@ -68,14 +114,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { getMessageList, markAsRead, markAllAsRead, deleteMessage, type Message } from '@/api/messages'
+import { ref, onMounted, computed } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
+import { getMessageList, markAsRead, markAllAsRead, deleteMessage, type Message, type ChatConversation } from '@/api/messages'
+import { getImageUrl as getImgUrl } from '@/utils/image'
 
 // 当前选中的消息类型
 const currentType = ref<'system' | 'chat'>('system')
 
-// 消息列表
-const messageList = ref<Message[]>([])
+// 系统消息列表
+const systemMessageList = ref<Message[]>([])
+// 聊天会话列表
+const chatConversationList = ref<ChatConversation[]>([])
 
 // 分页参数
 const page = ref(1)
@@ -83,6 +133,16 @@ const limit = ref(10)
 const hasMore = ref(true)
 const isLoading = ref(false)
 const isRefreshing = ref(false)
+
+// 计算当前显示列表（用于空状态判断）
+const displayList = computed(() => {
+  return currentType.value === 'system' ? systemMessageList.value : chatConversationList.value
+})
+
+// 获取图片URL
+const getImageUrl = (imagePath: string) => {
+  return getImgUrl(imagePath)
+}
 
 // 获取消息列表
 const fetchMessageList = async (isRefresh = false) => {
@@ -98,18 +158,30 @@ const fetchMessageList = async (isRefresh = false) => {
     }
     
     const res = await getMessageList(params)
-    const resMessages = res.messages || []
+    const resData = res.messages || []
     
-    if (isRefresh) {
-      messageList.value = resMessages
-      page.value = 2
+    if (currentType.value === 'system') {
+      // 系统消息
+      if (isRefresh) {
+        systemMessageList.value = resData as Message[]
+        page.value = 2
+      } else {
+        systemMessageList.value = [...systemMessageList.value, ...(resData as Message[])]
+        page.value++
+      }
     } else {
-      messageList.value = [...messageList.value, ...resMessages]
-      page.value++
+      // 聊天会话
+      if (isRefresh) {
+        chatConversationList.value = resData as ChatConversation[]
+        page.value = 2
+      } else {
+        chatConversationList.value = [...chatConversationList.value, ...(resData as ChatConversation[])]
+        page.value++
+      }
     }
     
     // 判断是否还有更多数据
-    hasMore.value = resMessages.length === limit.value && page.value <= res.pagination.totalPages
+    hasMore.value = resData.length === limit.value
   } catch (error) {
     uni.showToast({
       title: '获取消息失败',
@@ -127,7 +199,6 @@ const switchType = (type: 'system' | 'chat') => {
   currentType.value = type
   page.value = 1
   hasMore.value = true
-  messageList.value = []
   fetchMessageList(true)
 }
 
@@ -143,14 +214,6 @@ const onRefresh = () => {
 const onLoadMore = () => {
   if (!hasMore.value || isLoading.value) return
   fetchMessageList()
-}
-
-// 获取消息标题
-const getMessageTitle = (message: Message) => {
-  if (message.type === 'system') {
-    return '系统通知'
-  }
-  return message.sender?.username || '未知用户'
 }
 
 // 格式化时间
@@ -181,32 +244,35 @@ const formatTime = (timeStr: string) => {
   return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })
 }
 
-// 点击消息
-const handleMessageClick = async (message: Message) => {
+// 点击系统消息
+const handleSystemMessageClick = async (message: Message) => {
   // 标记为已读
-  if (message.status === 'unread') {
+  if (!message.isRead) {
     try {
       await markAsRead(message.id)
-      message.status = 'read'
+      message.isRead = true
     } catch (error) {
       console.error('标记已读失败', error)
     }
   }
   
-  // 跳转到对应页面
-  if (message.type === 'chat') {
-    // 跳转到聊天页面
+  // 系统通知，如果有相关订单则跳转到订单详情
+  if (message.relatedId && message.relatedType === 'order') {
     uni.navigateTo({
-      url: `/pages/chat/chat?userId=${message.senderId}`
+      url: `/pages/order/detail?id=${message.relatedId}`
     })
-  } else if (message.type === 'system') {
-    // 系统通知，如果有相关订单则跳转到订单详情
-    if (message.relatedId && message.relatedType === 'order') {
-      uni.navigateTo({
-        url: `/pages/order/detail?id=${message.relatedId}`
-      })
-    }
   }
+}
+
+// 点击聊天会话
+const handleChatClick = (conversation: ChatConversation) => {
+  // 跳转到对应物品的聊天页面，携带 itemId 和 userId 参数
+  const itemId = conversation.itemId
+  const userId = conversation.otherUserId
+  
+  uni.navigateTo({
+    url: `/pages/chat/chat?itemId=${itemId}&userId=${userId}`
+  })
 }
 
 // 标记全部已读
@@ -214,9 +280,15 @@ const handleMarkAllAsRead = async () => {
   try {
     await markAllAsRead()
     // 更新本地状态
-    messageList.value.forEach(msg => {
-      msg.status = 'read'
-    })
+    if (currentType.value === 'system') {
+      systemMessageList.value.forEach(msg => {
+        msg.isRead = true
+      })
+    } else {
+      chatConversationList.value.forEach(conv => {
+        conv.unreadCount = 0
+      })
+    }
     uni.showToast({
       title: '已全部标记为已读',
       icon: 'success'
@@ -229,7 +301,7 @@ const handleMarkAllAsRead = async () => {
   }
 }
 
-// 长按消息
+// 长按消息（仅系统消息支持删除）
 const handleLongPress = (message: Message) => {
   uni.showActionSheet({
     itemList: ['删除消息'],
@@ -251,9 +323,9 @@ const handleDelete = async (message: Message) => {
         try {
           await deleteMessage(message.id)
           // 从列表中移除
-          const index = messageList.value.findIndex(m => m.id === message.id)
+          const index = systemMessageList.value.findIndex(m => m.id === message.id)
           if (index > -1) {
-            messageList.value.splice(index, 1)
+            systemMessageList.value.splice(index, 1)
           }
           uni.showToast({
             title: '删除成功',
@@ -270,9 +342,28 @@ const handleDelete = async (message: Message) => {
   })
 }
 
+// 检查登录状态
+const checkLoginStatus = () => {
+  const token = uni.getStorageSync('token')
+  if (!token) {
+    uni.navigateTo({ url: '/pages/login/login' })
+    return false
+  }
+  return true
+}
+
 // 页面加载时获取消息列表
 onMounted(() => {
-  fetchMessageList(true)
+  if (checkLoginStatus()) {
+    fetchMessageList(true)
+  }
+})
+
+// 页面显示时重新加载数据
+onShow(() => {
+  if (checkLoginStatus()) {
+    fetchMessageList(true)
+  }
 })
 </script>
 
@@ -346,6 +437,7 @@ onMounted(() => {
   color: #999999;
 }
 
+/* 系统消息样式 */
 .message-item {
   display: flex;
   align-items: center;
@@ -373,10 +465,6 @@ onMounted(() => {
 
 .message-icon.system {
   background-color: #e3f2fd;
-}
-
-.message-icon.chat {
-  background-color: #e8f5e8;
 }
 
 .icon {
@@ -430,6 +518,122 @@ onMounted(() => {
 .delete-icon {
   font-size: 32rpx;
   opacity: 0.6;
+}
+
+/* 聊天会话样式 */
+.chat-item {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  position: relative;
+}
+
+.chat-item.unread {
+  background-color: #f0f7ff;
+}
+
+.item-cover {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+  background-color: #f5f5f5;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+}
+
+.cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-icon {
+  font-size: 48rpx;
+}
+
+.chat-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 120rpx;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.chat-time {
+  font-size: 22rpx;
+  color: #999999;
+  flex-shrink: 0;
+}
+
+.publisher-name {
+  font-size: 26rpx;
+  color: #666666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.last-message {
+  font-size: 26rpx;
+  color: #999999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.unread-count {
+  min-width: 36rpx;
+  height: 36rpx;
+  background-color: #ff4d4f;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10rpx;
+  flex-shrink: 0;
+}
+
+.unread-text {
+  font-size: 22rpx;
+  color: #ffffff;
+  font-weight: bold;
 }
 
 .loading-more,

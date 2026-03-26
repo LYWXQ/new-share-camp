@@ -1,60 +1,60 @@
 ---
-title: 只在 Mounted 钩子后访问 DOM
+title: Access DOM Only After Mounted Hook
 impact: HIGH
-impactDescription: 在 mounted 之前访问 DOM 元素会导致未定义错误和静默失败
+impactDescription: Accessing DOM elements before mounted causes undefined errors and silent failures
 type: capability
 tags: [vue3, vue2, lifecycle, dom, mounted, created, beforeMount, template-refs]
 ---
 
-# 只在 Mounted 钩子后访问 DOM
+# Access DOM Only After Mounted Hook
 
-**影响：高** - 在 `created` 或 `beforeMount` 钩子中尝试访问 DOM 元素或 `this.$el` 会失败，因为组件的模板尚未渲染到 DOM。这会导致未定义错误、空引用和第三方库初始化失败。
+**Impact: HIGH** - Attempting to access DOM elements or `this.$el` in `created` or `beforeMount` hooks fails because the component's template has not yet been rendered to the DOM. This leads to undefined errors, null references, and failed third-party library initializations.
 
-组件的 DOM 只在 `mounted` 钩子（Options API）或 `onMounted` 运行后（Composition API）才可用。在此之前，`this.$el` 是未定义的，模板引用是 null。
+The component's DOM is only available starting from the `mounted` hook (Options API) or after `onMounted` runs (Composition API). Before this point, `this.$el` is undefined and template refs are null.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 只在 `mounted`/`onMounted` 或之后执行 DOM 操作
-- [ ] 在 mounted 中初始化依赖 DOM 的库（图表、地图、编辑器）
-- [ ] 使用 `created` 进行数据初始化和 API 调用（非 DOM 操作）
-- [ ] 只在 mounted 后访问模板引用
-- [ ] 如果需要在响应式数据更改后访问 DOM，使用 `$nextTick`
+- [ ] Perform DOM manipulations only in `mounted`/`onMounted` or later
+- [ ] Initialize DOM-dependent libraries (charts, maps, editors) in mounted
+- [ ] Use `created` for data initialization and API calls (non-DOM operations)
+- [ ] Access template refs only after mounted
+- [ ] Use `$nextTick` if you need DOM after reactive data changes
 
-**错误示例：**
+**Incorrect:**
 ```javascript
-// 错误：在 created 钩子中访问 DOM
+// WRONG: Accessing DOM in created hook
 export default {
   created() {
-    // DOM 还不存在！
+    // DOM doesn't exist yet!
     console.log(this.$el) // undefined
-    this.$el.querySelector('.chart') // 错误：无法读取 undefined 的属性 'querySelector'
+    this.$el.querySelector('.chart') // Error: Cannot read property 'querySelector' of undefined
 
-    // 第三方库初始化失败
-    new Chart(document.getElementById('myChart')) // 元素还不存在
+    // Third-party library initialization fails
+    new Chart(document.getElementById('myChart')) // Element doesn't exist yet
   }
 }
 ```
 
 ```javascript
-// 错误：在 beforeMount 中访问 DOM
+// WRONG: Accessing DOM in beforeMount
 export default {
   beforeMount() {
-    // 仍然太早 - 模板已编译但未挂载
-    console.log(this.$el) // 在 Vue 3 中是 undefined
-    this.$refs.myInput.focus() // 错误：无法读取 undefined 的属性 'focus'
+    // Still too early - template is compiled but not mounted
+    console.log(this.$el) // undefined in Vue 3
+    this.$refs.myInput.focus() // Error: Cannot read property 'focus' of undefined
   }
 }
 ```
 
 ```vue
-<!-- 错误：在 setup 中同步访问模板引用 -->
+<!-- WRONG: Accessing template ref synchronously in setup -->
 <script setup>
 import { ref } from 'vue'
 
 const myInput = ref(null)
 
-// 这在 setup 期间运行，在挂载之前
-myInput.value.focus() // 错误：无法读取 null 的属性 'focus'
+// This runs during setup, before mounting
+myInput.value.focus() // Error: Cannot read property 'focus' of null
 </script>
 
 <template>
@@ -62,22 +62,22 @@ myInput.value.focus() // 错误：无法读取 null 的属性 'focus'
 </template>
 ```
 
-**正确示例：**
+**Correct:**
 ```javascript
-// 正确：使用 created 处理数据，mounted 处理 DOM
+// CORRECT: Use created for data, mounted for DOM
 export default {
   data() {
     return { chartData: null }
   },
   async created() {
-    // 在 created 中获取数据是可以的
+    // Data fetching is fine in created
     this.chartData = await fetchChartData()
   },
   mounted() {
-    // 现在 DOM 存在且可以安全访问
+    // Now the DOM exists and is safe to access
     console.log(this.$el) // <div>...</div>
 
-    // 初始化依赖 DOM 的库
+    // Initialize DOM-dependent libraries
     this.chart = new Chart(this.$refs.chartCanvas, {
       data: this.chartData
     })
@@ -86,15 +86,15 @@ export default {
 ```
 
 ```vue
-<!-- 正确：在 onMounted 中访问模板引用 -->
+<!-- CORRECT: Access template refs in onMounted -->
 <script setup>
 import { ref, onMounted } from 'vue'
 
 const myInput = ref(null)
 
 onMounted(() => {
-  // DOM 现在可用
-  myInput.value.focus() // 有效！
+  // DOM is now available
+  myInput.value.focus() // Works!
 })
 </script>
 
@@ -104,23 +104,23 @@ onMounted(() => {
 ```
 
 ```javascript
-// 正确：使用 $nextTick 在数据更改后访问 DOM
+// CORRECT: Using $nextTick for DOM access after data changes
 export default {
   methods: {
     async addItem() {
       this.items.push(newItem)
 
-      // 等待 Vue 更新 DOM
+      // Wait for Vue to update the DOM
       await this.$nextTick()
 
-      // 现在新元素存在于 DOM 中
+      // Now the new element exists in DOM
       this.$refs.list.lastElementChild.scrollIntoView()
     }
   }
 }
 ```
 
-## Vue 3 Composition API 模式
+## Vue 3 Composition API Pattern
 
 ```vue
 <script setup>
@@ -130,19 +130,19 @@ const listRef = ref(null)
 const items = ref([])
 
 onMounted(() => {
-  // 在这里访问 DOM 是安全的
+  // Safe to access DOM here
   listRef.value.style.height = '400px'
 })
 </script>
 ```
 
-## Vue 3.5+ useTemplateRef 模式
+## Vue 3.5+ useTemplateRef Pattern
 
 ```vue
 <script setup>
 import { useTemplateRef, onMounted } from 'vue'
 
-// Vue 3.5+ 推荐方法 - 将 ref 名称与变量名解耦
+// Vue 3.5+ recommended approach - decouples ref name from variable name
 const input = useTemplateRef('my-input')
 
 onMounted(() => {
@@ -167,10 +167,10 @@ const items = ref([])
 async function addItem(item) {
   items.value.push(item)
 
-  // 等待响应式更改后的 DOM 更新
+  // Wait for DOM update after reactive change
   await nextTick()
 
-  // 现在新项在 DOM 中
+  // Now new item is in DOM
   listRef.value.lastElementChild.focus()
 }
 </script>
@@ -182,16 +182,16 @@ async function addItem(item) {
 </template>
 ```
 
-## 常见第三方库
+## Common Third-Party Libraries
 
 ```javascript
-// 正确：在 mounted 中初始化
+// CORRECT: Initialize in mounted
 export default {
   mounted() {
     // Chart.js
     this.chart = new Chart(this.$refs.canvas, config)
 
-    // Leaflet 地图
+    // Leaflet maps
     this.map = L.map(this.$refs.mapContainer).setView([51.505, -0.09], 13)
 
     // Monaco Editor
@@ -201,7 +201,7 @@ export default {
     this.player = videojs(this.$refs.videoElement)
   },
   beforeUnmount() {
-    // 别忘了清理！
+    // Don't forget cleanup!
     this.chart?.destroy()
     this.map?.remove()
     this.editor?.dispose()
@@ -210,7 +210,7 @@ export default {
 }
 ```
 
-## 参考
-- [Vue.js 生命周期钩子](https://vuejs.org/guide/essentials/lifecycle.html)
-- [Vue.js 模板引用](https://vuejs.org/guide/essentials/template-refs.html)
+## Reference
+- [Vue.js Lifecycle Hooks](https://vuejs.org/guide/essentials/lifecycle.html)
+- [Vue.js Template Refs](https://vuejs.org/guide/essentials/template-refs.html)
 - [Vue.js nextTick](https://vuejs.org/api/general.html#nexttick)

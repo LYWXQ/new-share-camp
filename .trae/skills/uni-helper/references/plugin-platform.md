@@ -1,19 +1,19 @@
 ---
 name: vite-plugin-uni-platform
-description: uni-app 基于文件的平台编译 - 根据目标平台编译不同文件，做什么：使用文件命名约定根据目标平台编译不同文件，支持平台特定实现而无需条件编译；何时调用：当用户需要为不同平台编写特定实现、使用平台后缀文件或替代 #ifdef 条件编译时调用
+description: File-based platform compilation for uni-app - compile different files based on target platform
 ---
 
 # vite-plugin-uni-platform
 
-使用文件命名约定根据目标平台编译不同文件。支持平台特定实现而无需条件编译。
+Compile different files based on target platform using file naming conventions. Supports platform-specific implementations without conditional compilation.
 
-## 安装
+## Installation
 
 ```bash
 npm i -D @uni-helper/vite-plugin-uni-platform
 ```
 
-## 设置
+## Setup
 
 ```ts
 // vite.config.ts
@@ -26,61 +26,61 @@ export default defineConfig({
 })
 ```
 
-## 文件命名约定
+## File Naming Convention
 
-在文件名中使用平台后缀：
+Use platform suffixes in filenames:
 
 ```
 src/
   utils/
-    request.ts           # 默认实现
-    request.h5.ts        # H5 特定
-    request.mp-weixin.ts # 微信小程序
+    request.ts           # Default implementation
+    request.h5.ts        # H5-specific
+    request.mp-weixin.ts # WeChat Mini Program
     request.app.ts       # App (iOS/Android)
 ```
 
-## 支持的平台
+## Supported Platforms
 
-| 后缀 | 平台 |
+| Suffix | Platform |
 |--------|----------|
 | `.h5.ts` | H5/Web |
-| `.mp-weixin.ts` | 微信小程序 |
-| `.mp-alipay.ts` | 支付宝小程序 |
-| `.mp-baidu.ts` | 百度智能小程序 |
-| `.mp-toutiao.ts` | 抖音小程序 |
-| `.mp-qq.ts` | QQ 小程序 |
-| `.mp-kuaishou.ts` | 快手小程序 |
+| `.mp-weixin.ts` | WeChat Mini Program |
+| `.mp-alipay.ts` | Alipay Mini Program |
+| `.mp-baidu.ts` | Baidu Smart Program |
+| `.mp-toutiao.ts` | Douyin Mini Program |
+| `.mp-qq.ts` | QQ Mini Program |
+| `.mp-kuaishou.ts` | Kuaishou Mini Program |
 | `.app.ts` | iOS/Android App |
-| `.app-plus.ts` | App（替代） |
-| `.harmony` | 鸿蒙 |
+| `.app-plus.ts` | App (alternative) |
+| `.harmony` | HarmonyOS |
 
-## 导入用法
+## Import Usage
 
-导入时不带平台后缀：
+Import without the platform suffix:
 
 ```ts
-// 自动解析为正确的平台版本
+// This automatically resolves to the correct platform version
 import { request } from './utils/request'
 ```
 
-## 示例
+## Example
 
 ```ts
-// utils/request.ts - 默认实现
+// utils/request.ts - Default implementation
 export const request = (options: RequestOptions) => {
   return uni.request(options)
 }
 
-// utils/request.h5.ts - H5 使用 axios
+// utils/request.h5.ts - H5 with axios
 import axios from 'axios'
 
 export const request = (options: RequestOptions) => {
   return axios.request(options)
 }
 
-// utils/request.mp-weixin.ts - 微信特定
+// utils/request.mp-weixin.ts - WeChat specific
 export const request = (options: RequestOptions) => {
-  // 添加微信特定的请求头
+  // Add WeChat-specific headers
   return uni.request({
     ...options,
     header: {
@@ -91,12 +91,12 @@ export const request = (options: RequestOptions) => {
 }
 ```
 
-## 优势
+## Benefits
 
-- 更清晰的代码，无需 `#ifdef` 条件
-- 类型安全的平台实现
-- Tree-shaking 移除未使用的平台代码
-- 更好的 IDE 支持和导航
+- Cleaner code without `#ifdef` conditions
+- Type-safe platform implementations
+- Tree-shaking removes unused platform code
+- Better IDE support and navigation
 
 <!--
 Source references:

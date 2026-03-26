@@ -1,34 +1,57 @@
 /**
  * 消息通知相关 API
  */
-import { get, post, put } from '@/utils/request'
+import { get, post, put, del } from '@/utils/request'
 import type { PaginationData } from './types'
 
 // 消息类型
-type MessageType = 'system' | 'chat'
+type MessageType = 'system' | 'text' | 'image'
 
 // 消息状态
 type MessageStatus = 'unread' | 'read'
+
+// 物品信息（简版）
+export interface ItemInfo {
+  id: number
+  title: string
+  images?: string
+}
+
+// 用户信息（简版）
+export interface UserInfo {
+  id: number
+  username: string
+  avatar?: string
+}
 
 // 消息信息接口
 export interface Message {
   id: number
   senderId: number
   receiverId: number
+  itemId?: number
   type: MessageType
   content: string
-  status: MessageStatus
+  isRead: boolean
   relatedId?: number
   relatedType?: string
   createdAt: string
   sender?: UserInfo
+  receiver?: UserInfo
+  item?: ItemInfo
 }
 
-// 用户信息（简版）
-interface UserInfo {
+// 聊天会话接口（用于消息列表）
+export interface ChatConversation {
   id: number
-  username: string
-  avatar?: string
+  itemId: number
+  item?: ItemInfo
+  otherUserId: number
+  otherUser?: UserInfo
+  lastMessage: string
+  lastMessageTime: string
+  unreadCount: number
+  type: 'chat'
 }
 
 // 发送消息参数
@@ -36,28 +59,32 @@ export interface SendMessageParams {
   receiverId: number
   content: string
   type?: MessageType
+  itemId?: number
   relatedId?: number
   relatedType?: string
 }
 
 /**
  * 获取消息列表
+ * type: 'system' | 'chat' - 系统消息或聊天消息
  */
-export const getMessageList = (params?: { page?: number; limit?: number; type?: MessageType }): Promise<PaginationData<Message>> => {
-  return get<PaginationData<Message>>('/messages', params)
+export const getMessageList = (params?: { page?: number; limit?: number; type?: 'system' | 'chat' }): Promise<PaginationData<Message | ChatConversation>> => {
+  return get<PaginationData<Message | ChatConversation>>('/messages', params)
 }
 
 /**
  * 获取与某个用户的聊天记录
+ * 支持按物品筛选
  */
-export const getChatHistory = (userId: number, params?: { page?: number; limit?: number }): Promise<PaginationData<Message>> => {
+export const getChatHistory = (userId: number, params?: { page?: number; limit?: number; itemId?: number }): Promise<PaginationData<Message>> => {
   return get<PaginationData<Message>>(`/messages/chat/${userId}`, params)
 }
 
 /**
  * 发送消息
+ * 注意：请求工具会自动提取 response.data，所以这里直接返回 Message
  */
-export const sendMessage = (data: SendMessageParams): Promise<{ message: string; messageData: Message }> => {
+export const sendMessage = (data: SendMessageParams): Promise<Message> => {
   return post('/messages', data)
 }
 
@@ -87,4 +114,11 @@ export const getUnreadCount = (options?: any): Promise<{ count: number }> => {
  */
 export const deleteMessage = (messageId: number): Promise<{ message: string }> => {
   return put(`/messages/${messageId}/delete`)
+}
+
+/**
+ * 清空指定用户的所有消息（管理员接口）
+ */
+export const clearUserMessages = (usernames: string[]): Promise<{ message: string; deletedCount: number; clearedUsers: string[] }> => {
+  return del('/messages/clear-users', { usernames })
 }

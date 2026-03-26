@@ -1,27 +1,27 @@
 ---
 name: transformer-attributify-jsx
-description: 在 JSX/TSX 中支持无值 attributify
+description: Support valueless attributify in JSX/TSX
 ---
 
 # Transformer Attributify JSX
 
-修复 JSX 中的无值 attributify 模式，其中 `<div foo>` 变为 `<div foo={true}>`。
+Fixes valueless attributify mode in JSX where `<div foo>` becomes `<div foo={true}>`.
 
-## 问题
+## The Problem
 
-在 JSX 中，无值属性被转换：
+In JSX, valueless attributes are transformed:
 
 ```jsx
-// 你写的
+// You write
 <div m-2 rounded text-teal-400 />
 
-// JSX 编译为
+// JSX compiles to
 <div m-2={true} rounded={true} text-teal-400={true} />
 ```
 
-`={true}` 破坏了 UnoCSS attributify 检测。
+The `={true}` breaks UnoCSS attributify detection.
 
-## 安装
+## Installation
 
 ```ts
 import { 
@@ -40,49 +40,49 @@ export default defineConfig({
 })
 ```
 
-## 工作原理
+## How It Works
 
-转换器将 JSX 布尔属性转换回字符串：
+The transformer converts JSX boolean attributes back to strings:
 
 ```jsx
-// 输入（JSX 编译后）
+// Input (after JSX compilation)
 <div m-2={true} rounded={true} />
 
-// 输出（转换后）
+// Output (transformed)
 <div m-2="" rounded="" />
 ```
 
-现在 UnoCSS 可以正确提取 attributify 类。
+Now UnoCSS can properly extract the attributify classes.
 
-## 选项
+## Options
 
 ```ts
 transformerAttributifyJsx({
-  // 仅转换特定属性
-  // 默认：转换所有匹配 attributify 模式的
+  // Only transform specific attributes
+  // Default: transforms all that match attributify patterns
   blocklist: ['text', 'font'],
 })
 ```
 
-## 何时使用
+## When to Use
 
-需要时使用：
+Required when using:
 - React
 - Preact
 - Solid
-- 任何基于 JSX 的框架
+- Any JSX-based framework
 
-使用无值 attributify 语法：
+With valueless attributify syntax:
 
 ```jsx
-// 需要此转换器
+// This needs the transformer
 <div flex items-center gap-4 />
 
-// 不需要转换器（有值）
+// This works without transformer (has values)
 <div flex="~" items="center" gap="4" />
 ```
 
-## 框架设置
+## Framework Setup
 
 ### React
 
@@ -93,7 +93,7 @@ import UnoCSS from 'unocss/vite'
 
 export default {
   plugins: [
-    UnoCSS(), // 必须在使用 attributify 时放在 React 之前
+    UnoCSS(), // Must be before React
     React(),
   ],
 }
@@ -121,7 +121,7 @@ export default defineConfig({
 
 ### Preact
 
-与 React 相同，使用 `@preact/preset-vite` 或 `@prefresh/vite`。
+Same as React, use `@preact/preset-vite` or `@prefresh/vite`.
 
 ### Solid
 
@@ -137,9 +137,9 @@ export default {
 }
 ```
 
-## TypeScript 支持
+## TypeScript Support
 
-添加类型声明：
+Add type declarations:
 
 ```ts
 // shims.d.ts

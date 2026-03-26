@@ -1,13 +1,13 @@
 ---
 name: transformer-compile-class
-description: 将多个类编译为一个哈希类
+description: Compile multiple classes into one hashed class
 ---
 
 # Transformer Compile Class
 
-将多个工具类编译为单个哈希类，以获得更小的 HTML。
+Compiles multiple utility classes into a single hashed class for smaller HTML.
 
-## 安装
+## Installation
 
 ```ts
 import { defineConfig, transformerCompileClass } from 'unocss'
@@ -19,23 +19,23 @@ export default defineConfig({
 })
 ```
 
-## 用法
+## Usage
 
-添加 `:uno:` 前缀标记要编译的类：
+Add `:uno:` prefix to mark classes for compilation:
 
 ```html
-<!-- 编译前 -->
+<!-- Before -->
 <div class=":uno: text-center sm:text-left">
   <div class=":uno: text-sm font-bold hover:text-red" />
 </div>
 
-<!-- 编译后 -->
+<!-- After -->
 <div class="uno-qlmcrp">
   <div class="uno-0qw2gr" />
 </div>
 ```
 
-## 生成的 CSS
+## Generated CSS
 
 ```css
 .uno-qlmcrp {
@@ -57,33 +57,33 @@ export default defineConfig({
 }
 ```
 
-## 选项
+## Options
 
 ```ts
 transformerCompileClass({
-  // 自定义触发字符串（默认：':uno:'）
+  // Custom trigger string (default: ':uno:')
   trigger: ':uno:',
   
-  // 自定义类前缀（默认：'uno-'）
+  // Custom class prefix (default: 'uno-')
   classPrefix: 'uno-',
   
-  // 类名的哈希函数
-  hashFn: (str) => /* 自定义哈希 */,
+  // Hash function for class names
+  hashFn: (str) => /* custom hash */,
   
-  // 保留原始类与编译类并存
+  // Keep original classes alongside compiled
   keepOriginal: false,
 })
 ```
 
-## 用例
+## Use Cases
 
-- **更小的 HTML** - 减少重复的类字符串
-- **混淆** - 在生产环境中隐藏工具类名
-- **性能** - 更少的 class 属性需要解析
+- **Smaller HTML** - Reduce repetitive class strings
+- **Obfuscation** - Hide utility class names in production
+- **Performance** - Fewer class attributes to parse
 
-## ESLint 集成
+## ESLint Integration
 
-在整个项目中强制使用编译类：
+Enforce compile class usage across project:
 
 ```json
 {
@@ -93,11 +93,11 @@ transformerCompileClass({
 }
 ```
 
-此规则：
-- 当 class 属性不以 `:uno:` 开头时警告
-- 通过添加前缀自动修复
+This rule:
+- Warns when class attribute doesn't start with `:uno:`
+- Auto-fixes by adding the prefix
 
-选项：
+Options:
 
 ```json
 {
@@ -110,14 +110,14 @@ transformerCompileClass({
 }
 ```
 
-## 与其他转换器组合
+## Combining with Other Transformers
 
 ```ts
 export default defineConfig({
   transformers: [
-    transformerVariantGroup(),  // 首先处理变体组
-    transformerDirectives(),    // 然后处理指令
-    transformerCompileClass(),  // 最后编译
+    transformerVariantGroup(),  // Process variant groups first
+    transformerDirectives(),    // Then directives
+    transformerCompileClass(),  // Compile last
   ],
 })
 ```

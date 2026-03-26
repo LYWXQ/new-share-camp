@@ -4,13 +4,32 @@ const { authenticateToken } = require('../middleware/auth');
 const { Item, User } = require('../models');
 const { Op } = require('sequelize');
 
-// 获取物品列表
-router.get('/', async (req, res) => {
+// 获取物品列表（可选认证）
+router.get('/', async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, category, keyword, sort = 'newest' } = req.query;
+    const { page = 1, limit = 10, category, keyword, sort = 'newest', transactionType } = req.query;
     const offset = (page - 1) * limit;
     
     const where = { status: 'available' };
+    
+    // 尝试从token获取用户信息（可选认证）
+    let userId = null;
+    try {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        const jwt = require('jsonwebtoken');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+        userId = decoded.userId;
+      }
+    } catch (err) {
+      userId = null;
+    }
+    
+    // 过滤掉本人发布的物品
+    if (userId) {
+      where.userId = { [Op.ne]: userId };
+    }
     
     if (category) {
       where.category = category;
@@ -18,6 +37,10 @@ router.get('/', async (req, res) => {
     
     if (keyword) {
       where.title = { [Op.like]: `%${keyword}%` };
+    }
+    
+    if (transactionType) {
+      where.transactionType = transactionType;
     }
     
     const order = [];
@@ -121,7 +144,7 @@ router.get('/:id', async (req, res) => {
 // 发布物品
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { title, description, category, images, price, deposit, availableTime, location } = req.body;
+    const { title, description, category, images, price, deposit, availableTime, location, transactionType, salePrice, isLongTermRent } = req.body;
     const userId = req.user.id;
     
     const item = await Item.create({
@@ -134,7 +157,10 @@ router.post('/', authenticateToken, async (req, res) => {
       availableTime: availableTime || {},
       location,
       userId,
-      status: 'available'
+      status: 'available',
+      transactionType,
+      salePrice,
+      isLongTermRent: isLongTermRent || false
     });
     
     res.status(201).json({
@@ -159,7 +185,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this item' });
     }
     
-    const { title, description, category, images, price, deposit, availableTime, location, status } = req.body;
+    const { title, description, category, images, price, deposit, availableTime, location, status, transactionType, salePrice, isLongTermRent } = req.body;
     
     await item.update({
       title: title || item.title,
@@ -170,7 +196,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
       deposit: deposit || item.deposit,
       availableTime: availableTime || item.availableTime,
       location: location || item.location,
-      status: status || item.status
+      status: status || item.status,
+      transactionType: transactionType || item.transactionType,
+      salePrice: salePrice || item.salePrice,
+      isLongTermRent: isLongTermRent !== undefined ? isLongTermRent : item.isLongTermRent
     });
     
     res.json({

@@ -1,13 +1,13 @@
 ---
 name: preset-wind4
-description: 兼容 Tailwind CSS v4 的预设，具有增强功能
+description: Tailwind CSS v4 compatible preset with enhanced features
 ---
 
 # Preset Wind4
 
-兼容 Tailwind CSS v4 的预设。使用现代 CSS 特性增强 preset-wind3。
+The Tailwind CSS v4 compatible preset. Enhances preset-wind3 with modern CSS features.
 
-## 安装
+## Installation
 
 ```ts
 import { defineConfig, presetWind4 } from 'unocss'
@@ -19,18 +19,18 @@ export default defineConfig({
 })
 ```
 
-## 与 Wind3 的关键差异
+## Key Differences from Wind3
 
-### 内置 CSS 重置
+### Built-in CSS Reset
 
-无需 `@unocss/reset` - 重置已内置：
+No need for `@unocss/reset` - reset is built-in:
 
 ```ts
-// 移除这些导入
-import '@unocss/reset/tailwind.css' // ❌ 不需要
-import '@unocss/reset/tailwind-compat.css' // ❌ 不需要
+// Remove these imports
+import '@unocss/reset/tailwind.css' // ❌ Not needed
+import '@unocss/reset/tailwind-compat.css' // ❌ Not needed
 
-// 在配置中启用
+// Enable in config
 presetWind4({
   preflights: {
     reset: true,
@@ -38,13 +38,13 @@ presetWind4({
 })
 ```
 
-### OKLCH 颜色模型
+### OKLCH Color Model
 
-使用 `oklch` 以获得更好的颜色感知和对比度。与 `presetLegacyCompat` 不兼容。
+Uses `oklch` for better color perception and contrast. Not compatible with `presetLegacyCompat`.
 
-### 主题 CSS 变量
+### Theme CSS Variables
 
-从主题自动生成 CSS 变量：
+Automatically generates CSS variables from theme:
 
 ```css
 :root, :host {
@@ -56,9 +56,9 @@ presetWind4({
 }
 ```
 
-### @property CSS 规则
+### @property CSS Rules
 
-使用 `@property` 以获得更好的浏览器优化：
+Uses `@property` for better browser optimization:
 
 ```css
 @property --un-text-opacity {
@@ -68,14 +68,14 @@ presetWind4({
 }
 ```
 
-### 主题键变更
+### Theme Key Changes
 
 | preset-wind3 | preset-wind4 |
 |--------------|--------------|
 | `fontFamily` | `font` |
 | `fontSize` | `text.fontSize` |
-| `lineHeight` | `text.lineHeight` 或 `leading` |
-| `letterSpacing` | `text.letterSpacing` 或 `tracking` |
+| `lineHeight` | `text.lineHeight` or `leading` |
+| `letterSpacing` | `text.letterSpacing` or `tracking` |
 | `borderRadius` | `radius` |
 | `easing` | `ease` |
 | `breakpoints` | `breakpoint` |
@@ -83,28 +83,28 @@ presetWind4({
 | `boxShadow` | `shadow` |
 | `transitionProperty` | `property` |
 | `container.maxWidth` | `containers.maxWidth` |
-| 尺寸属性（`width`、`height` 等） | 统一为 `spacing` |
+| Size properties (`width`, `height`, etc.) | Unified to `spacing` |
 
-## 选项
+## Options
 
 ```ts
 presetWind4({
   preflights: {
-    // 内置重置样式
+    // Built-in reset styles
     reset: true,
     
-    // 主题 CSS 变量生成
+    // Theme CSS variables generation
     theme: 'on-demand', // true | false | 'on-demand'
     
-    // @property CSS 规则
+    // @property CSS rules
     property: true,
   },
 })
 ```
 
-### 主题变量处理
+### Theme Variable Processing
 
-将 rem 转换为 px 用于主题变量：
+Convert rem to px for theme variables:
 
 ```ts
 import { createRemToPxProcessor } from '@unocss/preset-wind4/utils'
@@ -118,28 +118,28 @@ presetWind4({
   },
 })
 
-// 同时应用于工具类
+// Also apply to utilities
 export default defineConfig({
   postprocess: [createRemToPxProcessor()],
 })
 ```
 
-### 属性层自定义
+### Property Layer Customization
 
 ```ts
 presetWind4({
   preflights: {
     property: {
-      // 自定义父级包装器
+      // Custom parent wrapper
       parent: '@layer custom-properties',
-      // 自定义选择器
+      // Custom selector
       selector: ':where(*, ::before, ::after)',
     },
   },
 })
 ```
 
-移除 `@supports` 包装器：
+Remove `@supports` wrapper:
 
 ```ts
 presetWind4({
@@ -151,17 +151,17 @@ presetWind4({
 })
 ```
 
-## 生成的层
+## Generated Layers
 
-| 层 | 描述 | 顺序 |
+| Layer | Description | Order |
 |-------|-------------|-------|
-| `properties` | CSS `@property` 规则 | -200 |
-| `theme` | 主题 CSS 变量 | -150 |
-| `base` | 重置/预检样式 | -100 |
+| `properties` | CSS `@property` rules | -200 |
+| `theme` | Theme CSS variables | -150 |
+| `base` | Reset/preflight styles | -100 |
 
 ## Theme.defaults
 
-重置样式的全局默认配置：
+Global default configuration for reset styles:
 
 ```ts
 import type { Theme } from '@unocss/preset-wind4/theme'
@@ -183,11 +183,11 @@ const defaults: Theme['default'] = {
 }
 ```
 
-## 兼容性说明
+## Compatibility Notes
 
 ### presetRemToPx
 
-不需要 - 改用内置处理器：
+Not needed - use built-in processor instead:
 
 ```ts
 presetWind4({
@@ -201,25 +201,25 @@ presetWind4({
 
 ### presetLegacyCompat
 
-由于 `oklch` 颜色模型，与 preset-wind4**不兼容**。
+**Not compatible** with preset-wind4 due to `oklch` color model.
 
-## 从 Wind3 迁移
+## Migration from Wind3
 
-1. 根据上表更新主题键
-2. 移除 `@unocss/reset` 导入
-3. 启用 `preflights.reset: true`
-4. 测试颜色输出（oklch 与 rgb）
-5. 更新任何自定义主题扩展
+1. Update theme keys according to the table above
+2. Remove `@unocss/reset` imports
+3. Enable `preflights.reset: true`
+4. Test color outputs (oklch vs rgb)
+5. Update any custom theme extensions
 
 ```ts
-// 之前（wind3）
+// Before (wind3)
 theme: {
   fontFamily: { sans: 'Roboto' },
   fontSize: { lg: '1.125rem' },
   breakpoints: { sm: '640px' },
 }
 
-// 之后（wind4）
+// After (wind4)
 theme: {
   font: { sans: 'Roboto' },
   text: { lg: { fontSize: '1.125rem' } },
@@ -227,19 +227,19 @@ theme: {
 }
 ```
 
-## 何时使用 Wind4
+## When to Use Wind4
 
-选择 **preset-wind4** 当：
-- 开始新项目
-- 面向现代浏览器
-- 需要内置重置和 CSS 变量
-- 遵循 Tailwind v4 约定
+Choose **preset-wind4** when:
+- Starting a new project
+- Targeting modern browsers
+- Want built-in reset and CSS variables
+- Following Tailwind v4 conventions
 
-选择 **preset-wind3** 当：
-- 需要旧版浏览器支持
-- 从 Tailwind v3 迁移
-- 使用 presetLegacyCompat
-- 需要稳定、经过验证的预设
+Choose **preset-wind3** when:
+- Need legacy browser support
+- Migrating from Tailwind v3
+- Using presetLegacyCompat
+- Want stable, proven preset
 
 <!-- 
 Source references:

@@ -1,12 +1,12 @@
 ---
-category: 元素
+category: Elements
 ---
 
 # useWindowSize
 
-响应式窗口大小
+Reactive window size
 
-## 用法
+## Usage
 
 ```vue
 <script setup lang="ts">
@@ -17,51 +17,51 @@ const { width, height } = useWindowSize()
 
 <template>
   <div>
-    宽度: {{ width }}
-    高度: {{ height }}
+    Width: {{ width }}
+    Height: {{ height }}
   </div>
 </template>
 ```
 
-## 组件用法
+## Component Usage
 
 ```vue
 <template>
   <UseWindowSize v-slot="{ width, height }">
-    宽度: {{ width }}
-    高度: {{ height }}
+    Width: {{ width }}
+    Height: {{ height }}
   </UseWindowSize>
 </template>
 ```
 
-## 类型声明
+## Type Declarations
 
 ```ts
 export interface UseWindowSizeOptions extends ConfigurableWindow {
   initialWidth?: number
   initialHeight?: number
   /**
-   * 监听窗口 `orientationchange` 事件
+   * Listen to window `orientationchange` event
    *
    * @default true
    */
   listenOrientation?: boolean
   /**
-   * 滚动条是否应该包含在宽度和高度中
-   * 仅在 `type` 为 `'inner'` 时有效
+   * Whether the scrollbar should be included in the width and height
+   * Only effective when `type` is `'inner'`
    *
    * @default true
    */
   includeScrollbar?: boolean
   /**
-   * 使用 `window.innerWidth` 或 `window.outerWidth` 或 `window.visualViewport`
-   * visualViewport 文档来自 MDN(https://developer.mozilla.org/zh-CN/docs/Web/API/VisualViewport)
+   * Use `window.innerWidth` or `window.outerWidth` or `window.visualViewport`
+   * visualViewport documentation from MDN(https://developer.mozilla.org/zh-CN/docs/Web/API/VisualViewport)
    * @default 'inner'
    */
   type?: "inner" | "outer" | "visual"
 }
 /**
- * 响应式窗口大小。
+ * Reactive window size.
  *
  * @see https://vueuse.org/useWindowSize
  * @param options

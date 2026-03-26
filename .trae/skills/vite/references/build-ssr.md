@@ -1,21 +1,21 @@
 ---
 name: build-ssr
-description: 使用 Vite 进行服务器端渲染设置和配置
+description: Server-side rendering setup and configuration with Vite
 ---
 
-# 服务器端渲染 (SSR)
+# Server-Side Rendering (SSR)
 
-面向框架作者的底层 API。对于应用程序，使用 [Awesome Vite SSR](https://github.com/vitejs/awesome-vite#ssr) 中的高级工具。
+Low-level API for framework authors. For applications, use higher-level tools from [Awesome Vite SSR](https://github.com/vitejs/awesome-vite#ssr).
 
-## 项目结构
+## Project Structure
 
 ```
 ├── index.html
-├── server.js              # Express/Node 服务器
+├── server.js              # Express/Node server
 └── src/
-    ├── main.js            # 通用应用代码
-    ├── entry-client.js    # 将应用挂载到 DOM
-    └── entry-server.js    # 使用 SSR API 渲染应用
+    ├── main.js            # Universal app code
+    ├── entry-client.js    # Mounts app to DOM
+    └── entry-server.js    # Renders app with SSR API
 ```
 
 ## index.html
@@ -30,7 +30,7 @@ description: 使用 Vite 进行服务器端渲染设置和配置
 </html>
 ```
 
-## 开发服务器
+## Development Server
 
 ```ts
 // server.js
@@ -51,22 +51,22 @@ async function createServer() {
     const url = req.originalUrl
 
     try {
-      // 1. 读取 index.html
+      // 1. Read index.html
       let template = fs.readFileSync(
         path.resolve(__dirname, 'index.html'),
         'utf-8'
       )
 
-      // 2. 应用 Vite 转换
+      // 2. Apply Vite transforms
       template = await vite.transformIndexHtml(url, template)
 
-      // 3. 加载服务器入口
+      // 3. Load server entry
       const { render } = await vite.ssrLoadModule('/src/entry-server.js')
 
-      // 4. 渲染应用 HTML
+      // 4. Render app HTML
       const appHtml = await render(url)
 
-      // 5. 注入到模板
+      // 5. Inject into template
       const html = template.replace('<!--ssr-outlet-->', appHtml)
 
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
@@ -82,15 +82,15 @@ async function createServer() {
 createServer()
 ```
 
-## 条件逻辑
+## Conditional Logic
 
 ```ts
 if (import.meta.env.SSR) {
-  // 仅服务器代码（在客户端被 tree-shaken）
+  // Server-only code (tree-shaken on client)
 }
 ```
 
-## 生产构建
+## Production Build
 
 ```json
 {
@@ -101,39 +101,39 @@ if (import.meta.env.SSR) {
 }
 ```
 
-### 生产服务器
+### Production Server
 
 ```ts
-// 与开发的区别：
-// 1. 使用 dist/client/index.html 作为模板
-// 2. 使用 import('./dist/server/entry-server.js') 代替 ssrLoadModule
-// 3. 从 dist/client 提供静态文件
+// Differences from dev:
+// 1. Use dist/client/index.html as template
+// 2. Use import('./dist/server/entry-server.js') instead of ssrLoadModule
+// 3. Serve static files from dist/client
 ```
 
 ## SSR Manifest
 
-用于预加载指令：
+For preload directives:
 
 ```bash
 vite build --outDir dist/client --ssrManifest
 ```
 
-生成 `dist/client/.vite/ssr-manifest.json`，包含模块到代码块的映射。
+Generates `dist/client/.vite/ssr-manifest.json` with module-to-chunk mappings.
 
-## SSR 外部依赖
+## SSR Externals
 
-依赖默认被外部化。要使用 Vite 转换：
+Dependencies are externalized by default. To transform with Vite:
 
 ```ts
 export default defineConfig({
   ssr: {
-    noExternal: ['需要转换的包'],
-    external: ['要外部化的包']
+    noExternal: ['package-that-needs-transform'],
+    external: ['package-to-externalize']
   }
 })
 ```
 
-## SSR 特定插件逻辑
+## SSR-specific Plugin Logic
 
 ```ts
 export function mySSRPlugin() {
@@ -141,37 +141,37 @@ export function mySSRPlugin() {
     name: 'my-ssr',
     transform(code, id, options) {
       if (options?.ssr) {
-        // SSR 特定转换
+        // SSR-specific transform
       }
     }
   }
 }
 ```
 
-## SSR 目标
+## SSR Target
 
 ```ts
 export default defineConfig({
   ssr: {
-    target: 'node',      // 默认
-    // target: 'webworker'  // 用于边缘运行时
+    target: 'node',      // Default
+    // target: 'webworker'  // For edge runtimes
   }
 })
 ```
 
-## SSR 打包
+## SSR Bundle
 
-打包所有依赖（用于 workers）：
+Bundle all dependencies (for workers):
 
 ```ts
 export default defineConfig({
   ssr: {
-    noExternal: true  // 打包所有内容
+    noExternal: true  // Bundle everything
   }
 })
 ```
 
-## 解析条件
+## Resolve Conditions
 
 ```ts
 export default defineConfig({
@@ -184,9 +184,9 @@ export default defineConfig({
 })
 ```
 
-## 预渲染 / SSG
+## Pre-Rendering / SSG
 
-在构建时使用已知数据将路由预渲染为静态 HTML。
+Pre-render routes with known data into static HTML at build time.
 
 <!-- 
 Source references:

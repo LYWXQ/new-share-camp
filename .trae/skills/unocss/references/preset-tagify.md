@@ -1,13 +1,13 @@
 ---
 name: preset-tagify
-description: 将工具类用作 HTML 标签名
+description: Use utilities as HTML tag names
 ---
 
 # Preset Tagify
 
-直接将 CSS 工具类用作 HTML 标签名。
+Use CSS utilities directly as HTML tag names.
 
-## 安装
+## Installation
 
 ```ts
 import { defineConfig, presetTagify } from 'unocss'
@@ -19,27 +19,27 @@ export default defineConfig({
 })
 ```
 
-## 基本用法
+## Basic Usage
 
-替代：
+Instead of:
 
 ```html
-<span class="text-red">红色文字</span>
-<div class="flex">弹性盒子</div>
+<span class="text-red">red text</span>
+<div class="flex">flexbox</div>
 <span class="i-line-md-emoji-grin"></span>
 ```
 
-直接使用标签名：
+Use tag names directly:
 
 ```html
-<text-red>红色文字</text-red>
-<flex>弹性盒子</flex>
+<text-red>red text</text-red>
+<flex>flexbox</flex>
 <i-line-md-emoji-grin />
 ```
 
-效果完全相同！
+Works exactly the same!
 
-## 带前缀
+## With Prefix
 
 ```ts
 presetTagify({
@@ -48,27 +48,27 @@ presetTagify({
 ```
 
 ```html
-<!-- 匹配 -->
+<!-- Matched -->
 <un-flex></un-flex>
 
-<!-- 不匹配 -->
+<!-- Not matched -->
 <flex></flex>
 ```
 
-## 额外属性
+## Extra Properties
 
-为匹配的标签添加 CSS 属性：
+Add CSS properties to matched tags:
 
 ```ts
 presetTagify({
-  // 为图标添加 display: inline-block
+  // Add display: inline-block to icons
   extraProperties: matched => matched.startsWith('i-')
     ? { display: 'inline-block' }
     : {},
 })
 ```
 
-或应用于所有：
+Or apply to all:
 
 ```ts
 presetTagify({
@@ -76,32 +76,32 @@ presetTagify({
 })
 ```
 
-## 选项
+## Options
 
 ```ts
 presetTagify({
-  // 标签前缀
+  // Tag prefix
   prefix: '',
   
-  // 排除的标签（不会被处理）
+  // Excluded tags (won't be processed)
   excludedTags: ['b', /^h\d+$/, 'table'],
   
-  // 额外 CSS 属性
+  // Extra CSS properties
   extraProperties: {},
   
-  // 启用默认提取器
+  // Enable default extractor
   defaultExtractor: true,
 })
 ```
 
-## 排除的标签
+## Excluded Tags
 
-默认情况下，这些标签被排除：
-- `b`（粗体）
-- `h1` 到 `h6`（标题）
+By default, these tags are excluded:
+- `b` (bold)
+- `h1` through `h6` (headings)
 - `table`
 
-添加你自己的：
+Add your own:
 
 ```ts
 presetTagify({
@@ -109,24 +109,24 @@ presetTagify({
     'b',
     /^h\d+$/,
     'table',
-    'article',  // 添加自定义排除
-    /^my-/,     // 排除以 'my-' 开头的标签
+    'article',  // Add custom exclusions
+    /^my-/,     // Exclude tags starting with 'my-'
   ],
 })
 ```
 
-## 用例
+## Use Cases
 
-- 快速原型设计
-- 简单页面的更简洁 HTML
-- 图标嵌入：`<i-carbon-sun />`
-- 语义化样式：`<flex-center>`、`<text-red>`
+- Quick prototyping
+- Cleaner HTML for simple pages
+- Icon embedding: `<i-carbon-sun />`
+- Semantic-like styling: `<flex-center>`, `<text-red>`
 
-## 限制
+## Limitations
 
-- 自定义元素名必须包含连字符（HTML 规范）
-- 某些框架可能不支持所有自定义元素
-- 没有连字符的工具类需要 prefix 选项
+- Custom element names must contain a hyphen (HTML spec)
+- Some frameworks may not support all custom elements
+- Utilities without hyphens need the prefix option
 
 <!-- 
 Source references:

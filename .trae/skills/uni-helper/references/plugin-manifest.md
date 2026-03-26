@@ -1,19 +1,19 @@
 ---
 name: vite-plugin-uni-manifest
-description: 使用 TypeScript 编写 uni-app manifest.json - 具有类型安全和智能提示，做什么：允许使用 TypeScript 编写 manifest.json 配置，提供完整的类型安全和 IntelliSense 支持；何时调用：当用户需要使用 TypeScript 配置 manifest.json、需要类型安全的环境配置或动态生成应用配置时调用
+description: Write uni-app manifest.json in TypeScript with type safety and IntelliSense
 ---
 
 # vite-plugin-uni-manifest
 
-使用 TypeScript 编写 uni-app `manifest.json` 配置，具有完整的类型安全和智能提示支持。
+Write your uni-app `manifest.json` configuration in TypeScript with full type safety and IntelliSense support.
 
-## 安装
+## Installation
 
 ```bash
 npm i -D @uni-helper/vite-plugin-uni-manifest
 ```
 
-## 设置
+## Setup
 
 ```ts
 // vite.config.ts
@@ -26,9 +26,9 @@ export default defineConfig({
 })
 ```
 
-## 配置文件
+## Configuration File
 
-创建 `manifest.config.ts`（或 .js/.json）：
+Create `manifest.config.ts` (or .js/.json):
 
 ```ts
 // manifest.config.ts
@@ -37,33 +37,33 @@ import { defineManifestConfig } from '@uni-helper/vite-plugin-uni-manifest'
 export default defineManifestConfig({
   name: 'my-uni-app',
   appid: '__UNI__XXXXXXX',
-  description: '我的 uni-app 项目',
+  description: 'My awesome uni-app project',
   versionName: '1.0.0',
   versionCode: '100',
   transformPx: false,
   app: {
-    // App 特定配置
+    // App-specific config
   },
   mp-weixin: {
-    // 微信小程序配置
+    // WeChat Mini Program config
   },
   mp-alipay: {
-    // 支付宝小程序配置
+    // Alipay Mini Program config
   },
   h5: {
-    // H5 配置
+    // H5 config
   },
 })
 ```
 
-## 优势
+## Benefits
 
-- **类型安全**：所有 manifest 属性的完整 TypeScript 智能提示
-- **代码复用**：导入并复用配置值
-- **注释**：添加注释说明配置选择
-- **基于环境的配置**：对不同环境使用条件判断
+- **Type Safety**: Full TypeScript intellisense for all manifest properties
+- **Code Reuse**: Import and reuse configuration values
+- **Comments**: Add comments to explain configuration choices
+- **Environment-based Config**: Use conditionals for different environments
 
-## 动态配置示例
+## Example with Dynamic Config
 
 ```ts
 import { defineManifestConfig } from '@uni-helper/vite-plugin-uni-manifest'
@@ -74,7 +74,7 @@ export default defineManifestConfig({
   versionName: version,
   versionCode: version.replace(/\./g, ''),
 
-  // 平台特定配置
+  // Platform-specific config
   'mp-weixin': {
     appid: process.env.WX_APPID || '',
     setting: {
@@ -92,9 +92,9 @@ export default defineManifestConfig({
 })
 ```
 
-## 配置选项
+## Configuration Options
 
-请参阅 [types.ts](https://github.com/uni-helper/vite-plugin-uni-manifest/tree/main/packages/core/src/types.ts) 了解所有可用选项。
+See [types.ts](https://github.com/uni-helper/vite-plugin-uni-manifest/tree/main/packages/core/src/types.ts) for all available options.
 
 <!--
 Source references:

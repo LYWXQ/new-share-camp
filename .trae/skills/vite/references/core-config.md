@@ -1,49 +1,49 @@
 ---
 name: core-config
-description: Vite 配置文件设置、defineConfig 辅助函数、条件和异步配置
+description: Vite configuration file setup, defineConfig helper, conditional and async configs
 ---
 
-# Vite 配置
+# Vite Configuration
 
-Vite 自动解析项目根目录中名为 `vite.config.*` 的配置文件。
+Vite automatically resolves a config file named `vite.config.*` in the project root.
 
-## 基本配置
+## Basic Configuration
 
 ```ts
 // vite.config.ts
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  // 配置选项
+  // config options
 })
 ```
 
-使用 `defineConfig` 获得 TypeScript 智能提示。或者使用 JSDoc 注解：
+Use `defineConfig` for TypeScript intellisense. Alternatively, use JSDoc annotations:
 
 ```js
 /** @type {import('vite').UserConfig} */
 export default {
-  // 配置选项
+  // config options
 }
 ```
 
-## 条件配置
+## Conditional Config
 
-导出一个函数以根据命令、模式或构建类型条件确定选项：
+Export a function to conditionally determine options based on command, mode, or build type:
 
 ```ts
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
   if (command === 'serve') {
-    // 开发特定配置
+    // dev specific config
     return {
       define: {
         __DEV__: true
       }
     }
   } else {
-    // 构建特定配置
+    // build specific config
     return {
       define: {
         __DEV__: false
@@ -53,10 +53,10 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
 })
 ```
 
-- `command` 在开发期间（`vite`、`vite dev`、`vite serve`）为 `'serve'`，生产构建时为 `'build'`
-- `mode` 默认为 serve 的 `'development'`，build 的 `'production'`
+- `command` is `'serve'` during dev (`vite`, `vite dev`, `vite serve`) and `'build'` for production
+- `mode` defaults to `'development'` for serve, `'production'` for build
 
-## 异步配置
+## Async Config
 
 ```ts
 import { defineConfig } from 'vite'
@@ -64,25 +64,25 @@ import { defineConfig } from 'vite'
 export default defineConfig(async ({ command, mode }) => {
   const data = await fetchRemoteConfig()
   return {
-    // 使用获取的数据进行配置
+    // config using fetched data
   }
 })
 ```
 
-## 关键配置选项
+## Key Configuration Options
 
-### 根目录和基础路径
+### Root and Base
 
 ```ts
 export default defineConfig({
-  root: './src',           // 项目根目录（index.html 所在位置）
-  base: '/my-app/',        // 资源的公共基础路径
-  publicDir: 'public',     // 静态资源目录
-  cacheDir: 'node_modules/.vite'  // 缓存目录
+  root: './src',           // Project root directory (where index.html is)
+  base: '/my-app/',        // Public base path for assets
+  publicDir: 'public',     // Static assets directory
+  cacheDir: 'node_modules/.vite'  // Cache directory
 })
 ```
 
-### 解析别名
+### Resolve Aliases
 
 ```ts
 import { resolve } from 'path'
@@ -93,13 +93,13 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
       '~': resolve(__dirname, 'src/components')
     },
-    // 尝试无扩展名导入的文件扩展名
+    // File extensions to try for imports without extension
     extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
   }
 })
 ```
 
-### 定义全局常量
+### Define Global Constants
 
 ```ts
 export default defineConfig({
@@ -110,7 +110,7 @@ export default defineConfig({
 })
 ```
 
-值必须是 JSON 可序列化的或单个标识符。添加 TypeScript 声明：
+Values must be JSON-serializable or a single identifier. Add TypeScript declarations:
 
 ```ts
 // vite-env.d.ts
@@ -118,26 +118,26 @@ declare const __APP_VERSION__: string
 declare const __API_URL__: string
 ```
 
-### JSON 处理
+### JSON Handling
 
 ```ts
 export default defineConfig({
   json: {
-    namedExports: true,  // 支持从 JSON 命名导入
-    stringify: 'auto'    // 为性能将大型 JSON 字符串化
+    namedExports: true,  // Support named imports from JSON
+    stringify: 'auto'    // Stringify large JSON for performance
   }
 })
 ```
 
-## 在配置中使用环境变量
+## Using Environment Variables in Config
 
-`.env` 文件中的变量不会自动在配置中可用。使用 `loadEnv`：
+Variables from `.env` files are NOT automatically available in config. Use `loadEnv`:
 
 ```ts
 import { defineConfig, loadEnv } from 'vite'
 
 export default defineConfig(({ mode }) => {
-  // 从 .env 文件加载环境变量
+  // Load env vars from .env files
   const env = loadEnv(mode, process.cwd(), '')
   
   return {
@@ -151,22 +151,22 @@ export default defineConfig(({ mode }) => {
 })
 ```
 
-## 指定配置文件
+## Specifying Config File
 
 ```bash
 vite --config my-config.ts
 ```
 
-## 配置加载方法
+## Config Loading Methods
 
 ```bash
-# 默认：使用 Rolldown 打包（在 monorepo 中可能有问题）
+# Default: bundle with Rolldown (may have issues in monorepos)
 vite
 
-# 使用模块运行器（无临时文件，即时转换）
+# Use module runner (no temp file, transforms on the fly)
 vite --configLoader runner
 
-# 使用原生运行时（需要支持 TypeScript 的 Node.js）
+# Use native runtime (requires Node.js with TypeScript support)
 vite --configLoader native
 ```
 

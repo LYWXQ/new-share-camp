@@ -1,24 +1,24 @@
 ---
 name: unocss-layers-preflights
-description: CSS 层排序和原始 CSS 注入
+description: CSS layer ordering and raw CSS injection
 ---
 
-# 层和预检
+# Layers and Preflights
 
-控制 CSS 输出顺序和注入全局 CSS。
+Control CSS output order and inject global CSS.
 
-## 层
+## Layers
 
-在规则上设置层：
+Set layer on rules:
 
 ```ts
 rules: [
   [/^m-(\d)$/, ([, d]) => ({ margin: `${d / 4}rem` }), { layer: 'utilities' }],
-  ['btn', { padding: '4px' }], // 默认层
+  ['btn', { padding: '4px' }], // default layer
 ]
 ```
 
-### 层排序
+### Layer Ordering
 
 ```ts
 layers: {
@@ -28,7 +28,7 @@ layers: {
 }
 ```
 
-### 单独导入层
+### Import Layers Separately
 
 ```ts
 import 'uno:components.css'
@@ -37,12 +37,12 @@ import './my-custom.css'
 import 'uno:utilities.css'
 ```
 
-### CSS 级联层
+### CSS Cascade Layers
 
 ```ts
 outputToCssLayers: true
 
-// 或使用自定义名称
+// Or with custom names
 outputToCssLayers: {
   cssLayerName: (layer) => {
     if (layer === 'default') return 'utilities'
@@ -51,19 +51,19 @@ outputToCssLayers: {
 }
 ```
 
-## 层变体
+## Layer Variants
 
 ```html
-<!-- UnoCSS 层 -->
+<!-- UnoCSS layer -->
 <p class="uno-layer-my-layer:text-xl">
 
 <!-- CSS @layer -->
 <p class="layer-my-layer:text-xl">
 ```
 
-## 预检
+## Preflights
 
-全局注入原始 CSS：
+Inject raw CSS globally:
 
 ```ts
 preflights: [
@@ -78,7 +78,7 @@ preflights: [
 ]
 ```
 
-带层：
+With layer:
 
 ```ts
 preflights: [
@@ -89,13 +89,13 @@ preflights: [
 ]
 ```
 
-## preset-wind4 层
+## preset-wind4 Layers
 
-| 层 | 描述 | 顺序 |
+| Layer | Description | Order |
 |-------|-------------|-------|
-| `properties` | CSS @property 规则 | -200 |
-| `theme` | 主题 CSS 变量 | -150 |
-| `base` | 重置样式 | -100 |
+| `properties` | CSS @property rules | -200 |
+| `theme` | Theme CSS variables | -150 |
+| `base` | Reset styles | -100 |
 
 <!-- 
 Source references:

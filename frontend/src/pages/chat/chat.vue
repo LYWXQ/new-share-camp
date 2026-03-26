@@ -4,13 +4,22 @@
       <image class="avatar" :src="otherUser?.avatar || '/static/default-avatar.png'" mode="aspectFill" />
       <text class="chat-title">{{ otherUser?.username || '聊天' }}</text>
     </view>
+    <!-- 物品信息展示区域 -->
+    <view v-if="itemInfo" class="item-info-bar" @click="navigateToItemDetail">
+      <image class="item-image" :src="itemInfo.images?.[0] || '/static/default-item.png'" mode="aspectFill" />
+      <view class="item-detail">
+        <text class="item-title">{{ itemInfo.title }}</text>
+        <text class="item-price">{{ formatPrice(itemInfo) }}</text>
+      </view>
+      <text class="item-arrow">›</text>
+    </view>
     <scroll-view
       class="chat-content"
       scroll-y
       :scroll-top="scrollTop"
       :scroll-with-animation="true"
       @scrolltoupper="loadMoreMessages"
-      :refresher-enabled="true"
+      :refresher-enabled="false"
       :refresher-triggered="isRefreshing"
       @refresherrefresh="onRefresh"
     >
@@ -18,13 +27,13 @@
         <text class="loading-text">加载中...</text>
       </view>
       <view
-        v-for="msg in messageList"
-        :key="msg.id"
+        v-for="msg in validMessageList"
+        :key="msg?.id || Math.random()"
         class="message"
-        :class="{ 'sent': msg.senderId === currentUserId, 'received': msg.senderId !== currentUserId }"
+        :class="{ 'sent': msg?.senderId === currentUserId, 'received': msg?.senderId !== currentUserId }"
       >
         <image
-          v-if="msg.senderId !== currentUserId"
+          v-if="msg?.senderId !== currentUserId"
           class="message-avatar"
           :src="otherUser?.avatar || '/static/default-avatar.png'"
           mode="aspectFill"
@@ -37,11 +46,12 @@
         />
         <view class="message-content">
           <view class="message-bubble">
-            <text class="message-text">{{ msg.content }}</text>
+            <text class="message-text">{{ msg?.content || '' }}</text>
           </view>
-          <text class="message-time">{{ formatTime(msg.createdAt) }}</text>
+          <text class="message-time">{{ msg?.createdAt ? formatTime(msg.createdAt) : '' }}</text>
         </view>
       </view>
+      <view class="scroll-bottom-anchor" id="scroll-bottom-anchor"></view>
     </scroll-view>
     <view class="chat-input">
       <input
@@ -61,6 +71,7 @@
 import { ref, onMounted, nextTick, computed } from 'vue';
 import { getChatHistory, sendMessage, type Message } from '@/api/messages';
 import { getUserProfile } from '@/api/users';
+import { getItemDetail, type Item } from '@/api/items';
 
 // 当前用户 ID（从本地存储获取）
 const currentUserId = ref<number>(uni.getStorageSync('userInfo')?.id || 0);
@@ -70,6 +81,10 @@ const currentUser = ref<{ avatar?: string }>({});
 const otherUserId = ref<number>(0);
 const otherUser = ref<{ id?: number; username?: string; avatar?: string }>({});
 
+// 物品信息
+const itemId = ref<number | null>(null);
+const itemInfo = ref<Item | null>(null);
+
 // 消息列表
 const messageList = ref<Message[]>([]);
 const messageText = ref('');
@@ -77,6 +92,17 @@ const isSending = ref(false);
 const isLoadingMore = ref(false);
 const isRefreshing = ref(false);
 const scrollTop = ref(0);
+
+// 计算属性：过滤有效的消息
+const validMessageList = computed(() => {
+  return messageList.value.filter((msg: any) => {
+    return msg && 
+           typeof msg === 'object' && 
+           msg.id !== undefined && 
+           msg.id !== null &&
+           msg.senderId !== undefined;
+  });
+});
 
 // 分页参数
 const page = ref(1);
@@ -91,6 +117,26 @@ const formatTime = (time: string) => {
   return `${hours}:${minutes}`;
 };
 
+// 格式化价格显示
+const formatPrice = (item: Item) => {
+  if (item.transactionType === 'free') {
+    return '免费';
+  } else if (item.transactionType === 'sell') {
+    return `¥${item.salePrice || item.price}`;
+  } else {
+    return `¥${item.price}/天`;
+  }
+};
+
+// 跳转到物品详情页
+const navigateToItemDetail = () => {
+  if (itemId.value) {
+    uni.navigateTo({
+      url: `/pages/items/detail?id=${itemId.value}`
+    });
+  }
+};
+
 // 获取聊天记录
 const fetchChatHistory = async (isLoadMore = false) => {
   if (!otherUserId.value) return;
@@ -100,10 +146,15 @@ const fetchChatHistory = async (isLoadMore = false) => {
   }
 
   try {
-    const res = await getChatHistory(otherUserId.value, {
+    const params: { page: number; limit: number; itemId?: number } = {
       page: page.value,
       limit
-    });
+    };
+    // 如果有 itemId，添加到参数中
+    if (itemId.value) {
+      params.itemId = itemId.value;
+    }
+    const res = await getChatHistory(otherUserId.value, params);
 
     const messages = res.messages || [];
     
@@ -123,7 +174,7 @@ const fetchChatHistory = async (isLoadMore = false) => {
     if (messages.length > 0 && !otherUser.value.username) {
       const firstMsg = messages[0];
       const otherId = firstMsg.senderId === currentUserId.value ? firstMsg.receiverId : firstMsg.senderId;
-      if (firstMsg.sender && firstMsg.sender.id !== currentUserId.value) {
+      if (firstMsg.sender && firstMsg.sender.id !== undefined && firstMsg.sender.id !== currentUserId.value) {
         otherUser.value = firstMsg.sender;
       }
     }
@@ -167,18 +218,29 @@ const handleSendMessage = async () => {
   const content = messageText.value.trim();
 
   try {
-    const res = await sendMessage({
+    const params: { receiverId: number; content: string; type: 'text'; itemId?: number } = {
       receiverId: otherUserId.value,
       content: content,
-      type: 'chat'
-    });
+      type: 'text'
+    };
+    // 如果有 itemId，添加到参数中
+    if (itemId.value) {
+      params.itemId = itemId.value;
+    }
+    const newMessage = await sendMessage(params);
 
-    // 添加新消息到列表
-    messageList.value.push(res.messageData);
-    messageText.value = '';
+    // 添加新消息到列表 - 使用展开运算符创建新数组触发响应式更新
+    if (newMessage && newMessage.id) {
+      messageList.value = [...messageList.value, newMessage];
+      
+      // 立即清空输入框
+      messageText.value = '';
 
-    // 滚动到底部
-    scrollToBottom();
+      // 滚动到底部 - 等待 DOM 更新完成
+      nextTick(() => {
+        scrollToBottom();
+      });
+    }
   } catch (error) {
     console.error('发送消息失败:', error);
     uni.showToast({ title: '发送失败，请重试', icon: 'none' });
@@ -190,12 +252,10 @@ const handleSendMessage = async () => {
 // 滚动到底部
 const scrollToBottom = () => {
   nextTick(() => {
-    const query = uni.createSelectorQuery().in(getCurrentInstance()?.proxy);
-    query.select('.chat-content').boundingClientRect((rect: any) => {
-      if (rect) {
-        scrollTop.value = rect.height + 9999;
-      }
-    }).exec();
+    // 添加延迟确保 DOM 已更新
+    setTimeout(() => {
+      scrollTop.value = 99999;
+    }, 100);
   });
 };
 
@@ -225,22 +285,44 @@ const fetchOtherUserInfo = async () => {
   }
 };
 
+// 获取物品信息
+const fetchItemInfo = async () => {
+  if (!itemId.value) return;
+  try {
+    const res = await getItemDetail(itemId.value);
+    if (res.item) {
+      itemInfo.value = res.item;
+    }
+  } catch (error) {
+    console.error('获取物品信息失败:', error);
+  }
+};
+
 import { getCurrentInstance } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 
 onLoad((options: any) => {
-  const { userId, username, avatar } = options;
+  const { userId, username, avatar, itemId: urlItemId } = options;
 
   if (userId) {
     otherUserId.value = parseInt(userId as string);
     if (username) otherUser.value.username = username as string;
     if (avatar) otherUser.value.avatar = avatar as string;
 
+    // 解析 itemId 参数
+    if (urlItemId) {
+      itemId.value = parseInt(urlItemId as string);
+    }
+
     fetchCurrentUser();
     fetchChatHistory();
     // 如果没有从参数获取到用户信息，则调用 API 获取
     if (!username) {
       fetchOtherUserInfo();
+    }
+    // 如果有 itemId，获取物品信息
+    if (itemId.value) {
+      fetchItemInfo();
     }
   } else {
     uni.showToast({ title: '参数错误', icon: 'none' });
@@ -276,6 +358,51 @@ onLoad((options: any) => {
   font-size: 28rpx;
   font-weight: bold;
   color: #333333;
+}
+
+/* 物品信息栏样式 */
+.item-info-bar {
+  background-color: #ffffff;
+  padding: 20rpx 24rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.item-image {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+}
+
+.item-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.item-title {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-price {
+  font-size: 24rpx;
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.item-arrow {
+  font-size: 32rpx;
+  color: #999999;
+  padding: 0 8rpx;
 }
 
 .chat-content {
@@ -367,6 +494,11 @@ onLoad((options: any) => {
   font-size: 20rpx;
   color: #999999;
   margin-top: 8rpx;
+}
+
+.scroll-bottom-anchor {
+  height: 1rpx;
+  width: 100%;
 }
 
 .chat-input {

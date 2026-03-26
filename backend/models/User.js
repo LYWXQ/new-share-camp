@@ -39,6 +39,16 @@ const User = sequelize.define('User', {
     allowNull: true,
     comment: '邮箱'
   },
+  school: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    comment: '学校名称'
+  },
+  major: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    comment: '专业名称'
+  },
   creditScore: {
     type: DataTypes.INTEGER,
     defaultValue: 100,

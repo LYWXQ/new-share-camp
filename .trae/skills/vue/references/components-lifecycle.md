@@ -1,13 +1,13 @@
 ---
 name: lifecycle-hooks
-description: 在组件生命周期的特定阶段运行代码
+description: Run code at specific stages of component lifecycle
 ---
 
-# 生命周期钩子
+# Lifecycle Hooks
 
-在组件生命周期的特定阶段执行代码。
+Execute code at specific stages of a component's lifecycle.
 
-## 常用生命周期钩子
+## Common Lifecycle Hooks
 
 ```vue
 <script setup lang="ts">
@@ -20,56 +20,56 @@ import {
   onUnmounted
 } from 'vue'
 
-// DOM 挂载前
+// Before DOM is mounted
 onBeforeMount(() => {
   console.log('before mount')
 })
 
-// DOM 挂载后（最常用）
+// After DOM is mounted (most common)
 onMounted(() => {
   console.log('mounted')
-  // 可以安全访问 DOM、发起 API 调用、启动定时器
+  // Safe to access DOM, make API calls, start timers
 })
 
-// 响应式状态变更导致重新渲染前
+// Before reactive state change causes re-render
 onBeforeUpdate(() => {
   console.log('before update')
 })
 
-// DOM 重新渲染后
+// After DOM re-render
 onUpdated(() => {
   console.log('updated')
 })
 
-// 组件卸载前
+// Before component unmounts
 onBeforeUnmount(() => {
   console.log('before unmount')
 })
 
-// 组件卸载后
+// After component unmounts
 onUnmounted(() => {
   console.log('unmounted')
-  // 清理：移除监听器、取消定时器等
+  // Cleanup: remove listeners, cancel timers, etc.
 })
 </script>
 ```
 
-## 生命周期图示
+## Lifecycle Diagram
 
 ```
-创建：
+Creation:
   setup() → onBeforeMount → onMounted
 
-更新：
+Updates:
   onBeforeUpdate → onUpdated
 
-销毁：
+Destruction:
   onBeforeUnmount → onUnmounted
 ```
 
-## 常见模式
+## Common Patterns
 
-### DOM 访问
+### DOM Access
 
 ```ts
 import { ref, onMounted } from 'vue'
@@ -77,12 +77,12 @@ import { ref, onMounted } from 'vue'
 const inputRef = ref<HTMLInputElement | null>(null)
 
 onMounted(() => {
-  // DOM 已可用
+  // DOM is available
   inputRef.value?.focus()
 })
 ```
 
-### API 调用
+### API Calls
 
 ```ts
 import { ref, onMounted } from 'vue'
@@ -95,7 +95,7 @@ onMounted(async () => {
 })
 ```
 
-### 清理
+### Cleanup
 
 ```ts
 import { onMounted, onUnmounted } from 'vue'
@@ -109,7 +109,7 @@ onUnmounted(() => {
 })
 ```
 
-### 定时器清理
+### Timer Cleanup
 
 ```ts
 import { onMounted, onUnmounted } from 'vue'
@@ -127,62 +127,62 @@ onUnmounted(() => {
 })
 ```
 
-## 较少使用的钩子
+## Less Common Hooks
 
 ```ts
 import {
-  onActivated,      // 被 keep-alive 的组件被激活
-  onDeactivated,    // 被 keep-alive 的组件被停用
-  onErrorCaptured,  // 捕获到来自后代的错误
-  onRenderTracked,  // 调试：响应式依赖被追踪
-  onRenderTriggered // 调试：重新渲染被触发
+  onActivated,      // Component kept alive is activated
+  onDeactivated,    // Component kept alive is deactivated
+  onErrorCaptured,  // Error from descendant captured
+  onRenderTracked,  // Debug: reactive dependency tracked
+  onRenderTriggered // Debug: re-render triggered
 } from 'vue'
 ```
 
-## SSR 钩子
+## SSR Hooks
 
 ```ts
 import { onServerPrefetch } from 'vue'
 
-// 仅在服务端渲染期间运行
+// Only runs during server-side rendering
 onServerPrefetch(async () => {
   data.value = await fetchData()
 })
 ```
 
-## 重要说明
+## Important Notes
 
-1. **钩子必须在 `setup()` 中同步调用**：
+1. **Hooks must be called synchronously** during `setup()`:
 
 ```ts
-// ❌ 无法工作
+// ❌ Won't work
 setTimeout(() => {
   onMounted(() => {})
 }, 100)
 
-// ✅ 可以工作
+// ✅ Works
 onMounted(() => {
   setTimeout(() => {}, 100)
 })
 ```
 
-2. **可以从外部函数调用**，如果在 setup 中同步调用：
+2. **Can call from external functions** if called synchronously from setup:
 
 ```ts
 // composable.ts
 export function useFeature() {
   onMounted(() => {
-    // 如果在 setup 中同步调用 useFeature，这会正常工作
+    // This works if useFeature is called synchronously in setup
   })
 }
 ```
 
-3. **允许多次调用** - 所有回调都会被执行：
+3. **Multiple calls are allowed** - all callbacks will be invoked:
 
 ```ts
 onMounted(() => console.log('first'))
 onMounted(() => console.log('second'))
-// 两者都会运行
+// Both will run
 ```
 
 <!-- 

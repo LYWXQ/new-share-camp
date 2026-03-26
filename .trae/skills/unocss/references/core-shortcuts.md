@@ -1,47 +1,47 @@
 ---
 name: unocss-shortcuts
-description: 将多个工具类规则组合为单个简写类
+description: Combine multiple utility rules into single shorthand classes
 ---
 
-# UnoCSS 快捷方式
+# UnoCSS Shortcuts
 
-快捷方式将多个规则组合为单个简写，灵感来自 Windi CSS。
+Shortcuts combine multiple rules into a single shorthand, inspired by Windi CSS.
 
-## 静态快捷方式
+## Static Shortcuts
 
-将快捷方式名称映射到工具类组合的对象：
+Define as an object mapping shortcut names to utility combinations:
 
 ```ts
 shortcuts: {
-  // 组合多个工具类
+  // Multiple utilities combined
   'btn': 'py-2 px-4 font-semibold rounded-lg shadow-md',
   'btn-green': 'text-white bg-green-500 hover:bg-green-700',
-  // 单个工具类别名
+  // Single utility alias
   'red': 'text-red-100',
 }
 ```
 
-用法：
+Usage:
 ```html
-<button class="btn btn-green">点击我</button>
+<button class="btn btn-green">Click me</button>
 ```
 
-## 动态快捷方式
+## Dynamic Shortcuts
 
-使用 RegExp 匹配器和函数，类似于动态规则：
+Use RegExp matcher with function, similar to dynamic rules:
 
 ```ts
 shortcuts: [
-  // 静态快捷方式也可以在数组中
+  // Static shortcuts can be in array too
   {
     btn: 'py-2 px-4 font-semibold rounded-lg shadow-md',
   },
-  // 动态快捷方式
+  // Dynamic shortcut
   [/^btn-(.*)$/, ([, c]) => `bg-${c}-400 text-${c}-100 py-2 px-4 rounded-lg`],
 ]
 ```
 
-现在 `btn-green` 和 `btn-red` 生成：
+Now `btn-green` and `btn-red` generate:
 
 ```css
 .btn-green {
@@ -54,9 +54,9 @@ shortcuts: [
 }
 ```
 
-## 在快捷方式中访问主题
+## Accessing Theme in Shortcuts
 
-动态快捷方式接收带有主题访问权限的上下文：
+Dynamic shortcuts receive context with theme access:
 
 ```ts
 shortcuts: [
@@ -67,21 +67,21 @@ shortcuts: [
 ]
 ```
 
-## 快捷方式层
+## Shortcuts Layer
 
-快捷方式默认输出到 `shortcuts` 层。配置方式：
+Shortcuts are output to the `shortcuts` layer by default. Configure with:
 
 ```ts
 shortcutsLayer: 'my-shortcuts-layer'
 ```
 
-## 要点
+## Key Points
 
-- 后面的快捷方式优先级更高
-- 快捷方式可以引用其他快捷方式
-- 动态快捷方式的工作方式类似于动态规则
-- 快捷方式在构建时展开，而不是运行时
-- 所有变体都适用于快捷方式（`hover:btn`、`dark:btn` 等）
+- Later shortcuts have higher priority
+- Shortcuts can reference other shortcuts
+- Dynamic shortcuts work like dynamic rules
+- Shortcuts are expanded at build time, not runtime
+- All variants work with shortcuts (`hover:btn`, `dark:btn`, etc.)
 
 <!-- 
 Source references:

@@ -1,21 +1,21 @@
 ---
 name: unocss-extracting
-description: UnoCSS 如何从源代码中提取工具类
+description: How UnoCSS extracts utilities from source code
 ---
 
-# 提取
+# Extracting
 
-UnoCSS 在代码库中搜索工具类用法并即时生成 CSS。
+UnoCSS searches for utility usages in your codebase and generates CSS on-demand.
 
-## 内容源
+## Content Sources
 
-### 管道提取（Vite/Webpack）
+### Pipeline Extraction (Vite/Webpack)
 
-最高效 - 从构建工具管道中提取。
+Most efficient - extracts from build tool pipeline.
 
-**默认文件类型：** `.jsx`、`.tsx`、`.vue`、`.md`、`.html`、`.svelte`、`.astro`、`.marko`
+**Default file types:** `.jsx`, `.tsx`, `.vue`, `.md`, `.html`, `.svelte`, `.astro`, `.marko`
 
-**默认不包含：** `.js`、`.ts`
+**Not included by default:** `.js`, `.ts`
 
 ```ts
 export default defineConfig({
@@ -23,16 +23,16 @@ export default defineConfig({
     pipeline: {
       include: [
         /\.(vue|svelte|[jt]sx|mdx?|astro|html)($|\?)/,
-        'src/**/*.{js,ts}', // 添加 js/ts
+        'src/**/*.{js,ts}', // Add js/ts
       ],
     },
   },
 })
 ```
 
-### 文件系统提取
+### Filesystem Extraction
 
-用于不在构建管道中的文件：
+For files not in build pipeline:
 
 ```ts
 export default defineConfig({
@@ -45,7 +45,7 @@ export default defineConfig({
 })
 ```
 
-### 内联文本提取
+### Inline Text Extraction
 
 ```ts
 export default defineConfig({
@@ -58,11 +58,11 @@ export default defineConfig({
 })
 ```
 
-## 魔法注释
+## Magic Comments
 
 ### @unocss-include
 
-强制扫描文件：
+Force scan a file:
 
 ```ts
 // @unocss-include
@@ -73,7 +73,7 @@ export const classes = {
 
 ### @unocss-ignore
 
-跳过整个文件：
+Skip entire file:
 
 ```ts
 // @unocss-ignore
@@ -81,33 +81,33 @@ export const classes = {
 
 ### @unocss-skip-start / @unocss-skip-end
 
-跳过特定块：
+Skip specific blocks:
 
 ```html
-<p class="text-green">已提取</p>
+<p class="text-green">Extracted</p>
 <!-- @unocss-skip-start -->
-<p class="text-red">不提取</p>
+<p class="text-red">NOT extracted</p>
 <!-- @unocss-skip-end -->
 ```
 
-## 限制
+## Limitations
 
-UnoCSS 在**构建时**工作 - 动态类不起作用：
+UnoCSS works at **build time** - dynamic classes don't work:
 
 ```html
-<!-- 不会生效！ -->
+<!-- Won't work! -->
 <div class="p-${size}"></div>
 ```
 
-### 解决方案
+### Solutions
 
-**1. 安全列表** - 预生成已知值：
+**1. Safelist** - Pre-generate known values:
 
 ```ts
 safelist: ['p-1', 'p-2', 'p-3', 'p-4']
 ```
 
-**2. 静态映射** - 静态列出组合：
+**2. Static mapping** - List combinations statically:
 
 ```ts
 const colors = {
@@ -116,9 +116,9 @@ const colors = {
 }
 ```
 
-**3. 运行时** - 使用 `@unocss/runtime` 实现真正的运行时生成。
+**3. Runtime** - Use `@unocss/runtime` for true runtime generation.
 
-## 自定义提取器
+## Custom Extractors
 
 ```ts
 extractors: [

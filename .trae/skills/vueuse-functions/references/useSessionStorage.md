@@ -1,16 +1,16 @@
 ---
-category: 状态
+category: State
 ---
 
 # useSessionStorage
 
-响应式 [SessionStorage](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/sessionStorage)。
+Reactive [SessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage).
 
-## 用法
+## Usage
 
-请参阅 `useStorage`。
+Please refer to `useStorage`.
 
-## 类型声明
+## Type Declarations
 
 ```ts
 export declare function useSessionStorage(

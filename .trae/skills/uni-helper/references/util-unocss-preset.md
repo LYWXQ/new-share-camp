@@ -1,19 +1,19 @@
 ---
 name: unocss-preset-uni
-description: uni-app 的 UnoCSS 预设 - 包含平台特定工具和 rpx 支持，做什么：专为 uni-app 开发设计的 UnoCSS 预设，提供 rpx 单位和平台特定样式工具；何时调用：当用户需要配置 UnoCSS 用于 uni-app、使用 rpx 单位工具或应用平台特定样式时调用
+description: UnoCSS preset for uni-app with platform-specific utilities and rpx support
 ---
 
 # unocss-preset-uni
 
-专为 uni-app 开发设计的 UnoCSS 预设。提供 rpx 单位和平台特定样式工具。
+UnoCSS preset designed for uni-app development. Provides utilities for rpx units and platform-specific styling.
 
-## 安装
+## Installation
 
 ```bash
 npm i -D @uni-helper/unocss-preset-uni
 ```
 
-## 设置
+## Setup
 
 ```ts
 // uno.config.ts
@@ -27,19 +27,19 @@ export default defineConfig({
 })
 ```
 
-## 特性
+## Features
 
-- **rpx 支持**：自动转换为 rpx 单位
-- **平台变体**：针对特定平台的样式
-- **安全区域工具**：处理刘海屏和安全区域
-- **兼容**：小程序、H5 和 App
+- **rpx support**: Automatic conversion to rpx units
+- **Platform variants**: Style targeting specific platforms
+- **Safe area utilities**: Handle notches and safe areas
+- **Compatible with**: Mini programs, H5, and App
 
-## RPX 工具
+## RPX Utilities
 
-预设自动将像素值转换为 rpx：
+The preset automatically converts pixel values to rpx:
 
 ```html
-<!-- 这些生成 rpx 单位 -->
+<!-- These generate rpx units -->
 <view class="w-100"></view>    <!-- width: 100rpx -->
 <view class="h-50"></view>     <!-- height: 50rpx -->
 <view class="m-20"></view>     <!-- margin: 20rpx -->
@@ -47,59 +47,59 @@ export default defineConfig({
 <view class="text-32"></view>  <!-- font-size: 32rpx -->
 ```
 
-## 平台变体
+## Platform Variants
 
-将样式应用到特定平台：
+Apply styles to specific platforms:
 
 ```html
-<!-- 仅在 H5 上应用 -->
+<!-- Only apply on H5 -->
 <view class="h5:bg-red"></view>
 
-<!-- 仅在微信上应用 -->
+<!-- Only apply on WeChat -->
 <view class="mp-weixin:bg-blue"></view>
 
-<!-- 仅在 App 上应用 -->
+<!-- Only apply on App -->
 <view class="app:bg-green"></view>
 
-<!-- 与响应式结合 -->
+<!-- Combine with responsive -->
 <view class="h5:p-20 mp-weixin:p-10"></view>
 ```
 
-## 安全区域工具
+## Safe Area Utilities
 
 ```html
-<!-- 安全区域内边距 -->
+<!-- Safe area padding -->
 <view class="pt-safe"></view>      <!-- padding-top: env(safe-area-inset-top) -->
 <view class="pb-safe"></view>      <!-- padding-bottom: env(safe-area-inset-bottom) -->
-<view class="px-safe"></view>      <!-- 带安全区域的 padding-x -->
+<view class="px-safe"></view>      <!-- padding-x with safe area -->
 
-<!-- 安全区域外边距 -->
+<!-- Safe area margin -->
 <view class="mt-safe"></view>
 <view class="mb-safe"></view>
 
-<!-- 完整安全区域 -->
+<!-- Full safe area -->
 <view class="safe-area"></view>
 ```
 
-## Tab Bar 工具
+## Tab Bar Utilities
 
 ```html
-<!-- Tab Bar 内边距 -->
+<!-- Padding for tab bar -->
 <view class="pb-tabbar"></view>
 
-<!-- Tab Bar 外边距 -->
+<!-- Margin for tab bar -->
 <view class="mb-tabbar"></view>
 ```
 
-## 状态栏工具
+## Status Bar Utilities
 
 ```html
-<!-- 状态栏高度 -->
+<!-- Status bar height -->
 <view class="h-statusbar"></view>
 <view class="pt-statusbar"></view>
 ```
 
-## 配置
+## Configuration
 
 ```ts
 // uno.config.ts
@@ -109,23 +109,23 @@ import { presetUni } from '@uni-helper/unocss-preset-uni'
 export default defineConfig({
   presets: [
     presetUni({
-      // rpx 基准宽度（默认：750）
+      // rpx base width (default: 750)
       baseWidth: 750,
 
-      // 启用平台变体
+      // Enable platform variants
       platform: true,
 
-      // 启用安全区域工具
+      // Enable safe area utilities
       safeArea: true,
 
-      // 自定义平台
+      // Custom platforms
       platforms: ['mp-weixin', 'mp-alipay', 'h5', 'app'],
     }),
   ],
 })
 ```
 
-## 与 Vite 一起使用
+## With Vite
 
 ```ts
 // vite.config.ts
@@ -141,28 +141,28 @@ export default defineConfig({
 })
 ```
 
-## 示例
+## Example
 
 ```vue
 <template>
   <view class="page bg-gray-100">
-    <!-- 状态栏间距 -->
+    <!-- Status bar spacing -->
     <view class="h-statusbar"></view>
 
-    <!-- 带安全区域的头部 -->
+    <!-- Header with safe area -->
     <view class="px-32 pt-safe flex items-center justify-between">
-      <text class="text-36 font-bold">标题</text>
+      <text class="text-36 font-bold">Title</text>
     </view>
 
-    <!-- 内容 -->
+    <!-- Content -->
     <view class="p-32 flex flex-col gap-20">
-      <!-- 平台特定样式 -->
+      <!-- Platform-specific styling -->
       <view class="card h5:shadow-lg mp-weixin:border">
-        <text class="text-28 text-gray-800">内容</text>
+        <text class="text-28 text-gray-800">Content</text>
       </view>
     </view>
 
-    <!-- 刘海屏设备的底部安全区域 -->
+    <!-- Bottom safe area for devices with notches -->
     <view class="pb-safe"></view>
   </view>
 </template>

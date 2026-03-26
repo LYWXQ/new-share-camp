@@ -3,6 +3,7 @@ const Item = require('./Item');
 const Order = require('./Order');
 const Review = require('./Review');
 const Message = require('./Message');
+const Favorite = require('./Favorite');
 
 // 定义模型关联关系
 User.hasMany(Item, { foreignKey: 'userId', as: 'items' });
@@ -30,10 +31,22 @@ User.hasMany(Message, { foreignKey: 'receiverId', as: 'receivedMessages' });
 Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
 Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
 
+// 消息与物品的关联
+Item.hasMany(Message, { foreignKey: 'itemId', as: 'messages' });
+Message.belongsTo(Item, { foreignKey: 'itemId', as: 'item' });
+
+// 收藏关联
+User.hasMany(Favorite, { foreignKey: 'userId', as: 'favorites' });
+Favorite.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+Item.hasMany(Favorite, { foreignKey: 'itemId', as: 'favorites' });
+Favorite.belongsTo(Item, { foreignKey: 'itemId', as: 'item' });
+
 module.exports = {
   User,
   Item,
   Order,
   Review,
-  Message
+  Message,
+  Favorite
 };

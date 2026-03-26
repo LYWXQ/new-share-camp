@@ -1,28 +1,28 @@
 ---
-title: 保持 Props 稳定以最小化子组件重新渲染
+title: Keep Props Stable to Minimize Child Re-renders
 impact: HIGH
-impactDescription: 向列表项传递变化的 props 会导致所有子组件不必要地重新渲染
+impactDescription: Passing changing props to list items causes ALL children to re-render unnecessarily
 type: efficiency
 tags: [vue3, performance, props, v-for, re-renders, optimization]
 ---
 
-# 保持 Props 稳定以最小化子组件重新渲染
+# Keep Props Stable to Minimize Child Re-renders
 
-**影响：高** - 当传递给子组件的 props 变化时，Vue 必须重新渲染这些组件。将派生值如 `activeId` 传递给每个列表项会导致所有项在 activeId 变化时重新渲染，即使只有一项的 active 状态实际变化。
+**Impact: HIGH** - When props passed to child components change, Vue must re-render those components. Passing derived values like `activeId` to every list item causes all items to re-render when activeId changes, even if only one item's active state actually changed.
 
-将比较逻辑移到父组件并传递布尔结果。这是 Vue 中最具影响力的更新性能优化之一。
+Move comparison logic to the parent and pass the boolean result instead. This is one of the most impactful update performance optimizations in Vue.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 避免传递所有子组件都比较的父级状态（如 `activeId`）
-- [ ] 在父组件中预计算派生布尔 props（如 `:active="item.id === activeId"`）
-- [ ] 使用 Vue DevTools 分析重新渲染以识别 prop 稳定性问题
-- [ ] 对大型列表特别考虑这种模式
+- [ ] Avoid passing parent-level state that all children compare against (like `activeId`)
+- [ ] Pre-compute derived boolean props in the parent (like `:active="item.id === activeId"`)
+- [ ] Profile re-renders using Vue DevTools to identify prop stability issues
+- [ ] Consider this pattern especially critical for large lists
 
-**错误：**
+**Incorrect:**
 ```vue
 <template>
-  <!-- 错误：activeId 变化 -> 所有 100 个 ListItem 重新渲染 -->
+  <!-- BAD: activeId changes -> ALL 100 ListItems re-render -->
   <ListItem
     v-for="item in list"
     :key="item.id"
@@ -34,18 +34,18 @@ tags: [vue3, performance, props, v-for, re-renders, optimization]
 <script setup>
 import { ref } from 'vue'
 
-const list = ref([/* 100 项 */])
+const list = ref([/* 100 items */])
 const activeId = ref(null)
 
-// 当 activeId 从 1 变为 2 时：
-// - ListItem 1 需要重新渲染（之前是 active，现在不是）
-// - ListItem 2 需要重新渲染（之前不是 active，现在是）
-// - 其他 98 个 ListItem 也因为 activeId prop 变化而重新渲染！
+// When activeId changes from 1 to 2:
+// - ListItem 1 needs to re-render (was active, now not)
+// - ListItem 2 needs to re-render (was not active, now active)
+// - All other 98 ListItems ALSO re-render because activeId prop changed!
 </script>
 ```
 
 ```vue
-<!-- ListItem.vue - 接收 activeId 并在内部比较 -->
+<!-- ListItem.vue - receives activeId and compares internally -->
 <template>
   <div :class="{ active: id === activeId }">
     {{ id }}
@@ -55,15 +55,15 @@ const activeId = ref(null)
 <script setup>
 defineProps({
   id: Number,
-  activeId: Number  // 这个 prop 对所有项都变化
+  activeId: Number  // This prop changes for ALL items
 })
 </script>
 ```
 
-**正确：**
+**Correct:**
 ```vue
 <template>
-  <!-- 正确：只有 :active 实际变化的项才会重新渲染 -->
+  <!-- GOOD: Only items whose :active actually changed will re-render -->
   <ListItem
     v-for="item in list"
     :key="item.id"
@@ -75,18 +75,18 @@ defineProps({
 <script setup>
 import { ref } from 'vue'
 
-const list = ref([/* 100 项 */])
+const list = ref([/* 100 items */])
 const activeId = ref(null)
 
-// 当 activeId 从 1 变为 2 时：
-// - ListItem 1: :active 从 true 变为 false -> 重新渲染
-// - ListItem 2: :active 从 false 变为 true -> 重新渲染
-// - 其他 98 个 ListItem: :active 仍然是 false -> 不重新渲染！
+// When activeId changes from 1 to 2:
+// - ListItem 1: :active changed from true to false -> re-renders
+// - ListItem 2: :active changed from false to true -> re-renders
+// - All other 98 ListItems: :active is still false -> NO re-render!
 </script>
 ```
 
 ```vue
-<!-- ListItem.vue - 接收预计算的布尔值 -->
+<!-- ListItem.vue - receives pre-computed boolean -->
 <template>
   <div :class="{ active }">
     {{ id }}
@@ -96,30 +96,30 @@ const activeId = ref(null)
 <script setup>
 defineProps({
   id: Number,
-  active: Boolean  // 这只对真正变化的项变化
+  active: Boolean  // This only changes for items that truly changed
 })
 </script>
 ```
 
-## 导致 Prop 不稳定的常见模式
+## Common Patterns That Cause Prop Instability
 
 ```vue
-<!-- 错误：传递可能偏移的索引 -->
+<!-- BAD: Passing index that could shift -->
 <Item
   v-for="(item, index) in items"
   :key="item.id"
   :index="index"
-  :total="items.length"  <!-- 列表变化时变化 -->
+  :total="items.length"  <!-- Changes when list changes -->
 />
 
-<!-- 错误：传递整个选择集合 -->
+<!-- BAD: Passing entire selection set -->
 <Item
   v-for="item in items"
   :key="item.id"
-  :selected-ids="selectedIds"  <!-- 任何选择时所有项都重新渲染 -->
+  :selected-ids="selectedIds"  <!-- All items re-render on any selection -->
 />
 
-<!-- 正确：预计算布尔值 -->
+<!-- GOOD: Pre-compute the boolean -->
 <Item
   v-for="item in items"
   :key="item.id"
@@ -127,14 +127,14 @@ defineProps({
 />
 ```
 
-## 性能影响示例
+## Performance Impact Example
 
-| 场景 | Props 变化 | 组件重新渲染 |
-|------|-----------|-------------|
-| 100 项，传递 `activeId` | 100 | 100 (全部) |
-| 100 项，传递 `:active` 布尔值 | 2 | 2 (仅变化的) |
-| 1000 项，传递 `activeId` | 1000 | 1000 (全部) |
-| 1000 项，传递 `:active` 布尔值 | 2 | 2 (仅变化的) |
+| Scenario | Props Changed | Components Re-rendered |
+|----------|---------------|------------------------|
+| 100 items, pass `activeId` | 100 | 100 (all) |
+| 100 items, pass `:active` boolean | 2 | 2 (only changed) |
+| 1000 items, pass `activeId` | 1000 | 1000 (all) |
+| 1000 items, pass `:active` boolean | 2 | 2 (only changed) |
 
-## 参考
-- [Vue.js 性能 - Props 稳定性](https://vuejs.org/guide/best-practices/performance.html#props-stability)
+## Reference
+- [Vue.js Performance - Props Stability](https://vuejs.org/guide/best-practices/performance.html#props-stability)

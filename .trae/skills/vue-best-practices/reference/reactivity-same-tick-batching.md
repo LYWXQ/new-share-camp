@@ -1,25 +1,25 @@
 ---
-title: 理解响应式更新在每个事件循环 Tick 中被批处理
+title: Understand Reactive Updates are Batched Per Event Loop Tick
 impact: MEDIUM
-impactDescription: 多个同步响应式更改被批处理 - 监听器只看到最终值，而不是中间状态
+impactDescription: Multiple synchronous reactive changes are batched - watchers only see the final value, not intermediate states
 type: gotcha
 tags: [vue3, reactivity, batching, event-loop, watchers, nextTick]
 ---
 
-# 理解响应式更新在每个事件循环 Tick 中被批处理
+# Understand Reactive Updates are Batched Per Event Loop Tick
 
-**影响：中** - Vue 批处理在同一事件循环 tick 中同步发生的多个响应式状态更改。监听器和计算属性只看到最终状态，而不是中间值。这是一种优化，但如果你期望监听器为每个单独的更改触发，这可能会令人惊讶。
+**Impact: MEDIUM** - Vue batches multiple reactive state changes that happen synchronously within the same event loop tick. Watchers and computed properties only see the final state, not intermediate values. This is an optimization, but it can be surprising if you expect watchers to fire for each individual change.
 
-理解这种行为对于调试你期望观察每个状态转换的场景至关重要。
+Understanding this behavior is essential for debugging scenarios where you expect to observe every state transition.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 理解监听器每个 tick 只触发一次并带有最终值，而不是每次变更都触发
-- [ ] 如果你需要确保状态更改之间的 DOM 更新，使用 `nextTick()`
-- [ ] 只有在你绝对需要立即执行时才在监听器上使用 `flush: 'sync'`
-- [ ] 对于中间值追踪，考虑日志记录或显式状态快照
+- [ ] Understand watchers fire once per tick with final value, not for each mutation
+- [ ] Use `nextTick()` if you need to ensure DOM updates between state changes
+- [ ] Use `flush: 'sync'` on watchers only if you absolutely need immediate execution
+- [ ] For intermediate value tracking, consider logging or explicit state snapshots
 
-**批处理行为示例：**
+**Example of batching behavior:**
 ```javascript
 import { ref, watch } from 'vue'
 
@@ -29,7 +29,7 @@ watch(count, (newValue) => {
   console.log('Count changed to:', newValue)
 })
 
-// 同一 tick 中的多个同步更改
+// Multiple synchronous changes in the same tick
 function multipleUpdates() {
   count.value = 1
   count.value = 2
@@ -38,11 +38,11 @@ function multipleUpdates() {
 }
 
 multipleUpdates()
-// 控制台输出："Count changed to: 4"
-// 不是：1, 2, 3, 4 - 只观察到最终值！
+// Console output: "Count changed to: 4"
+// NOT: 1, 2, 3, 4 - only the final value is observed!
 ```
 
-**你不会看到的控制台日志：**
+**The console logs you WON'T see:**
 ```javascript
 const items = reactive([])
 
@@ -50,35 +50,35 @@ watch(items, (newItems) => {
   console.log('Items count:', newItems.length)
 })
 
-// 一批更改
+// Batch of changes
 items.push('a')  // length: 1
 items.push('b')  // length: 2
 items.push('c')  // length: 3
 
-// 输出："Items count: 3"
-// 你不会看到 1, 2, 3 分别记录
+// Output: "Items count: 3"
+// You won't see 1, 2, 3 logged separately
 ```
 
-**使用 flush: 'sync' 进行立即监听（谨慎使用）：**
+**Using flush: 'sync' for immediate watching (use with caution):**
 ```javascript
 import { ref, watch } from 'vue'
 
 const count = ref(0)
 
-// 同步监听器在每次更改时立即触发
+// Sync watcher fires immediately on each change
 watch(count, (newValue) => {
   console.log('Immediate:', newValue)
 }, { flush: 'sync' })
 
-count.value = 1  // 日志："Immediate: 1"
-count.value = 2  // 日志："Immediate: 2"
-count.value = 3  // 日志："Immediate: 3"
+count.value = 1  // Logs: "Immediate: 1"
+count.value = 2  // Logs: "Immediate: 2"
+count.value = 3  // Logs: "Immediate: 3"
 
-// 警告：flush: 'sync' 可能导致性能问题
-// 并产生不可预测的行为。尽可能避免。
+// WARNING: flush: 'sync' can cause performance issues
+// and creates less predictable behavior. Avoid if possible.
 ```
 
-**使用 nextTick 分隔批处理：**
+**Using nextTick to separate batches:**
 ```javascript
 import { ref, watch, nextTick } from 'vue'
 
@@ -90,19 +90,19 @@ watch(count, (newValue) => {
 
 async function separatedUpdates() {
   count.value = 1
-  await nextTick()  // 强制刷新
-  // 输出："Count: 1"
+  await nextTick()  // Force flush
+  // Output: "Count: 1"
 
   count.value = 2
   await nextTick()
-  // 输出："Count: 2"
+  // Output: "Count: 2"
 
   count.value = 3
-  // 输出："Count: 3"
+  // Output: "Count: 3"
 }
 ```
 
-**实际示例 - 表单验证：**
+**Practical example - form validation:**
 ```javascript
 const formData = reactive({
   email: '',
@@ -111,23 +111,23 @@ const formData = reactive({
 
 const validationErrors = ref([])
 
-// 这个监听器只触发一次，带有最终表单状态
+// This watcher only fires once, with final form state
 watch(formData, (data) => {
-  // 在所有字段更新后运行一次
+  // Runs once after all fields are updated
   validateForm(data)
 }, { deep: true })
 
-// 当用户提交时，你可能更新多个字段
+// When user submits, you might update multiple fields
 function populateFromSavedData(saved) {
   formData.email = saved.email
   formData.password = saved.password
-  // 验证在两个字���都设置后运行一次
+  // Validation runs once with both fields set
 }
 ```
 
-**批处理何时有助于性能：**
+**When batching helps performance:**
 ```javascript
-// 没有批处理，这将触发 1000 次监听器/渲染周期
+// Without batching, this would trigger 1000 watcher/render cycles
 const list = reactive([])
 
 function addManyItems() {
@@ -135,21 +135,21 @@ function addManyItems() {
     list.push(i)
   }
 }
-// 使用批处理：用所有 1000 项渲染一次
-// 没有批处理：将渲染 1000 次！
+// With batching: renders once with all 1000 items
+// Without batching: would render 1000 times!
 ```
 
-**调试中间状态：**
+**Debugging intermediate states:**
 ```javascript
-// 如果你需要观察每次更改以进行调试：
+// If you need to observe every change for debugging:
 import { ref, watch } from 'vue'
 
 const count = ref(0)
 
-// 方法 1：同步监听器（不推荐用于生产）
+// Method 1: Sync watcher (not recommended for production)
 watch(count, (val) => console.log('DEBUG:', val), { flush: 'sync' })
 
-// 方法 2：手动追踪历史
+// Method 2: Track history manually
 const history = []
 const originalSet = count.value
 Object.defineProperty(count, 'value', {
@@ -160,7 +160,7 @@ Object.defineProperty(count, 'value', {
 })
 ```
 
-## 参考
-- [Vue.js 深入响应式](https://vuejs.org/guide/extras/reactivity-in-depth.html)
-- [Vue.js 监听器 - 回调刷新时机](https://vuejs.org/guide/essentials/watchers.html#callback-flush-timing)
+## Reference
+- [Vue.js Reactivity in Depth](https://vuejs.org/guide/extras/reactivity-in-depth.html)
+- [Vue.js Watchers - Callback Flush Timing](https://vuejs.org/guide/essentials/watchers.html#callback-flush-timing)
 - [Vue.js nextTick()](https://vuejs.org/api/general.html#nexttick)

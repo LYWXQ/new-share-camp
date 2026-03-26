@@ -1,13 +1,13 @@
 ---
 name: script-setup
-description: 单文件组件中 Composition API 的编译时语法糖
+description: Compile-time syntactic sugar for Composition API in SFCs
 ---
 
 # Script Setup
 
-`<script setup>` 是单文件组件中 Composition API 的推荐语法。
+`<script setup>` is the recommended syntax for Composition API in Single-File Components.
 
-## 基本语法
+## Basic Syntax
 
 ```vue
 <script setup lang="ts">
@@ -25,27 +25,27 @@ function increment() {
 </template>
 ```
 
-## 优势
+## Benefits
 
-- 更少的样板代码（无需 `export default`，无需 `return`）
-- TypeScript 类型推断
-- 更好的运行时性能
-- 更好的 IDE 支持
+- Less boilerplate (no `export default`, no `return`)
+- TypeScript type inference
+- Better runtime performance
+- Better IDE support
 
-## 顶层绑定
+## Top-Level Bindings
 
-所有顶层绑定自动在模板中可用：
+All top-level bindings are automatically available in template:
 
 ```vue
 <script setup lang="ts">
-// 变量
+// Variables
 const msg = 'Hello'
 
-// 导入
+// Imports
 import { capitalize } from './helpers'
 import MyComponent from './MyComponent.vue'
 
-// 函数
+// Functions
 function greet() {
   console.log(msg)
 }
@@ -54,25 +54,25 @@ function greet() {
 <template>
   <MyComponent />
   <p>{{ capitalize(msg) }}</p>
-  <button @click="greet">问候</button>
+  <button @click="greet">Greet</button>
 </template>
 ```
 
-## 编译器宏
+## Compiler Macros
 
-这些无需导入即可使用：
+These are available without import:
 
-- `defineProps()` - 声明 props
-- `defineEmits()` - 声明 emits
-- `defineModel()` - 声明 v-model（3.4+）
-- `defineExpose()` - 暴露公共实例属性
-- `defineOptions()` - 声明组件选项（3.3+）
-- `defineSlots()` - 类型化插槽 props（3.3+）
-- `withDefaults()` - 提供 props 默认值
+- `defineProps()` - declare props
+- `defineEmits()` - declare emits
+- `defineModel()` - declare v-model (3.4+)
+- `defineExpose()` - expose public instance properties
+- `defineOptions()` - declare component options (3.3+)
+- `defineSlots()` - type slot props (3.3+)
+- `withDefaults()` - provide prop defaults
 
-## 使用组件
+## Using Components
 
-直接导入使用，无需注册：
+Import and use directly without registration:
 
 ```vue
 <script setup lang="ts">
@@ -86,7 +86,7 @@ import { MyButton } from './components'
 </template>
 ```
 
-### 动态组件
+### Dynamic Components
 
 ```vue
 <script setup lang="ts">
@@ -99,17 +99,17 @@ import Bar from './Bar.vue'
 </template>
 ```
 
-### 递归组件
+### Recursive Components
 
-单文件组件可以通过文件名引用自身：
+SFCs can reference themselves by filename:
 
 ```vue
-<!-- FooBar.vue 可以在其模板中使用 <FooBar/> -->
+<!-- FooBar.vue can use <FooBar/> in its template -->
 ```
 
-## 自定义指令
+## Custom Directives
 
-以 `v` 开头的变量可作为指令使用：
+Variables starting with `v` are available as directives:
 
 ```vue
 <script setup lang="ts">
@@ -125,7 +125,7 @@ const vFocus = {
 
 ## defineExpose()
 
-组件默认是封闭的。使用 `defineExpose` 暴露属性：
+Components are closed by default. Use `defineExpose` to expose properties:
 
 ```vue
 <script setup lang="ts">
@@ -141,17 +141,17 @@ defineExpose({
 </script>
 ```
 
-父组件可通过模板 ref 访问：
+Parent can access via template ref:
 
 ```ts
 const childRef = ref()
-childRef.value.count // 可访问
-childRef.value.publicMethod() // 可访问
+childRef.value.count // accessible
+childRef.value.publicMethod() // accessible
 ```
 
-## defineOptions()（3.3+）
+## defineOptions() (3.3+)
 
-无需单独的 `<script>` 块即可声明组件选项：
+Declare component options without separate `<script>` block:
 
 ```vue
 <script setup lang="ts">
@@ -162,9 +162,9 @@ defineOptions({
 </script>
 ```
 
-## defineSlots()（3.3+）
+## defineSlots() (3.3+)
 
-为 IDE 支持类型化插槽 props：
+Type slot props for IDE support:
 
 ```vue
 <script setup lang="ts">
@@ -177,7 +177,7 @@ const slots = defineSlots<{
 
 ## useSlots() & useAttrs()
 
-在 script 中访问插槽和属性：
+Access slots and attrs in script:
 
 ```vue
 <script setup lang="ts">
@@ -188,9 +188,9 @@ const attrs = useAttrs()
 </script>
 ```
 
-## 顶层 await
+## Top-Level await
 
-使用 Suspense 的异步 setup：
+Async setup with Suspense:
 
 ```vue
 <script setup lang="ts">
@@ -198,9 +198,9 @@ const data = await fetch('/api/data').then(r => r.json())
 </script>
 ```
 
-> 注意：需要在父组件中有 `<Suspense>` 边界。
+> Note: Requires `<Suspense>` boundary in parent.
 
-## 泛型组件（TypeScript）
+## Generic Components (TypeScript)
 
 ```vue
 <script setup lang="ts" generic="T extends string | number">
@@ -211,7 +211,7 @@ defineProps<{
 </script>
 ```
 
-带约束的多个泛型：
+Multiple generics with constraints:
 
 ```vue
 <script setup lang="ts" generic="T extends Item, U extends string">
@@ -224,20 +224,20 @@ defineProps<{
 </script>
 ```
 
-## 与普通 script 一起使用
+## Alongside Normal Script
 
-用于高级场景，如具名导出或一次性副作用：
+For advanced cases like named exports or one-time side effects:
 
 ```vue
 <script lang="ts">
-// 模块导入时运行一次
+// Runs once when module is imported
 runSideEffect()
 
 export const exportedValue = 'hello'
 </script>
 
 <script setup lang="ts">
-// 每个组件实例运行时执行
+// Runs for each component instance
 </script>
 ```
 

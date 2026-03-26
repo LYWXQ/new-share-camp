@@ -17,6 +17,11 @@ const Message = sequelize.define('Message', {
     allowNull: false,
     comment: '接收者ID'
   },
+  itemId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: '关联物品ID，用于区分不同物品的聊天'
+  },
   content: {
     type: DataTypes.TEXT,
     allowNull: false,

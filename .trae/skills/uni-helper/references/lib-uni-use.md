@@ -1,32 +1,32 @@
 ---
 name: uni-use
-description: 类似 VueUse 的 uni-app 组合式工具 - 专为 uni-app 设计的响应式工具函数，做什么：提供围绕 uni-app API 的响应式封装，包括生命周期钩子、系统信息、存储、UI 等组合式函数；何时调用：当用户需要使用组合式 API 访问 uni-app 功能（如系统信息、存储、剪贴板、位置等）时调用
+description: VueUse-style composable utilities for uni-app development
 ---
 
 # uni-use
 
-专为 uni-app 设计的类似 VueUse 的组合式工具。提供围绕 uni-app API 的响应式封装。
+VueUse-style composable utilities specifically designed for uni-app. Provides reactive wrappers around uni-app APIs.
 
-## 安装
+## Installation
 
 ```bash
 npm i @uni-helper/uni-use @vueuse/core@9
 ```
 
-## 用法
+## Usage
 
 ```ts
 import { tryOnLoad, useClipboard, useSystemInfo } from '@uni-helper/uni-use'
 
 tryOnLoad(() => {
-  console.log('页面加载')
+  console.log('Page loaded')
 })
 
 const { copy, text } = useClipboard()
 const { systemInfo } = useSystemInfo()
 ```
 
-## 自动导入设置
+## Auto Import Setup
 
 ```ts
 // vite.config.ts
@@ -43,107 +43,107 @@ export default defineConfig({
 })
 ```
 
-## 可用组合式函数
+## Available Composables
 
-### 生命周期
+### Lifecycle
 
-| 组合式函数 | 描述 |
-|------------|------|
-| `tryOnLoad` | 带 try-catch 的 onLoad |
-| `tryOnShow` | 带 try-catch 的 onShow |
-| `tryOnHide` | 带 try-catch 的 onHide |
-| `tryOnReady` | 带 try-catch 的 onReady |
-| `tryOnUnload` | 带 try-catch 的 onUnload |
-| `tryOnPullDownRefresh` | 带 try-catch 的 onPullDownRefresh |
-| `tryOnReachBottom` | 带 try-catch 的 onReachBottom |
-| `tryOnPageScroll` | 带 try-catch 的 onPageScroll |
-| `tryOnTabItemTap` | 带 try-catch 的 onTabItemTap |
+| Composable | Description |
+|------------|-------------|
+| `tryOnLoad` | onLoad with try-catch |
+| `tryOnShow` | onShow with try-catch |
+| `tryOnHide` | onHide with try-catch |
+| `tryOnReady` | onReady with try-catch |
+| `tryOnUnload` | onUnload with try-catch |
+| `tryOnPullDownRefresh` | onPullDownRefresh with try-catch |
+| `tryOnReachBottom` | onReachBottom with try-catch |
+| `tryOnPageScroll` | onPageScroll with try-catch |
+| `tryOnTabItemTap` | onTabItemTap with try-catch |
 
-### 系统
+### System
 
-| 组合式函数 | 描述 |
-|------------|------|
-| `useSystemInfo` | 响应式系统信息 |
-| `useDeviceInfo` | 设备信息 |
-| `useWindowInfo` | 窗口尺寸 |
-| `useAppTheme` | 应用主题（深色/浅色） |
-| `useNetworkStatus` | 网络连接状态 |
-| `useBattery` | 电池状态 |
+| Composable | Description |
+|------------|-------------|
+| `useSystemInfo` | Reactive system information |
+| `useDeviceInfo` | Device information |
+| `useWindowInfo` | Window dimensions |
+| `useAppTheme` | App theme (dark/light) |
+| `useNetworkStatus` | Network connection status |
+| `useBattery` | Battery status |
 
-### 存储
+### Storage
 
-| 组合式函数 | 描述 |
-|------------|------|
-| `useStorage` | 响应式本地存储 |
-| `useStorageAsync` | 异步存储操作 |
+| Composable | Description |
+|------------|-------------|
+| `useStorage` | Reactive local storage |
+| `useStorageAsync` | Async storage operations |
 
 ### UI
 
-| 组合式函数 | 描述 |
-|------------|------|
-| `useClipboard` | 剪贴板操作 |
-| `useToast` | 提示通知 |
-| `useModal` | 模态框 |
-| `useActionSheet` | 操作菜单 |
-| `useLoading` | 加载指示器 |
-| `useNavigationBar` | 导航栏控制 |
-| `usePullDownRefresh` | 下拉刷新 |
+| Composable | Description |
+|------------|-------------|
+| `useClipboard` | Clipboard operations |
+| `useToast` | Toast notifications |
+| `useModal` | Modal dialogs |
+| `useActionSheet` | Action sheet |
+| `useLoading` | Loading indicator |
+| `useNavigationBar` | Navigation bar control |
+| `usePullDownRefresh` | Pull-to-refresh |
 
-### 位置
+### Location
 
-| 组合式函数 | 描述 |
-|------------|------|
-| `useLocation` | 当前位置 |
-| `useChooseLocation` | 位置选择器 |
+| Composable | Description |
+|------------|-------------|
+| `useLocation` | Current location |
+| `useChooseLocation` | Location picker |
 
-### 媒体
+### Media
 
-| 组合式函数 | 描述 |
-|------------|------|
-| `useImage` | 图片操作 |
-| `useCamera` | 相机访问 |
-| `useRecorder` | 录音 |
+| Composable | Description |
+|------------|-------------|
+| `useImage` | Image operations |
+| `useCamera` | Camera access |
+| `useRecorder` | Audio recording |
 
-## 示例用法
+## Example Usage
 
 ```vue
 <script setup lang="ts">
 import { useClipboard, useSystemInfo, useStorage, tryOnLoad } from '@uni-helper/uni-use'
 
-// 系统信息
+// System info
 const { systemInfo, safeArea } = useSystemInfo()
 
-// 剪贴板
+// Clipboard
 const { text, copy, isSupported } = useClipboard()
 const handleCopy = async () => {
   await copy('Hello uni-app')
-  uni.showToast({ title: '已复制!' })
+  uni.showToast({ title: 'Copied!' })
 }
 
-// 存储
+// Storage
 const userToken = useStorage('token', '')
 const saveToken = (token: string) => {
   userToken.value = token
 }
 
-// 生命周期
+// Lifecycle
 tryOnLoad((options) => {
-  console.log('页面选项:', options)
+  console.log('Page options:', options)
 })
 </script>
 
 <template>
   <view class="page">
-    <text>平台: {{ systemInfo.platform }}</text>
-    <text>安全区域顶部: {{ safeArea?.top }}px</text>
-    <button @click="handleCopy">复制到剪贴板</button>
+    <text>Platform: {{ systemInfo.platform }}</text>
+    <text>Safe area top: {{ safeArea?.top }}px</text>
+    <button @click="handleCopy">Copy to clipboard</button>
   </view>
 </template>
 ```
 
-## 构建配置
+## Build Configuration
 
-对于面向 ES6 的 Vite + Vue3 项目：
+For Vite + Vue3 projects targeting ES6:
 
 ```ts
 // vite.config.ts
@@ -158,7 +158,7 @@ export default defineConfig({
 })
 ```
 
-如有需要在 `main.ts` 中添加 polyfills：
+Add polyfills in `main.ts` if needed:
 
 ```ts
 // main.ts
@@ -167,16 +167,16 @@ import 'core-js/actual/promise'
 import 'core-js/actual/object/assign'
 ```
 
-## 限制
+## Limitations
 
-- 小程序和 App 环境缺少一些全局对象（window、navigator）
-- 不能使用顶层 await
-- 某些 VueUse 功能可能在 uni-app 中无法使用
+- Mini Program and App environments lack some globals (window, navigator)
+- Cannot use top-level await
+- Some VueUse features may not work in uni-app
 
-## 另请参阅
+## See Also
 
-- 完整 API 文档：https://uni-helper.js.org/uni-use/apis
-- VueUse：https://vueuse.org/
+- Full API docs: https://uni-helper.js.org/uni-use/apis
+- VueUse: https://vueuse.org/
 
 <!--
 Source references:

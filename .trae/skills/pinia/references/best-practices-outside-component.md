@@ -1,15 +1,15 @@
 ---
 name: using-stores-outside-components
-description: 在导航守卫、插件和其他非组件上下文中正确使用 store
+description: Correctly using stores in navigation guards, plugins, and other non-component contexts
 ---
 
-# 在组件外部使用 Store
+# Using Stores Outside Components
 
-Store 需要 `pinia` 实例，它在组件中自动注入。在组件外部，可能需要手动提供。
+Stores need the `pinia` instance, which is automatically injected in components. Outside components, you may need to provide it manually.
 
-## 单页应用
+## Single Page Applications
 
-在 pinia 安装**之后**调用 store：
+Call stores **after** pinia is installed:
 
 ```ts
 import { useUserStore } from '@/stores/user'
@@ -17,26 +17,26 @@ import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import App from './App.vue'
 
-// ❌ 失败 - pinia 尚未创建
+// ❌ Fails - pinia not created yet
 const userStore = useUserStore()
 
 const pinia = createPinia()
 const app = createApp(App)
 app.use(pinia)
 
-// ✅ 成功 - pinia 已激活
+// ✅ Works - pinia is active
 const userStore = useUserStore()
 ```
 
-## 导航守卫
+## Navigation Guards
 
-**错误：** 在模块级别调用
+**Wrong:** Call at module level
 
 ```ts
 import { createRouter } from 'vue-router'
 const router = createRouter({ /* ... */ })
 
-// ❌ 可能失败，取决于导入顺序
+// ❌ May fail depending on import order
 const store = useUserStore()
 
 router.beforeEach((to) => {
@@ -44,11 +44,11 @@ router.beforeEach((to) => {
 })
 ```
 
-**正确：** 在守卫内部调用
+**Correct:** Call inside the guard
 
 ```ts
 router.beforeEach((to) => {
-  // ✅ 在 pinia 安装后调用
+  // ✅ Called after pinia is installed
   const store = useUserStore()
 
   if (to.meta.requiresAuth && !store.isLoggedIn) {
@@ -57,9 +57,9 @@ router.beforeEach((to) => {
 })
 ```
 
-## SSR 应用
+## SSR Applications
 
-始终将 `pinia` 实例传递给 `useStore()`：
+Always pass the `pinia` instance to `useStore()`:
 
 ```ts
 const pinia = createPinia()
@@ -68,7 +68,7 @@ app.use(router)
 app.use(pinia)
 
 router.beforeEach((to) => {
-  // ✅ 传递 pinia 实例
+  // ✅ Pass pinia instance
   const main = useMainStore(pinia)
 
   if (to.meta.requiresAuth && !main.isLoggedIn) {
@@ -79,7 +79,7 @@ router.beforeEach((to) => {
 
 ## serverPrefetch()
 
-通过 `this.$pinia` 访问 pinia：
+Access pinia via `this.$pinia`:
 
 ```ts
 export default {
@@ -92,22 +92,22 @@ export default {
 
 ## onServerPrefetch()
 
-在 `<script setup>` 中正常工作：
+Works normally in `<script setup>`:
 
 ```vue
 <script setup>
 const store = useStore()
 
 onServerPrefetch(async () => {
-  // ✅ 直接可用
+  // ✅ Just works
   await store.fetchData()
 })
 </script>
 ```
 
-## 关键要点
+## Key Takeaway
 
-将 `useStore()` 调用推迟到在 pinia 安装后运行的函数中，而不是在模块作用域调用。
+Defer `useStore()` calls to functions that run after pinia is installed, rather than calling at module scope.
 
 <!--
 Source references:

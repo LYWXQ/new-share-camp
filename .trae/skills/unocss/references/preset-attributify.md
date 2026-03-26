@@ -1,13 +1,13 @@
 ---
 name: preset-attributify
-description: 在 HTML 属性中分组工具类，替代 class
+description: Group utilities in HTML attributes instead of class
 ---
 
 # Preset Attributify
 
-在 HTML 属性中分组工具类以获得更好的可读性。
+Group utilities in HTML attributes for better readability.
 
-## 安装
+## Installation
 
 ```ts
 import { defineConfig, presetAttributify, presetWind3 } from 'unocss'
@@ -20,9 +20,9 @@ export default defineConfig({
 })
 ```
 
-## 基本用法
+## Basic Usage
 
-替代冗长的 class 字符串：
+Instead of long class strings:
 
 ```html
 <button class="bg-blue-400 hover:bg-blue-500 text-sm text-white font-mono font-light py-2 px-4 rounded border-2 border-blue-200">
@@ -30,7 +30,7 @@ export default defineConfig({
 </button>
 ```
 
-按前缀分组到属性中：
+Group by prefix in attributes:
 
 ```html
 <button
@@ -44,36 +44,36 @@ export default defineConfig({
 </button>
 ```
 
-## 前缀自引用
+## Prefix Self-Referencing
 
-对于与其前缀匹配的工具类（`flex`、`grid`、`border`），使用 `~`：
+For utilities matching their prefix (`flex`, `grid`, `border`), use `~`:
 
 ```html
-<!-- 之前 -->
+<!-- Before -->
 <button class="border border-red">Button</button>
 
-<!-- 之后 -->
+<!-- After -->
 <button border="~ red">Button</button>
 ```
 
-## 无值 Attributify
+## Valueless Attributify
 
-将工具类用作布尔属性：
+Use utilities as boolean attributes:
 
 ```html
 <div m-2 rounded text-teal-400 />
 ```
 
-## 处理属性冲突
+## Handling Property Conflicts
 
-当属性名与 HTML 属性冲突时：
+When attribute names conflict with HTML properties:
 
 ```html
-<!-- 使用 un- 前缀 -->
+<!-- Use un- prefix -->
 <a un-text="red">Text color to red</a>
 ```
 
-### 强制前缀
+### Enforce Prefix
 
 ```ts
 presetAttributify({
@@ -82,20 +82,20 @@ presetAttributify({
 })
 ```
 
-## 选项
+## Options
 
 ```ts
 presetAttributify({
-  strict: false,           // 仅为 attributify 生成 CSS
-  prefix: 'un-',           // 属性前缀
-  prefixedOnly: false,     // 要求所有都带前缀
-  nonValuedAttribute: true, // 支持无值属性
-  ignoreAttributes: [],    // 要忽略的属性
-  trueToNonValued: false,  // 将 value="true" 视为无值
+  strict: false,           // Only generate CSS for attributify
+  prefix: 'un-',           // Attribute prefix
+  prefixedOnly: false,     // Require prefix for all
+  nonValuedAttribute: true, // Support valueless attributes
+  ignoreAttributes: [],    // Attributes to ignore
+  trueToNonValued: false,  // Treat value="true" as valueless
 })
 ```
 
-## TypeScript 支持
+## TypeScript Support
 
 ### Vue 3
 
@@ -120,9 +120,9 @@ declare module 'react' {
 }
 ```
 
-## JSX 支持
+## JSX Support
 
-对于 JSX 中 `<div foo>` 变为 `<div foo={true}>` 的情况：
+For JSX where `<div foo>` becomes `<div foo={true}>`:
 
 ```ts
 import { transformerAttributifyJsx } from 'unocss'
@@ -134,7 +134,7 @@ export default defineConfig({
 })
 ```
 
-**重要：** 仅在 `uno.config.*` 显示启用了 `presetAttributify()` 时才使用 attributify。
+**Important:** Only use attributify if `uno.config.*` shows `presetAttributify()` is enabled.
 
 <!-- 
 Source references:

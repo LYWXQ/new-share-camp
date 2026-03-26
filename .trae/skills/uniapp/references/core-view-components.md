@@ -1,13 +1,13 @@
 ---
-name: 视图组件
-description: 用于布局和结构的核心容器组件。在使用 uni-app 的 view、scroll-view、swiper、movable-area、cover-view 等容器组件进行页面布局时调用此技能。
+name: View Components
+description: Core container components for layout and structure
 ---
 
-# 视图组件
+# View Components
 
 ## view
 
-基础容器组件，类似于 HTML 的 `<div>`。
+Basic container component, similar to HTML `<div>`.
 
 ```vue
 <template>
@@ -24,26 +24,26 @@ description: 用于布局和结构的核心容器组件。在使用 uni-app 的 
 </template>
 ```
 
-**属性：**
+**Properties:**
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| hover-class | String | none | 按下时的 CSS 类 |
-| hover-stop-propagation | Boolean | false | 阻止冒泡到祖先节点 |
-| hover-start-time | Number | 50 | 触发悬停状态的延迟（ms） |
-| hover-stay-time | Number | 400 | 保持悬停状态的时长（ms） |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| hover-class | String | none | CSS class when pressed |
+| hover-stop-propagation | Boolean | false | Stop propagation to ancestor nodes |
+| hover-start-time | Number | 50 | Delay before hover state (ms) |
+| hover-stay-time | Number | 400 | Duration to keep hover state (ms) |
 
-**提示：**
-- 在小程序中 `<div>` 会自动转换为 `<view>`
-- 在 nvue 页面中使用 `<text>` 包裹文本
+**Tips:**
+- `<div>` is auto-converted to `<view>` in mini-programs
+- Use `<text>` to wrap text in nvue pages
 
 ## scroll-view
 
-可滚动容器，具有增强的滚动能力。
+Scrollable container with enhanced scroll capabilities.
 
 ```vue
 <template>
-  <!-- 垂直滚动 -->
+  <!-- Vertical scroll -->
   <scroll-view
     scroll-y
     class="scroll-container"
@@ -52,11 +52,11 @@ description: 用于布局和结构的核心容器组件。在使用 uni-app 的 
     :scroll-top="scrollTop"
     :scroll-into-view="targetId"
   >
-    <view id="item1">项目 1</view>
-    <view id="item2">项目 2</view>
+    <view id="item1">Item 1</view>
+    <view id="item2">Item 2</view>
   </scroll-view>
 
-  <!-- 水平滚动 -->
+  <!-- Horizontal scroll -->
   <scroll-view scroll-x class="horizontal-scroll">
     <view class="scroll-item">1</view>
     <view class="scroll-item">2</view>
@@ -64,28 +64,28 @@ description: 用于布局和结构的核心容器组件。在使用 uni-app 的 
 </template>
 ```
 
-**属性：**
+**Properties:**
 
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| scroll-x | Boolean | 启用水平滚动 |
-| scroll-y | Boolean | 启用垂直滚动 |
-| upper-threshold | Number | 距顶部多远触发 scrolltoupper（px） |
-| lower-threshold | Number | 距底部多远触发 scrolltolower（px） |
-| scroll-top | Number | 垂直滚动位置 |
-| scroll-left | Number | 水平滚动位置 |
-| scroll-into-view | String | 滚动到视图的元素 ID |
-| scroll-with-animation | Boolean | 启用平滑滚动动画 |
-| enable-back-to-top | Boolean | iOS：点击状态栏滚动到顶部 |
+| Property | Type | Description |
+|----------|------|-------------|
+| scroll-x | Boolean | Enable horizontal scroll |
+| scroll-y | Boolean | Enable vertical scroll |
+| upper-threshold | Number | Distance from top to trigger scrolltoupper (px) |
+| lower-threshold | Number | Distance from bottom to trigger scrolltolower (px) |
+| scroll-top | Number | Vertical scroll position |
+| scroll-left | Number | Horizontal scroll position |
+| scroll-into-view | String | Element ID to scroll into view |
+| scroll-with-animation | Boolean | Enable smooth scroll animation |
+| enable-back-to-top | Boolean | iOS: tap status bar to scroll top |
 
-**事件：**
-- `@scroll` - 滚动事件
-- `@scrolltoupper` - 到达顶部
-- `@scrolltolower` - 到达底部
+**Events:**
+- `@scroll` - Scroll event
+- `@scrolltoupper` - Reached top
+- `@scrolltolower` - Reached bottom
 
 ## swiper
 
-轮播/滑动容器，用于切换内容。
+Carousel/slider container for switching content.
 
 ```vue
 <template>
@@ -99,10 +99,10 @@ description: 用于布局和结构的核心容器组件。在使用 uni-app 的 
     @change="onSwiperChange"
   >
     <swiper-item>
-      <view class="slide">幻灯片 1</view>
+      <view class="slide">Slide 1</view>
     </swiper-item>
     <swiper-item>
-      <view class="slide">幻灯片 2</view>
+      <view class="slide">Slide 2</view>
     </swiper-item>
   </swiper>
 </template>
@@ -123,25 +123,25 @@ export default {
 </script>
 ```
 
-**swiper 属性：**
+**swiper Properties:**
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| indicator-dots | Boolean | false | 显示分页点 |
-| indicator-color | Color | rgba(0,0,0,.3) | 未激活点颜色 |
-| indicator-active-color | Color | #000000 | 激活点颜色 |
-| autoplay | Boolean | false | 自动播放 |
-| current | Number | 0 | 当前幻灯片索引 |
-| interval | Number | 5000 | 自动播放间隔（ms） |
-| duration | Number | 500 | 过渡时长（ms） |
-| circular | Boolean | false | 循环滑动 |
-| vertical | Boolean | false | 垂直滑动 |
-| previous-margin | String | 0px | 前一张幻灯片边距 |
-| next-margin | String | 0px | 后一张幻灯片边距 |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| indicator-dots | Boolean | false | Show pagination dots |
+| indicator-color | Color | rgba(0,0,0,.3) | Inactive dot color |
+| indicator-active-color | Color | #000000 | Active dot color |
+| autoplay | Boolean | false | Auto-play slides |
+| current | Number | 0 | Current slide index |
+| interval | Number | 5000 | Auto-play interval (ms) |
+| duration | Number | 500 | Transition duration (ms) |
+| circular | Boolean | false | Circular sliding |
+| vertical | Boolean | false | Vertical sliding |
+| previous-margin | String | 0px | Previous slide margin |
+| next-margin | String | 0px | Next slide margin |
 
 ## movable-area / movable-view
 
-可拖动和缩放的容器。
+Draggable and scalable container.
 
 ```vue
 <template>
@@ -156,41 +156,41 @@ export default {
       @change="onChange"
       @scale="onScale"
     >
-      可拖动内容
+      Draggable content
     </movable-view>
   </movable-area>
 </template>
 ```
 
-**movable-view 属性：**
+**movable-view Properties:**
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| direction | String | none | 移动方向：all/vertical/horizontal/none |
-| x | Number | | 初始 X 位置 |
-| y | Number | | 初始 Y 位置 |
-| scale | Boolean | false | 启用缩放 |
-| scale-min | Number | 0.5 | 最小缩放 |
-| scale-max | Number | 10 | 最大缩放 |
-| scale-value | Number | 1 | 初始缩放 |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| direction | String | none | Move direction: all/vertical/horizontal/none |
+| x | Number | | Initial X position |
+| y | Number | | Initial Y position |
+| scale | Boolean | false | Enable scaling |
+| scale-min | Number | 0.5 | Min scale |
+| scale-max | Number | 10 | Max scale |
+| scale-value | Number | 1 | Initial scale |
 
 ## cover-view / cover-image
 
-原生覆盖组件，可以覆盖原生组件（地图、视频、画布）。
+Native overlay components that can cover native components (map, video, canvas).
 
 ```vue
 <template>
   <map class="map">
-    <cover-view class="overlay">覆盖文字</cover-view>
+    <cover-view class="overlay">Overlay text</cover-view>
     <cover-image class="marker" src="/static/marker.png" />
   </map>
 </template>
 ```
 
-**限制：**
-- 仅在微信小程序、App 和 H5 中支持
-- 样式能力有限
-- 不能嵌套常规组件
+**Limitations:**
+- Only supported in WeChat MP, App, and H5
+- Limited styling capabilities
+- Cannot nest regular components inside
 
 <!--
 Source references:

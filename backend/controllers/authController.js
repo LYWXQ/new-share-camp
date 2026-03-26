@@ -6,10 +6,21 @@ const { Op } = require('sequelize');
 // 用户注册（仅普通用户可以注册）
 const register = async (req, res) => {
   try {
-    const { studentId, username, password } = req.body;
+    const { studentId, username, password, school, major, phone } = req.body;
 
-    if (!studentId || !username || !password) {
-      return res.status(400).json({ message: '学号、用户名和密码不能为空' });
+    if (!studentId || !username || !password || !phone) {
+      return res.status(400).json({ message: '学号、用户名、密码和手机号不能为空' });
+    }
+
+    // 验证手机号格式
+    if (!/^1[3-9]\d{9}$/.test(phone)) {
+      return res.status(400).json({ message: '请输入正确的手机号' });
+    }
+
+    // 检查手机号是否已被注册
+    const existingPhone = await User.findOne({ where: { phone } });
+    if (existingPhone) {
+      return res.status(400).json({ message: '该手机号已被注册' });
     }
 
     const existingStudentId = await User.findOne({ where: { studentId } });
@@ -28,6 +39,9 @@ const register = async (req, res) => {
       studentId,
       username,
       password: hashedPassword,
+      school,
+      major,
+      phone,
       creditScore: 100,
       isVerified: false,
       role: 'user'
@@ -42,6 +56,9 @@ const register = async (req, res) => {
         id: user.id,
         studentId: user.studentId,
         username: user.username,
+        school: user.school,
+        major: user.major,
+        phone: user.phone,
         creditScore: user.creditScore,
         isVerified: user.isVerified,
         role: user.role
@@ -57,18 +74,22 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { account, password } = req.body;
+    console.log('登录请求 - account:', account, 'account type:', typeof account);
 
     if (!account || !password) {
       return res.status(400).json({ message: '账号和密码不能为空' });
     }
 
-    // 先按用户名查询
-    let user = await User.findOne({ where: { username: account } });
-    
-    // 如果没找到，再按学号查询
-    if (!user) {
-      user = await User.findOne({ where: { studentId: account } });
-    }
+    // 使用Op.or同时查询用户名和学号
+    let user = await User.findOne({
+      where: {
+        [Op.or]: [
+          { username: account },
+          { studentId: account }
+        ]
+      }
+    });
+    console.log('查询结果:', user ? (user.username + ' / ' + user.studentId) : '未找到');
 
     if (!user) {
       return res.status(401).json({ message: '账号或密码错误' });
@@ -93,6 +114,8 @@ const login = async (req, res) => {
         studentId: user.studentId,
         username: user.username,
         avatar: user.avatar,
+        school: user.school,
+        major: user.major,
         creditScore: user.creditScore,
         isVerified: user.isVerified,
         role: user.role,
@@ -116,6 +139,8 @@ const getCurrentUser = async (req, res) => {
       avatar: user.avatar,
       phone: user.phone,
       email: user.email,
+      school: user.school,
+      major: user.major,
       creditScore: user.creditScore,
       isVerified: user.isVerified,
       role: user.role,

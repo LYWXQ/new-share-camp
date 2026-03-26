@@ -1,13 +1,13 @@
 ---
 name: provide-inject
-description: 在组件树中传递数据，避免 prop 逐级传递
+description: Pass data through component tree without prop drilling
 ---
 
 # Provide / Inject
 
-从祖先组件向任意后代组件提供数据，避免 prop 逐级传递。
+Provide data from ancestor components to any descendant, avoiding prop drilling.
 
-## 基本用法
+## Basic Usage
 
 ```vue
 <!-- Provider.vue -->
@@ -20,7 +20,7 @@ provide('message', message)
 ```
 
 ```vue
-<!-- DeepChild.vue（任意层级深度） -->
+<!-- DeepChild.vue (any level deep) -->
 <script setup lang="ts">
 import { inject } from 'vue'
 
@@ -28,9 +28,9 @@ const message = inject('message')
 </script>
 ```
 
-## 使用 InjectionKey 进行类型定义
+## Typing with InjectionKey
 
-使用 `InjectionKey` 在提供者和注入者之间实现类型安全：
+Use `InjectionKey` for type safety between provider and injector:
 
 ```ts
 // keys.ts
@@ -61,20 +61,20 @@ const message = inject(messageKey) // Ref<string> | undefined
 </script>
 ```
 
-## 默认值
+## Default Values
 
 ```ts
-// 简单默认值
+// Simple default
 const value = inject('message', 'default value')
 
-// 工厂函数（用于昂贵的默认值）
+// Factory function (for expensive defaults)
 const value = inject('key', () => new ExpensiveClass(), true)
-//                                                       ^ 视为工厂函数
+//                                                       ^ treat as factory
 ```
 
-## 应用级 Provide
+## App-Level Provide
 
-对所有组件可用：
+Available to all components:
 
 ```ts
 // main.ts
@@ -84,9 +84,9 @@ const app = createApp(App)
 app.provide('globalConfig', { theme: 'dark' })
 ```
 
-## 响应式 Provide/Inject
+## Reactive Provide/Inject
 
-提供响应式值以实现自动更新：
+Provide reactive values for automatic updates:
 
 ```vue
 <!-- Provider.vue -->
@@ -98,11 +98,11 @@ provide('count', count)
 </script>
 ```
 
-注入的值保持响应式连接。
+The injected value maintains reactivity connection.
 
-## 变更的最佳实践
+## Mutations Best Practice
 
-将变更保留在提供者中，暴露更新函数：
+Keep mutations in the provider, expose update functions:
 
 ```vue
 <!-- Provider.vue -->
@@ -116,7 +116,7 @@ function updateLocation(newLocation: string) {
 }
 
 provide('location', {
-  location: readonly(location), // 防止直接变更
+  location: readonly(location), // Prevent direct mutation
   updateLocation
 })
 </script>
@@ -137,33 +137,33 @@ const { location, updateLocation } = inject('location')!
 </template>
 ```
 
-## 使用 Symbol 键
+## Using Symbol Keys
 
-推荐用于库和大型应用以避免冲突：
+Recommended for libraries and large apps to avoid collisions:
 
 ```ts
 // keys.ts
 export const myKey = Symbol('myKey')
 
-// 提供者
+// provider
 provide(myKey, value)
 
-// 注入者
+// injector
 inject(myKey)
 ```
 
-## 类型辅助
+## Type Helpers
 
 ```ts
-// 带显式类型的字符串键
+// String key with explicit type
 const foo = inject<string>('foo')
 //    ^? string | undefined
 
-// 带默认值（移除 undefined）
+// With default (removes undefined)
 const foo = inject<string>('foo', 'default')
 //    ^? string
 
-// 强制非 undefined（确定已提供时使用）
+// Force non-undefined (use when certain it's provided)
 const foo = inject('foo') as string
 ```
 

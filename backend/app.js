@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const sequelize = require('./config/database');
-const { User, Item, Order, Review, Message } = require('./models');
+const { User, Item, Order, Review, Message, Favorite } = require('./models');
 
 dotenv.config();
 
@@ -27,6 +27,7 @@ app.use('/api/messages', require('./routes/messages'));
 app.use('/api/recommendations', require('./routes/recommendations'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/favorites', require('./routes/favorites'));
 
 // 健康检查
 app.get('/health', (req, res) => {
@@ -53,9 +54,9 @@ const startServer = async () => {
       console.log('No disputes table found, continuing...');
     }
     
-    // 同步数据库模型
-    await sequelize.sync({ force: false });
-    console.log('Database models synchronized.');
+    // 同步数据库模型（使用 alter: true 来更新表结构，保持现有数据）
+    await sequelize.sync({ alter: true });
+    console.log('Database models synchronized with alter: true.');
     
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);

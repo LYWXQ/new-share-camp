@@ -1,12 +1,12 @@
 ---
-category: 状态
+category: State
 ---
 
 # useAsyncState
 
-响应式异步状态。不会阻塞您的 setup 函数，并会在 promise 准备好后触发更改。状态默认是 `shallowRef`。
+Reactive async state. Will not block your setup function and will trigger changes once the promise is ready. The state is a `shallowRef` by default.
 
-## 用法
+## Usage
 
 ```ts
 import { useAsyncState } from '@vueuse/core'
@@ -20,9 +20,9 @@ const { state, isReady, isLoading } = useAsyncState(
 )
 ```
 
-### 手动触发异步函数
+### Manually trigger the async function
 
-您也可以手动触发它。这在您想要控制异步函数何时执行时很有用。
+You can also trigger it manually. This is useful when you want to control when the async function is executed.
 
 ```vue
 <script setup lang="ts">
@@ -32,24 +32,24 @@ const { state, execute, executeImmediate } = useAsyncState(action, '', { immedia
 
 async function action(event) {
   await new Promise(resolve => setTimeout(resolve, 500))
-  return `${event.target.textContent} 已点击！`
+  return `${event.target.textContent} clicked!`
 }
 </script>
 
 <template>
-  <p>状态: {{ state }}</p>
+  <p>State: {{ state }}</p>
 
   <button class="button" @click="executeImmediate">
-    立即执行
+    Execute now
   </button>
 
   <button class="ml-2 button" @click="event => execute(500, event)">
-    延迟执行
+    Execute with delay
   </button>
 </template>
 ```
 
-## 类型声明
+## Type Declarations
 
 ```ts
 export interface UseAsyncStateReturnBase<
@@ -72,59 +72,60 @@ export type UseAsyncStateReturn<
   PromiseLike<UseAsyncStateReturnBase<Data, Params, Shallow>>
 export interface UseAsyncStateOptions<Shallow extends boolean, D = any> {
   /**
-   * 当 "immediate" 为 true 时，第一次执行 promise 的延迟时间（毫秒）。
+   * Delay for the first execution of the promise when "immediate" is true. In milliseconds.
    *
    * @default 0
    */
   delay?: number
   /**
-   * 在函数被调用后立即执行 promise。
-   * 如果有的话将应用延迟。
+   * Execute the promise right after the function is invoked.
+   * Will apply the delay if any.
    *
-   * 设置为 false 时，您需要手动执行它。
+   * When set to false, you will need to execute it manually.
    *
    * @default true
    */
   immediate?: boolean
   /**
-   * 捕获错误时的回调。
+   * Callback when error is caught.
    */
   onError?: (e: unknown) => void
   /**
-   * 捕获成功时的回调。
+   * Callback when success is caught.
    * @param {D} data
    */
   onSuccess?: (data: D) => void
   /**
-   * 在执行 promise 前将状态设置为 initialState。
+   * Sets the state to initialState before executing the promise.
    *
-   * 这在多次调用 execute 函数时很有用（例如，
-   * 刷新数据）。设置为 false 时，当前状态保持不变，
-   * 直到 promise 解决。
+   * This can be useful when calling the execute function more than once (for
+   * example, to refresh data). When set to false, the current state remains
+   * unchanged until the promise resolves.
    *
    * @default true
    */
   resetOnExecute?: boolean
   /**
-   * 使用 shallowRef。
+   * Use shallowRef.
    *
    * @default true
    */
   shallow?: Shallow
   /**
    *
-   * 执行 execute 函数时抛出错误
+   * An error is thrown when executing the execute function
    *
    * @default false
    */
   throwError?: boolean
 }
 /**
- * 响应式异步状态。不会阻塞您的 setup 函数，并会在 promise 准备好后触发更改。
+ * Reactive async state. Will not block your setup function and will trigger changes once
+ * the promise is ready.
  *
  * @see https://vueuse.org/useAsyncState
- * @param promise         要解决的 promise / 异步函数
- * @param initialState    初始状态，用于第一次评估完成前
+ * @param promise         The promise / async function to be resolved
+ * @param initialState    The initial state, used until the first evaluation finishes
  * @param options
  */
 export declare function useAsyncState<

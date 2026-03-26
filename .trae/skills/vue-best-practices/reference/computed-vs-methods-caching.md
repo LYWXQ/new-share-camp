@@ -1,28 +1,28 @@
 ---
-title: 使用计算属性进行缓存的响应式派生
+title: Use Computed Properties for Cached Reactive Derivations
 impact: MEDIUM
-impactDescription: 方法在每次渲染时重新计算，而计算属性会缓存结果
+impactDescription: Methods recalculate on every render while computed properties cache results
 type: efficiency
 tags: [vue3, computed, methods, performance, caching]
 ---
 
-# 使用计算属性进行缓存的响应式派生
+# Use Computed Properties for Cached Reactive Derivations
 
-**影响：中** - 计算属性基于其响应式依赖进行缓存，只在依赖项变化时重新求值。方法在每次组件重新渲染时运行，对昂贵操作造成性能问题。
+**Impact: MEDIUM** - Computed properties are cached based on their reactive dependencies and only re-evaluate when dependencies change. Methods run on every component re-render, causing performance issues for expensive operations.
 
-当你需要从响应式状态派生值时，优先使用计算属性而不是方法，以获得自动缓存和优化的重新渲染。
+When you need to derive a value from reactive state, prefer computed properties over methods for automatic caching and optimized re-renders.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 使用计算属性获取从响应式状态派生的值
-- [ ] 只在需要传递参数或不需要缓存时使用方法
-- [ ] 永远不要对非响应式值（如 `Date.now()`）使用计算属性
-- [ ] 考虑方法 vs 计算属性中昂贵操作的性能影响
+- [ ] Use computed properties for values derived from reactive state
+- [ ] Use methods only when you need to pass parameters or don't want caching
+- [ ] Never use computed for non-reactive values like `Date.now()`
+- [ ] Consider performance impact of expensive operations in methods vs computed
 
-**错误示例：**
+**Incorrect:**
 ```vue
 <template>
-  <!-- 错误：方法在每次重新渲染时运行 -->
+  <!-- BAD: Method runs on every re-render -->
   <p>{{ getFilteredItems() }}</p>
   <p>{{ calculateTotal() }}</p>
   <p>{{ getCurrentTime() }}</p>
@@ -31,89 +31,89 @@ tags: [vue3, computed, methods, performance, caching]
 <script setup>
 import { ref } from 'vue'
 
-const items = ref([/* 大型数组 */])
+const items = ref([/* large array */])
 const prices = ref([100, 200, 300])
 
-// 错误：昂贵操作在每次渲染时运行
+// BAD: Expensive operation runs every render
 function getFilteredItems() {
   return items.value
     .filter(item => item.active)
     .sort((a, b) => a.name.localeCompare(b.name))
 }
 
-// 错误：即使价格未变化，每次渲染都运行计算
+// BAD: Calculation runs every render even if prices unchanged
 function calculateTotal() {
   return prices.value.reduce((sum, price) => sum + price, 0)
 }
 
-// 这看起来像是计算属性的用例，但 Date.now() 是非响应式的
+// This looks like a computed use case, but Date.now() is non-reactive
 function getCurrentTime() {
-  return Date.now()  // 看起来有效但不会响应式更新
+  return Date.now()  // Will appear to work but won't update reactively
 }
 </script>
 ```
 
-**正确示例：**
+**Correct:**
 ```vue
 <template>
-  <!-- 正确：计算属性只在 items 变化时重新计算 -->
+  <!-- GOOD: Computed only recalculates when items change -->
   <p>{{ filteredItems }}</p>
   <p>{{ total }}</p>
-  <!-- 正确：对非响应式当前时间使用方法 -->
+  <!-- GOOD: Method for non-reactive current time -->
   <p>{{ getCurrentTime() }}</p>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 
-const items = ref([/* 大型数组 */])
+const items = ref([/* large array */])
 const prices = ref([100, 200, 300])
 
-// 正确：缓存 - 只在 items.value 变化时重新计算
+// GOOD: Cached - only recalculates when items.value changes
 const filteredItems = computed(() => {
   return items.value
     .filter(item => item.active)
     .sort((a, b) => a.name.localeCompare(b.name))
 })
 
-// 正确：缓存 - 只在价格变化时重新计算
+// GOOD: Cached - only recalculates when prices change
 const total = computed(() => {
   return prices.value.reduce((sum, price) => sum + price, 0)
 })
 
-// 正确：对非响应式值使用方法
-// （或使用 setInterval 更新 ref）
+// GOOD: Use method for non-reactive values
+// (or use setInterval to update a ref)
 function getCurrentTime() {
   return Date.now()
 }
 </script>
 ```
 
-## 何时使用每种
+## When to Use Each
 
-| 场景 | 使用计算属性 | 使用方法 |
-|------|-------------|----------|
-| 从响应式状态派生 | 是 | 否 |
-| 昂贵计算 | 是 | 否 |
-| 需要传递参数 | 否 | 是 |
-| 非响应式值 (Date.now()) | 否 | 是 |
-| 不需要缓存 | 否 | 是 |
-| 由用户操作触发 | 否 | 是 |
+| Scenario | Use Computed | Use Method |
+|----------|--------------|------------|
+| Derived from reactive state | Yes | No |
+| Expensive calculation | Yes | No |
+| Need to pass parameters | No | Yes |
+| Non-reactive value (Date.now()) | No | Yes |
+| Don't want caching | No | Yes |
+| Triggered by user action | No | Yes |
 
-## 非响应式值警告
+## Non-Reactive Values Warning
 
-计算属性只追踪响应式依赖。非响应式值如 `Date.now()` 会导致计算属性只被求值一次且永不更新：
+Computed properties only track reactive dependencies. Non-reactive values like `Date.now()` will cause the computed to be evaluated once and never update:
 
 ```javascript
-// 错误：Date.now() 不是响应式的 - 计算属性永远不会更新
+// BAD: Date.now() is not reactive - computed will never update
 const now = computed(() => Date.now())
 
-// 正确：使用带有 setInterval 的 ref 获取实时时间
+// GOOD: Use a ref with setInterval for live time
 const now = ref(Date.now())
 setInterval(() => {
   now.value = Date.now()
 }, 1000)
 ```
 
-## 参考
-- [Vue.js 计算属性 - 计算属性缓存 vs 方法](https://vuejs.org/guide/essentials/computed.html#computed-caching-vs-methods)
+## Reference
+- [Vue.js Computed Properties - Computed Caching vs Methods](https://vuejs.org/guide/essentials/computed.html#computed-caching-vs-methods)

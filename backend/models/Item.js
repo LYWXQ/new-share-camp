@@ -37,6 +37,21 @@ const Item = sequelize.define('Item', {
     allowNull: false,
     comment: '押金金额'
   },
+  transactionType: {
+    type: DataTypes.ENUM('free', 'rent', 'sell'),
+    defaultValue: 'rent',
+    comment: '交易类型'
+  },
+  salePrice: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    comment: '出售价格'
+  },
+  isLongTermRent: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: '是否长期租用'
+  },
   availableTime: {
     type: DataTypes.JSON,
     allowNull: true,

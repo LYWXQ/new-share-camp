@@ -1,19 +1,19 @@
 ---
 name: vite-plugin-uni-middleware
-description: uni-app 路由中间件支持 - 实现守卫、认证和页面生命周期钩子，做什么：为 uni-app 路由添加 Express 风格的中间件支持，实现认证守卫、页面分析和自定义路由逻辑；何时调用：当用户需要实现路由守卫、页面级认证、导航拦截或页面分析跟踪时调用
+description: Route middleware support for uni-app - implement guards, auth, and page lifecycle hooks
 ---
 
 # vite-plugin-uni-middleware
 
-为 uni-app 路由添加 Express 风格的中间件支持。实现认证守卫、页面分析和自定义路由逻辑。
+Add Express-style middleware support to uni-app routing. Implement authentication guards, page analytics, and custom route logic.
 
-## 安装
+## Installation
 
 ```bash
 npm i -D @uni-helper/vite-plugin-uni-middleware
 ```
 
-## 设置
+## Setup
 
 ```ts
 // vite.config.ts
@@ -26,9 +26,9 @@ export default defineConfig({
 })
 ```
 
-## 创建中间件
+## Creating Middleware
 
-在 `src/middleware/` 目录中创建中间件文件：
+Create middleware files in `src/middleware/` directory:
 
 ```ts
 // src/middleware/auth.ts
@@ -38,10 +38,10 @@ export default defineMiddleware((to, from, next) => {
   const token = uni.getStorageSync('token')
 
   if (!token && to.path !== '/pages/login/index') {
-    // 重定向到登录页
+    // Redirect to login
     next('/pages/login/index')
   } else {
-    // 继续导航
+    // Continue navigation
     next()
   }
 })
@@ -50,7 +50,7 @@ export default defineMiddleware((to, from, next) => {
 ```ts
 // src/middleware/analytics.ts
 export default defineMiddleware((to, from, next) => {
-  // 跟踪页面浏览
+  // Track page view
   uni.report('page_view', {
     path: to.path,
     from: from.path,
@@ -64,14 +64,14 @@ export default defineMiddleware((to, from, next) => {
 ```ts
 // src/middleware/logger.ts
 export default defineMiddleware((to, from, next) => {
-  console.log(`[路由] ${from.path} -> ${to.path}`)
+  console.log(`[Router] ${from.path} -> ${to.path}`)
   next()
 })
 ```
 
-## 应用中间件
+## Applying Middleware
 
-### 通过 definePage（推荐）
+### Via definePage (recommended)
 
 ```vue
 <script setup>
@@ -81,7 +81,7 @@ definePage({
 </script>
 ```
 
-### 通过 pages.json
+### Via pages.json
 
 ```json
 {
@@ -92,20 +92,20 @@ definePage({
 }
 ```
 
-### 全局中间件
+### Global Middleware
 
-创建 `src/middleware/index.ts` 作为全局中间件：
+Create `src/middleware/index.ts` for global middleware:
 
 ```ts
 // src/middleware/index.ts
 export default defineMiddleware((to, from, next) => {
-  // 每次导航都运行
-  console.log('全局中间件')
+  // Runs on every navigation
+  console.log('Global middleware')
   next()
 })
 ```
 
-## 中间件上下文
+## Middleware Context
 
 ```ts
 interface MiddlewareContext {
@@ -122,41 +122,41 @@ interface MiddlewareContext {
 }
 ```
 
-## 中间件执行顺序
+## Middleware Order
 
-中间件按声明顺序执行：
+Middleware executes in declaration order:
 
 ```vue
 <script setup>
 definePage({
-  // 执行顺序：logger -> auth -> analytics
+  // Runs: logger -> auth -> analytics
   middlewares: ['logger', 'auth', 'analytics'],
 })
 </script>
 ```
 
-## 导航控制
+## Navigation Control
 
 ```ts
 export default defineMiddleware((to, from, next) => {
-  // 继续到路由
+  // Continue to route
   next()
 
-  // 重定向到不同路由
+  // Redirect to different route
   next('/pages/other/index')
 
-  // 带查询参数重定向
+  // Redirect with query
   next({
     path: '/pages/login/index',
     query: { redirect: to.path },
   })
 
-  // 取消导航（停留在当前页面）
+  // Cancel navigation (stay on current page)
   next(false)
 })
 ```
 
-## 异步中间件
+## Async Middleware
 
 ```ts
 export default defineMiddleware(async (to, from, next) => {

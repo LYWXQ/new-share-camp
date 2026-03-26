@@ -1,67 +1,67 @@
 ---
-title: Script Setup 中的变量默认不是响应式的
+title: Variables in Script Setup Are Not Reactive by Default
 impact: HIGH
-impactDescription: 忘记用 ref() 或 reactive() 包装变量会导致 script setup 中的静默响应式失败
+impactDescription: Forgetting to wrap variables with ref() or reactive() causes silent reactivity failures in script setup
 type: gotcha
 tags: [vue3, sfc, script-setup, reactivity, ref, composition-api]
 ---
 
-# Script Setup 中的变量默认不是响应式的
+# Variables in Script Setup Are Not Reactive by Default
 
-**影响：高** - 与自动使属性响应式的 Options API 的 `data()` 不同，在 `<script setup>` 中声明的变量是普通 JavaScript 值。你必须显式使用 `ref()` 或 `reactive()` 使它们响应式。忘记这一点会导致值变化时 UI 不更新。
+**Impact: HIGH** - Unlike Options API's `data()` which automatically makes properties reactive, variables declared in `<script setup>` are plain JavaScript values. You must explicitly use `ref()` or `reactive()` to make them reactive. Forgetting this causes the UI to not update when values change.
 
-## 任务清单
+## Task Checklist
 
-- [ ] 始终用 `ref()` 包装原始值（字符串、数字、布尔值）
-- [ ] 当你不需要重新赋值整个对象时，对对象使用 `reactive()`
-- [ ] 记住在 script 中访问 refs 时使用 `.value`（模板中不需要）
-- [ ] 对派生响应式状态使用 `computed()`，而不是普通函数
+- [ ] Always wrap primitive values (strings, numbers, booleans) with `ref()`
+- [ ] Use `reactive()` for objects when you don't need to reassign the whole object
+- [ ] Remember to access `.value` on refs in script (not needed in templates)
+- [ ] Use `computed()` from Vue, not a plain function, for derived reactive state
 
-**问题代码：**
+**Problematic Code:**
 ```vue
 <script setup>
-// 错误：这些不是响应式的！
+// BAD: These are NOT reactive!
 let count = 0
 let message = 'Hello'
 let user = { name: 'John', age: 30 }
 
 function increment() {
-  count++  // 这个变化不会更新 UI！
+  count++  // This change won't update the UI!
 }
 
 function updateMessage() {
-  message = 'World'  // UI 不会反映这个变化！
+  message = 'World'  // UI won't reflect this change!
 }
 </script>
 
 <template>
   <div>
-    <!-- 将始终显示初始值 -->
+    <!-- Will always show initial values -->
     <p>Count: {{ count }}</p>
     <p>Message: {{ message }}</p>
-    <button @click="increment">递增</button>
-    <button @click="updateMessage">更新</button>
+    <button @click="increment">Increment</button>
+    <button @click="updateMessage">Update</button>
   </div>
 </template>
 ```
 
-**正确代码：**
+**Correct Code:**
 ```vue
 <script setup>
 import { ref, reactive, computed } from 'vue'
 
-// 正确：原始值用 ref() 包装
+// GOOD: Primitives wrapped with ref()
 const count = ref(0)
 const message = ref('Hello')
 
-// 正确：对象用 reactive()
+// GOOD: Object with reactive()
 const user = reactive({ name: 'John', age: 30 })
 
-// 正确：派生状态用 computed
+// GOOD: Computed for derived state
 const doubleCount = computed(() => count.value * 2)
 
 function increment() {
-  count.value++  // 在 script 中对 refs 使用 .value
+  count.value++  // Use .value for refs in script
 }
 
 function updateMessage() {
@@ -69,23 +69,23 @@ function updateMessage() {
 }
 
 function updateUser() {
-  user.name = 'Jane'  // 响应式对象不需要 .value
+  user.name = 'Jane'  // No .value needed for reactive objects
 }
 </script>
 
 <template>
   <div>
-    <!-- 模板中不需要 .value - Vue 自动解包 -->
+    <!-- No .value needed in templates - Vue unwraps automatically -->
     <p>Count: {{ count }}</p>
     <p>Double: {{ doubleCount }}</p>
     <p>Message: {{ message }}</p>
     <p>User: {{ user.name }}</p>
-    <button @click="increment">递增</button>
+    <button @click="increment">Increment</button>
   </div>
 </template>
 ```
 
-## 常见错误：普通计算
+## Common Mistake: Plain Computed
 
 ```vue
 <script setup>
@@ -93,15 +93,15 @@ import { ref } from 'vue'
 
 const items = ref([1, 2, 3, 4, 5])
 
-// 错误：普通函数，不是响应式的 - items 变化时不会更新
+// BAD: Plain function, not reactive - won't update when items change
 const total = items.value.reduce((sum, n) => sum + n, 0)
 
-// 错误：箭头函数 - 重新计算但 Vue 不追踪它
+// BAD: Arrow function - recalculates but Vue doesn't track it
 const getTotal = () => items.value.reduce((sum, n) => sum + n, 0)
 </script>
 
 <template>
-  <!-- total 从不更新，getTotal 有效但不是最优的 -->
+  <!-- total never updates, getTotal works but isn't optimal -->
   <p>Total: {{ total }}</p>
 </template>
 ```
@@ -112,51 +112,51 @@ import { ref, computed } from 'vue'
 
 const items = ref([1, 2, 3, 4, 5])
 
-// 正确：computed() 追踪依赖并缓存结果
+// GOOD: computed() tracks dependencies and caches result
 const total = computed(() => items.value.reduce((sum, n) => sum + n, 0))
 </script>
 
 <template>
-  <p>Total: {{ total }}</p>  <!-- items 变化时更新 -->
+  <p>Total: {{ total }}</p>  <!-- Updates when items change -->
 </template>
 ```
 
-## 何时使用 ref() vs reactive()
+## When to Use ref() vs reactive()
 
 ```vue
 <script setup>
 import { ref, reactive } from 'vue'
 
-// 对以下使用 ref()：
-// - 原始值（字符串、数字、布尔值）
-// - 你可能需要完全重新赋值的值
+// Use ref() for:
+// - Primitives (string, number, boolean)
+// - Values you might reassign entirely
 const count = ref(0)
 const isLoading = ref(false)
 const selectedId = ref<number | null>(null)
 
-// 对以下使用 reactive()：
-// - 你会变更但不会重新赋值的对象/数组
-// - 当你想避免 .value 时
+// Use reactive() for:
+// - Objects/arrays you'll mutate but not reassign
+// - When you want to avoid .value
 const form = reactive({
   name: '',
   email: '',
   errors: []
 })
 
-// 注意：不能重新赋值响应式对象
+// Gotcha: Can't reassign reactive objects
 const user = reactive({ name: 'John' })
-// user = { name: 'Jane' }  // 这会破坏响应式！
-// user.name = 'Jane'       // 这有效
+// user = { name: 'Jane' }  // This breaks reactivity!
+// user.name = 'Jane'       // This works
 
-// 如果你需要重新赋值对象，使用 ref()
+// Use ref() if you need to reassign objects
 const userData = ref({ name: 'John' })
-userData.value = { name: 'Jane' }  // 这有效
+userData.value = { name: 'Jane' }  // This works
 </script>
 ```
 
-## 模板自动解包
+## Template Automatic Unwrapping
 
-Vue 自动在模板中解包 refs：
+Vue automatically unwraps refs in templates:
 
 ```vue
 <script setup>
@@ -167,29 +167,29 @@ const user = ref({ name: 'John' })
 </script>
 
 <template>
-  <!-- 所有这些都有效 - 不需要 .value -->
+  <!-- All of these work - no .value needed -->
   <p>{{ count }}</p>
   <p>{{ user.name }}</p>
   <input v-model="count" type="number">
-  <button @click="count++">递增</button>
+  <button @click="count++">Increment</button>
 </template>
 ```
 
-但在内联编写的事件处理程序中，你可能仍然需要 `.value`：
+But in event handlers written inline, you might still need `.value`:
 
 ```vue
 <template>
-  <!-- 这有效（Vue 处理它） -->
+  <!-- This works (Vue handles it) -->
   <button @click="count++">+1</button>
 
-  <!-- 对于复杂逻辑，可能需要 .value -->
+  <!-- For complex logic, .value may be needed -->
   <button @click="() => { count.value = Math.max(0, count.value - 1) }">
-    -1 (最小 0)
+    -1 (min 0)
   </button>
 </template>
 ```
 
-## 参考
-- [Vue.js 响应式基础](https://vuejs.org/guide/essentials/reactivity-fundamentals.html)
+## Reference
+- [Vue.js Reactivity Fundamentals](https://vuejs.org/guide/essentials/reactivity-fundamentals.html)
 - [Vue.js ref()](https://vuejs.org/api/reactivity-core.html#ref)
 - [Vue.js reactive()](https://vuejs.org/api/reactivity-core.html#reactive)

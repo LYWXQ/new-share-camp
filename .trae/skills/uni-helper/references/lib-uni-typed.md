@@ -1,28 +1,28 @@
 ---
 name: uni-typed
-description: uni-app 模板的 TypeScript 类型定义 - 为 uni-app 组件提供完整的类型安全，做什么：为 uni-app 模板部分提供 TypeScript 类型定义，包括组件属性类型检查、事件处理器类型安全和组件引用类型推断；何时调用：当用户需要为 uni-app 模板添加类型支持、处理组件事件类型或获取组件引用类型时调用
+description: TypeScript type definitions for uni-app templates - complete type safety for uni-app components
 ---
 
 # uni-typed
 
-uni-app 模板部分的 TypeScript 类型定义。为 uni-app 组件提供完整的类型安全和智能提示。
+TypeScript type definitions for uni-app template sections. Provides complete type safety and IntelliSense for uni-app components.
 
-## 安装
+## Installation
 
 ```bash
-# 用于 uni-app
+# For uni-app
 npm i -D @uni-helper/uni-app-types
 
-# 用于 uni-ui
+# For uni-ui
 npm i -D @uni-helper/uni-ui-types
 
-# 用于 uni-cloud
+# For uni-cloud
 npm i -D @uni-helper/uni-cloud-types
 ```
 
-## 设置
+## Setup
 
-### Uni-app 类型
+### Uni-app Types
 
 ```json
 // tsconfig.json
@@ -33,7 +33,7 @@ npm i -D @uni-helper/uni-cloud-types
 }
 ```
 
-### Uni-ui 类型
+### Uni-ui Types
 
 ```json
 // tsconfig.json
@@ -47,16 +47,16 @@ npm i -D @uni-helper/uni-cloud-types
 }
 ```
 
-## 特性
+## Features
 
-- 类型安全的模板事件处理器
-- 组件属性类型检查
-- 自定义事件类型定义
-- 组件引用的类型推断
+- Type-safe template event handlers
+- Component prop type checking
+- Custom event type definitions
+- Ref type inference for components
 
-## 组件类型
+## Component Types
 
-### 模板类型安全
+### Template Type Safety
 
 ```vue
 <script setup lang="ts">
@@ -75,7 +75,7 @@ const handleChange = (e: UniHelper.SwitchOnChangeEvent) => {
 </script>
 
 <template>
-  <!-- 类型安全的组件使用 -->
+  <!-- Type-safe component usage -->
   <input
     type="text"
     :value="inputValue"
@@ -86,18 +86,18 @@ const handleChange = (e: UniHelper.SwitchOnChangeEvent) => {
 </template>
 ```
 
-### 组件引用类型
+### Component Ref Types
 
 ```vue
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-// 类型安全的组件引用
+// Type-safe component refs
 const videoRef = ref<UniHelper.VideoInstance>()
 const mapRef = ref<UniHelper.MapInstance>()
 
 onMounted(() => {
-  // 组件方法的智能提示
+  // IntelliSense for component methods
   videoRef.value?.play()
   videoRef.value?.pause()
   videoRef.value?.seek(100)
@@ -115,49 +115,49 @@ onMounted(() => {
 </template>
 ```
 
-## 事件类型
+## Event Types
 
-### 常见事件类型
+### Common Event Types
 
 ```ts
-// 输入事件
+// Input events
 UniHelper.InputOnInputEvent
 UniHelper.InputOnBlurEvent
 UniHelper.InputOnFocusEvent
 
-// 表单事件
+// Form events
 UniHelper.SwitchOnChangeEvent
 UniHelper.CheckboxOnChangeEvent
 UniHelper.RadioOnChangeEvent
 UniHelper.PickerOnChangeEvent
 UniHelper.SliderOnChangeEvent
 
-// 媒体事件
+// Media events
 UniHelper.VideoOnPlayEvent
 UniHelper.VideoOnPauseEvent
 UniHelper.VideoOnEndedEvent
 UniHelper.VideoOnTimeUpdateEvent
 
-// 触摸事件
+// Touch events
 UniHelper.ViewOnTouchstartEvent
 UniHelper.ViewOnTouchmoveEvent
 UniHelper.ViewOnTouchendEvent
 UniHelper.ViewOnTapEvent
 UniHelper.ViewOnLongpressEvent
 
-// 滚动事件
+// Scroll events
 UniHelper.ScrollViewOnScrollEvent
 UniHelper.ScrollViewOnScrolltolowerEvent
 UniHelper.ScrollViewOnScrolltoupperEvent
 ```
 
-### 自定义事件
+### Custom Events
 
-为你的组件定义自定义事件类型：
+Define custom event types for your components:
 
 ```vue
 <script setup lang="ts">
-// 子组件
+// Child component
 const emit = defineEmits<{
   change: [value: string]
   submit: [data: { id: number; name: string }]
@@ -167,7 +167,7 @@ const emit = defineEmits<{
 
 ```vue
 <script setup lang="ts">
-// 父组件
+// Parent component
 import type { MyComponentOnChangeEvent } from './types'
 
 const handleChange = (e: MyComponentOnChangeEvent) => {
@@ -180,18 +180,18 @@ const handleChange = (e: MyComponentOnChangeEvent) => {
 </template>
 ```
 
-## 为什么选择 uni-typed？
+## Why uni-typed?
 
-DCloud 的 `@dcloudio/types` 只提供 script 部分的 TypeScript 支持。uni-typed 填补了模板部分类型安全的空白，提供：
+DCloud's `@dcloudio/types` only provides TypeScript support for script sections. uni-typed fills the gap for template section type safety, providing:
 
-- 组件属性验证
-- 事件处理器类型检查
-- 组件引用上的方法智能提示
-- 更好的 IDE 支持（VS Code、WebStorm）
+- Component prop validation
+- Event handler type checking
+- Method IntelliSense on component refs
+- Better IDE support (VS Code, WebStorm)
 
-## 从 v0 迁移到 v1
+## Migration from v0 to v1
 
-请参阅[迁移指南](https://uni-helper.js.org/uni-typed/other/migrate-v0-to-v1)了解升级说明。
+See the [migration guide](https://uni-helper.js.org/uni-typed/other/migrate-v0-to-v1) for upgrading instructions.
 
 <!--
 Source references:

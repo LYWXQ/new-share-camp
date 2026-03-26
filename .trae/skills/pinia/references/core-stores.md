@@ -1,17 +1,17 @@
 ---
 name: stores
-description: 在 Pinia 中定义 store、state、getters 和 actions
+description: Defining stores, state, getters, and actions in Pinia
 ---
 
 # Pinia Stores
 
-Store 使用 `defineStore()` 定义，需要一个唯一的名称。每个 store 有三个核心概念：**state**、**getters** 和 **actions**。
+Stores are defined using `defineStore()` with a unique name. Each store has three core concepts: **state**, **getters**, and **actions**.
 
-## 定义 Store
+## Defining Stores
 
 ### Option Stores
 
-类似于 Vue 的 Options API：
+Similar to Vue's Options API:
 
 ```ts
 import { defineStore } from 'pinia'
@@ -32,11 +32,11 @@ export const useCounterStore = defineStore('counter', {
 })
 ```
 
-将 `state` 视为 `data`，`getters` 视为 `computed`，`actions` 视为 `methods`。
+Think of `state` as `data`, `getters` as `computed`, and `actions` as `methods`.
 
-### Setup Stores（推荐）
+### Setup Stores (Recommended)
 
-使用 Composition API 语法 - 更灵活和强大：
+Uses Composition API syntax - more flexible and powerful:
 
 ```ts
 import { ref, computed } from 'vue'
@@ -55,22 +55,22 @@ export const useCounterStore = defineStore('counter', () => {
 })
 ```
 
-在 Setup Stores 中：`ref()` → state，`computed()` → getters，`function()` → actions。
+In Setup Stores: `ref()` → state, `computed()` → getters, `function()` → actions.
 
-**重要：** 必须返回所有 state 属性，Pinia 才能追踪它们。
+**Important:** You must return all state properties for Pinia to track them.
 
-### 使用 Store
+### Using Stores
 
 ```vue
 <script setup>
 import { useCounterStore } from '@/stores/counter'
 
 const store = useCounterStore()
-// 访问：store.count, store.doubleCount, store.increment()
+// Access: store.count, store.doubleCount, store.increment()
 </script>
 ```
 
-### 使用 storeToRefs 解构
+### Destructuring with storeToRefs
 
 ```vue
 <script setup>
@@ -79,13 +79,13 @@ import { useCounterStore } from '@/stores/counter'
 
 const store = useCounterStore()
 
-// ❌ 破坏响应性
+// ❌ Breaks reactivity
 const { name, doubleCount } = store
 
-// ✅ 保持 state/getters 的响应性
+// ✅ Preserves reactivity for state/getters
 const { name, doubleCount } = storeToRefs(store)
 
-// ✅ Actions 可以直接解构
+// ✅ Actions can be destructured directly
 const { increment } = store
 </script>
 ```
@@ -94,11 +94,11 @@ const { increment } = store
 
 ## State
 
-State 定义为返回初始状态的函数。
+State is defined as a function returning the initial state.
 
 ### TypeScript
 
-类型推断自动工作。对于复杂类型：
+Type inference works automatically. For complex types:
 
 ```ts
 interface UserInfo {
@@ -114,7 +114,7 @@ export const useUserStore = defineStore('user', {
 })
 ```
 
-或使用接口定义返回类型：
+Or use an interface for the return type:
 
 ```ts
 interface State {
@@ -130,7 +130,7 @@ export const useUserStore = defineStore('user', {
 })
 ```
 
-### 访问和修改
+### Accessing and Modifying
 
 ```ts
 const store = useStore()
@@ -141,27 +141,27 @@ store.count++
 <input v-model="store.count" type="number" />
 ```
 
-### 使用 $patch 修改
+### Mutating with $patch
 
-一次性应用多个更改：
+Apply multiple changes at once:
 
 ```ts
-// 对象语法
+// Object syntax
 store.$patch({
   count: store.count + 1,
   name: 'DIO',
 })
 
-// 函数语法（用于复杂修改）
+// Function syntax (for complex mutations)
 store.$patch((state) => {
   state.items.push({ name: 'shoes', quantity: 1 })
   state.hasChanged = true
 })
 ```
 
-### 重置 State
+### Resetting State
 
-Option Stores 有内置的 `$reset()`。对于 Setup Stores，需要自己实现：
+Option Stores have built-in `$reset()`. For Setup Stores, implement your own:
 
 ```ts
 export const useCounterStore = defineStore('counter', () => {
@@ -175,29 +175,29 @@ export const useCounterStore = defineStore('counter', () => {
 })
 ```
 
-### 订阅 State 变更
+### Subscribing to State Changes
 
 ```ts
 cartStore.$subscribe((mutation, state) => {
   mutation.type // 'direct' | 'patch object' | 'patch function'
   mutation.storeId // 'cart'
-  mutation.payload // patch 对象（仅用于 'patch object'）
+  mutation.payload // patch object (only for 'patch object')
 
   localStorage.setItem('cart', JSON.stringify(state))
 })
 
-// 选项
-cartStore.$subscribe(callback, { flush: 'sync' }) // 立即执行
-cartStore.$subscribe(callback, { detached: true }) // 卸载后保持
+// Options
+cartStore.$subscribe(callback, { flush: 'sync' }) // Immediate
+cartStore.$subscribe(callback, { detached: true }) // Keep after unmount
 ```
 
 ---
 
 ## Getters
 
-Getters 是计算值，相当于 Vue 的 `computed()`。
+Getters are computed values, equivalent to Vue's `computed()`.
 
-### 基本 Getters
+### Basic Getters
 
 ```ts
 getters: {
@@ -205,9 +205,9 @@ getters: {
 }
 ```
 
-### 访问其他 Getters
+### Accessing Other Getters
 
-使用 `this` 并显式返回类型：
+Use `this` with explicit return type:
 
 ```ts
 getters: {
@@ -218,9 +218,9 @@ getters: {
 },
 ```
 
-### 带参数的 Getters
+### Getters with Arguments
 
-返回一个函数（注意：失去缓存）：
+Return a function (note: loses caching):
 
 ```ts
 getters: {
@@ -230,7 +230,7 @@ getters: {
 },
 ```
 
-在参数化 getters 中缓存：
+Cache within parameterized getters:
 
 ```ts
 getters: {
@@ -241,7 +241,7 @@ getters: {
 },
 ```
 
-### 在 Getters 中访问其他 Store
+### Accessing Other Stores in Getters
 
 ```ts
 import { useOtherStore } from './other-store'
@@ -258,9 +258,9 @@ getters: {
 
 ## Actions
 
-Actions 是用于业务逻辑的方法。与 getters 不同，它们可以是异步的。
+Actions are methods for business logic. Unlike getters, they can be asynchronous.
 
-### 定义 Actions
+### Defining Actions
 
 ```ts
 actions: {
@@ -273,7 +273,7 @@ actions: {
 },
 ```
 
-### 异步 Actions
+### Async Actions
 
 ```ts
 actions: {
@@ -287,7 +287,7 @@ actions: {
 },
 ```
 
-### 在 Actions 中访问其他 Store
+### Accessing Other Stores in Actions
 
 ```ts
 import { useAuthStore } from './auth-store'
@@ -302,40 +302,40 @@ actions: {
 },
 ```
 
-**SSR：** 在任何 `await` 之前调用所有 `useStore()`：
+**SSR:** Call all `useStore()` before any `await`:
 
 ```ts
 async orderCart() {
-  // ✅ 在 await 之前调用 store
+  // ✅ Call stores before await
   const user = useUserStore()
 
   await apiOrderCart(user.token, this.items)
-  // ❌ 不要在 SSR 中的 await 之后调用 useStore()
+  // ❌ Don't call useStore() after await in SSR
 }
 ```
 
-### 订阅 Actions
+### Subscribing to Actions
 
 ```ts
 const unsubscribe = someStore.$onAction(
   ({ name, store, args, after, onError }) => {
     const startTime = Date.now()
-    console.log(`开始 "${name}"，参数 [${args.join(', ')}]`)
+    console.log(`Start "${name}" with params [${args.join(', ')}]`)
 
     after((result) => {
-      console.log(`完成 "${name}"，耗时 ${Date.now() - startTime}ms`)
+      console.log(`Finished "${name}" after ${Date.now() - startTime}ms`)
     })
 
     onError((error) => {
-      console.warn(`失败 "${name}": ${error}`)
+      console.warn(`Failed "${name}": ${error}`)
     })
   }
 )
 
-unsubscribe() // 清理
+unsubscribe() // Cleanup
 ```
 
-组件卸载后保持订阅：
+Keep subscription after component unmount:
 
 ```ts
 someStore.$onAction(callback, true)
@@ -343,7 +343,7 @@ someStore.$onAction(callback, true)
 
 ---
 
-## Options API 辅助函数
+## Options API Helpers
 
 ```ts
 import { mapState, mapWritableState, mapActions } from 'pinia'
@@ -351,9 +351,9 @@ import { useCounterStore } from '../stores/counter'
 
 export default {
   computed: {
-    // 只读的 state/getters
+    // Readonly state/getters
     ...mapState(useCounterStore, ['count', 'doubleCount']),
-    // 可写的 state
+    // Writable state
     ...mapWritableState(useCounterStore, ['count']),
   },
   methods: {
@@ -364,7 +364,7 @@ export default {
 
 ---
 
-## 在 Setup Stores 中访问全局提供者
+## Accessing Global Providers in Setup Stores
 
 ```ts
 import { inject } from 'vue'
@@ -375,7 +375,7 @@ export const useSearchFilters = defineStore('search-filters', () => {
   const route = useRoute()
   const appProvided = inject('appProvided')
 
-  // 不要返回这些 - 在组件中直接访问它们
+  // Don't return these - access them directly in components
   return { /* ... */ }
 })
 ```

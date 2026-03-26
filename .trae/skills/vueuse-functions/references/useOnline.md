@@ -1,12 +1,12 @@
 ---
-category: 传感器
+category: Sensors
 ---
 
 # useOnline
 
-响应式在线状态。`useNetwork` 的包装器。
+Reactive online state. A wrapper of `useNetwork`.
 
-## 用法
+## Usage
 
 ```ts
 import { useOnline } from '@vueuse/core'
@@ -14,21 +14,21 @@ import { useOnline } from '@vueuse/core'
 const online = useOnline()
 ```
 
-## 组件用法
+## Component Usage
 
 ```vue
 <template>
   <UseOnline v-slot="{ isOnline }">
-    是否在线: {{ isOnline }}
+    Is Online: {{ isOnline }}
   </UseOnline>
 </template>
 ```
 
-## 类型声明
+## Type Declarations
 
 ```ts
 /**
- * 响应式在线状态。
+ * Reactive online state.
  *
  * @see https://vueuse.org/useOnline
  * @param options
